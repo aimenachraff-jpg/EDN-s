@@ -1,0 +1,73 @@
+{
+  "$schema": "https://opencode.dev/schema.json",
+  "project": {
+    "name": "MASTER2-A1",
+    "description": "Hallucination-Aware Super-Resolution Evaluation for ALSAT-2B Satellite Imagery",
+    "version": "0.1.0"
+  },
+  "provider": {
+    "id": "freellmapi",
+    "name": "FreeLLMAPI",
+    "apiKey": "${FREE_LLM_API_KEY}",
+    "baseUrl": "${FREE_LLM_API_BASE_URL}",
+    "models": {
+      "default": "auto",
+      "coding": "auto",
+      "reasoning": "auto",
+      "fast": "auto"
+    }
+  },
+  "agents": {
+    "researcher": {
+      "model": "auto",
+      "systemPrompt": "You are a research scientist conducting a Master 2 thesis on satellite image super-resolution. Follow scientific integrity rules: never fabricate, verify all claims, distinguish findings from hypotheses.",
+      "tools": ["read", "write", "edit", "grep", "glob", "shell", "webfetch", "websearch"]
+    },
+    "engineer": {
+      "model": "auto",
+      "systemPrompt": "You are a machine learning engineer implementing PyTorch models for satellite image super-resolution. Write clean, modular, reproducible code. Optimize for CPU training constraints.",
+      "tools": ["read", "write", "edit", "grep", "glob", "shell", "browser"]
+    },
+    "reviewer": {
+      "model": "auto",
+      "systemPrompt": "You are a scientific reviewer. Challenge assumptions, find flaws, check for data leakage, invalid comparisons, weak baselines, unsupported conclusions. Be rigorous.",
+      "tools": ["read", "grep", "glob", "shell"]
+    }
+  },
+  "tools": {
+    "browser": {
+      "enabled": true,
+      "headless": true
+    },
+    "shell": {
+      "enabled": true,
+      "timeout": 300000,
+      "workdir": "."
+    }
+  },
+  "permissions": {
+    "read": ["**"],
+    "write": ["**"],
+    "shell": ["python *", "pip *", "git *", "mkdir *", "cd *"],
+    "network": ["https://api.github.com/*", "https://arxiv.org/*", "https://scholar.google.com/*", "https://*.freellmapi.*/*"]
+  },
+  "hooks": {
+    "preWrite": [
+      "echo 'Writing file: {{path}}'"
+    ],
+    "preShell": [
+      "echo 'Running: {{command}}'"
+    ]
+  },
+  "context": {
+    "include": [
+      "AGENTS.md",
+      "README.md",
+      "research/research_plan.md",
+      "research/methodology.md",
+      "src/**/*.py",
+      "configs/*.yaml"
+    ],
+    "maxTokens": 100000
+  }
+}
