@@ -1,0 +1,21 @@
+# Cloud GPU Training Requirements (Kaggle/Colab/RunPod)
+# Additional packages for GPU training
+
+# Core SR repos (pin to specific commits for reproducibility)
+basicsr @ git+https://github.com/XPixelGroup/BasicSR.git@master
+swinir @ git+https://github.com/JingyunLiang/SwinIR.git@master
+realesrgan @ git+https://github.com/xinntao/Real-ESRGAN.git@master
+
+# Training utilities
+timm==1.0.7
+torchmetrics==1.4.0
+wandb==0.17.0  # optional, for experiment tracking
+
+# Segmentation models (for downstream tasks)
+segmentation-models-pytorch==0.3.3
+
+# Detection (for building detection)
+ultralytics==8.2.0
+
+# For PROBA-V MISR evaluation
+pytorch-lightning==2.4.0

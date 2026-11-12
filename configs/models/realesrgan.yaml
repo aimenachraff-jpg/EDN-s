@@ -1,0 +1,50 @@
+# Real-ESRGAN Configuration
+# Protocol: RRDBNet, 23 blocks, 64 feats, scale=4, 4 channels
+
+model:
+  _target_: src.models.realesrgan.RealESRGAN
+  net_g:
+    _target_: src.models.realesrgan.RRDBNet
+    num_in_ch: 4
+    num_out_ch: 4
+    num_feat: 64
+    num_block: 23
+  scale: 4
+
+training:
+  batch_size: 16
+  patch_size: 128
+  lr: 1.0e-4
+  max_iters: 400000
+  loss_type: "l1+perceptual+gan"
+  perceptual_weight: 1.0
+  gan_weight: 0.1
+  amp: true
+  num_workers: 4
+  seed: 456
+  deterministic: true
+  val_interval: 5000  # iterations
+  checkpoint_interval: 50000  # iterations
+  grad_clip: 1.0
+
+# Pretrained weights (optional)
+# pretrained_path: "experiments/checkpoints/realesrgan_x4.pth"
+# pretrained_3ch: true  # adapt from 3-channel pretrained
+
+# Loss components
+loss:
+  perceptual:
+    layer_weights:
+      conv1_2: 0.1
+      conv2_2: 0.1
+      conv3_4: 1.0
+      conv4_4: 1.0
+      conv5_4: 1.0
+    vgg_type: "vgg19"
+    use_input_norm: true
+    range_norm: false
+    criterion: "l1"
+  gan:
+    gan_type: "vanilla"
+    real_label_val: 1.0
+    fake_label_val: 0.0

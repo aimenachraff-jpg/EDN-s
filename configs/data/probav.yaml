@@ -1,0 +1,173 @@
+# PROBA-V MISR Configuration
+# Benchmark dataset for Multi-Image Super-Resolution (ESA Kelvin Challenge)
+
+# ============================================================================
+# Official ESA Challenge Specification (Verified)
+# ============================================================================
+# Source: https://kelvins.esa.int/proba-v-super-resolution/data/
+# Publication: Märtens et al. "Super-resolution of PROBA-V images using CNNs", Astrodynamics 3.4 (2019)
+# PROBA-V-ref variant: Nguyen et al. arXiv:2101.10200 (identifies reference LR in stack)
+
+dataset:
+  name: "PROBA-V MISR"
+  source: "ESA Kelvin Platform"
+  challenge_url: "https://kelvins.esa.int/proba-v-super-resolution/"
+  data_url: "https://zenodo.org/record/6327426"  # 675 MB zip
+  variant: "proba_v_ref"  # Use reference-aware variant
+
+  # Scene counts (official split)
+  n_scenes_total: 1450
+  n_scenes_train: 1160
+  n_scenes_test: 290
+  n_regions: 74  # hand-selected globally
+
+  # Per-scene structure
+  lr_per_scene:
+    min: 9
+    max: 19
+    avg: 19
+  hr_per_scene: 1
+
+# ============================================================================
+# Sensor Specifications (PROBA-V VEGETATION Instrument)
+# ============================================================================
+sensor:
+  mission: "PROBA-V (Project for On-Board Autonomy - Vegetation)"
+  instrument: "VEGETATION imager (VNIR)"
+  launch: 2013
+  orbit: "Sun-synchronous, 820 km, 98.7°, 10:30 LTAN"
+  swath: 2250  # km, global daily
+
+  bands:
+    BLUE:
+      wavelength_um: [0.45, 0.52]
+      gsd_1km: 1000
+      gsd_300m: 300
+    RED:
+      wavelength_um: [0.62, 0.69]
+      gsd_1km: 1000
+      gsd_300m: 300
+    NIR:
+      wavelength_um: [0.77, 0.89]
+      gsd_1km: 1000
+      gsd_300m: 300
+    SWIR:
+      wavelength_um: [1.55, 1.65]
+      gsd_1km: 1000
+      gsd_300m: 1000  # No 300m for SWIR
+
+  # Only RED and NIR provided in challenge
+  challenge_bands: ["RED", "NIR"]
+
+# ============================================================================
+# Image Specifications
+# ============================================================================
+images:
+  # Low Resolution (300m)
+  lr:
+    resolution_m: 300
+    size_pixels: [128, 128]
+    bit_depth: 14
+    storage_format: "16-bit PNG"
+    bands: ["RED", "NIR"]
+    quality_map: true  # QMXXX.png per LR image
+
+  # High Resolution (100m)
+  hr:
+    resolution_m: 100
+    size_pixels: [384, 384]
+    bit_depth: 14
+    storage_format: "16-bit PNG"
+    bands: ["RED", "NIR"]
+    status_map: true  # SM.png per HR image
+
+  # Scale factor
+  scale_factor: 3  # 300m -> 100m
+
+# ============================================================================
+# Quality Masks
+# ============================================================================
+quality_masks:
+  # Values: 1 = clear, 0 = obscured
+  hr_clear_threshold: 0.75  # ≥75% clear pixels required
+  lr_clear_threshold: 0.60  # ≥60% clear pixels required
+
+  mask_classes:
+    clear: 1
+    cloud: 0
+    cloud_shadow: 0
+    ice: 0
+    water: 0
+    missing: 0
+
+# ============================================================================
+# Registration
+# ============================================================================
+registration:
+  # Images NOT pre-registered (official challenge)
+  pre_registered: false
+  mean_geolocation_accuracy_m: 61
+  subpixel_shifts: true
+  shifts_necessary_for_misr: true
+  scoring_handles_shifts: true  # cPSNR is shift-invariant
+
+# ============================================================================
+# Evaluation Metric (Official)
+# ============================================================================
+metric:
+  name: "cPSNR"  # crop PSNR
+  description: "PSNR computed only on clear pixels (status map = 1), shift-invariant"
+  reference: "norm.csv provides baseline cPSNR for normalization"
+
+# ============================================================================
+# Directory Structure (After Download)
+# ============================================================================
+structure:
+  root: "data/raw/proba_v"
+  train:
+    RED: "train/RED/imgsetxxxx/HR.png, LRXXX.png, QMXXX.png"
+    NIR: "train/NIR/imgsetxxxx/HR.png, LRXXX.png, QMXXX.png"
+  test:
+    RED: "test/RED/imgsetxxxx/LRXXX.png, QMXXX.png, SM.png"
+    NIR: "test/NIR/imgsetxxxx/LRXXX.png, QMXXX.png, SM.png"
+  norm_csv: "norm.csv"
+
+# ============================================================================
+# Processing Parameters
+# ============================================================================
+processing:
+  # Normalization (14-bit in 16-bit PNG)
+  normalization:
+    method: "bit_depth"
+    max_value: 16383  # 2^14 - 1
+    output_range: [0, 1]
+
+  # Stack handling
+  stack:
+    max_lr_per_scene: 19
+    min_lr_per_scene: 9
+    sort_by: "acquisition_date"  # if metadata available
+
+  # Tiling (if needed for large scenes)
+  tile_size: 384  # HR size
+  overlap: 64
+
+# ============================================================================
+# Split Configuration
+# ============================================================================
+splits:
+  train: "official_train"  # 1160 scenes
+  test: "official_test"    # 290 scenes
+  val: "from_train"        # 10% of train held out for validation
+  val_fraction: 0.1
+  val_seed: 42
+
+# ============================================================================
+# Download Configuration
+# ============================================================================
+download:
+  url: "https://zenodo.org/record/6327426/files/proba-v-super-resolution.zip"
+  size_mb: 675
+  checksum: "sha256:verify_after_download"  # TODO: add actual checksum
+  extract: true
+  target_dir: "data/raw/proba_v"

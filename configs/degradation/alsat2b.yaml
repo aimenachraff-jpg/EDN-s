@@ -1,0 +1,137 @@
+# ALSAT-2B / NAOMI Degradation Configuration
+# ALL parameters are ESTIMATED from public specifications (ESA eoPortal)
+# No real ALSAT-2B calibration data available for validation
+
+# ============================================================================
+# Parameter Sources and Uncertainty
+# ============================================================================
+# DOCUMENTED (from ESA eoPortal, verified Nov 2025):
+# - Band edges (Table 2): exact
+# - Quantization: 12-bit -> 10-bit downlink (exact)
+# - Inter-band registration: <0.3 pixel (exact)
+# - Telescope: Korsch TMA SiC, 200mm, F/16 (exact)
+#
+# ESTIMATED (not in public specs):
+# - MTF @ Nyquist: spec says ">0.15" but no exact value
+# - SNR at reference radiance: spec says ">100" but no exact value
+# - Noise model details (Poisson vs Gaussian mix): not specified
+#
+# SENSITIVITY RANGES defined for robustness analysis
+
+degradation:
+  _target_: src.degradation.alsat2b_degradation.ALSAT2BDegradation
+
+  # -------------------------------------------------------------------------
+  # MTF (Modulation Transfer Function) - ESTIMATED
+  # -------------------------------------------------------------------------
+  # Gaussian MTF: MTF(f) = exp(-2 * pi^2 * sigma^2 * f^2)
+  # At Nyquist (f=0.5 cycles/pixel): MTF(0.5) = exp(-pi^2 * sigma^2 / 2)
+  # Spec: MTF@Nyquist > 0.15
+  # For sigma=0.35: MTF(0.5) = exp(-pi^2 * 0.35^2 / 2) = exp(-0.605) = 0.546
+  # For sigma=0.40: MTF(0.5) = exp(-pi^2 * 0.40^2 / 2) = exp(-0.790) = 0.454
+  # Both satisfy >0.15; nominal 0.35 chosen as midpoint of reasonable range
+  mtf_sigma_ms: 0.35      # MS bands (10m GSD) - pixels at 10m
+  mtf_sigma_pan: 0.35     # PAN band (2.5m GSD) - pixels at 2.5m
+  mtf_type: "gaussian"    # Could also be "piston" or "sinc" if characterized
+
+  # Sensitivity sweep range for H1 validation
+  mtf_sigma_range: [0.30, 0.35, 0.40]
+
+  # -------------------------------------------------------------------------
+  # SRF (Spectral Response Function) - DOCUMENTED band edges
+  # -------------------------------------------------------------------------
+  # From ESA eoPortal Table 2 (exact edges):
+  srf_type: "trapezoidal"
+  band_edges_um:
+    B1_blue:   [0.45, 0.52]
+    B2_green:  [0.53, 0.60]
+    B3_red:    [0.62, 0.69]
+    B4_nir:    [0.76, 0.89]
+    PAN:       [0.45, 0.90]  # Broadband panchromatic
+
+  # Transition width for trapezoidal (fraction of bandwidth)
+  srf_transition_width: 0.05  # 5% transition at edges
+
+  # -------------------------------------------------------------------------
+  # Noise Model - ESTIMATED (conservative)
+  # -------------------------------------------------------------------------
+  # Spec: SNR > 100 at reference radiance (linear)
+  # Conservative estimate: 20 dB = 100 linear
+  # Poisson-Gaussian model: variance = a * signal + b
+  # Where a = 1/gain (photon noise), b = read_noise^2
+  noise_model: "poisson_gaussian"
+  snr_db: 20              # Conservative (spec says >100 = 20dB)
+  snr_db_range: [15, 20, 25]  # Sensitivity sweep
+
+  # Gain (electrons/DN) - estimated typical for 10-bit
+  gain: 2.5
+  read_noise_e: 5.0       # electrons RMS
+
+  # -------------------------------------------------------------------------
+  # Quantization - DOCUMENTED (exact)
+  # -------------------------------------------------------------------------
+  quantization_bits: 10   # 12-bit ADC -> 10-bit downlink
+  quantization_type: "uniform"
+
+  # -------------------------------------------------------------------------
+  # Geometric - DOCUMENTED (exact)
+  # -------------------------------------------------------------------------
+  max_registration_error_px: 0.3  # <0.3 pixel inter-band
+  registration_distribution: "uniform"  # Uniform [-0.3, 0.3]
+
+  # -------------------------------------------------------------------------
+  # Downsampling
+  # -------------------------------------------------------------------------
+  downsample_method: "area"  # Area averaging (physically accurate)
+  scale_factor_ms: 4         # 2.5m PAN -> 10m MS
+  scale_factor_pan: 1        # PAN stays at 2.5m
+
+  # -------------------------------------------------------------------------
+  # Reproducibility
+  # -------------------------------------------------------------------------
+  seed: 42
+  deterministic: true
+
+  # -------------------------------------------------------------------------
+  # Validation Targets (for H1)
+  # -------------------------------------------------------------------------
+  validation:
+    # If real ALSAT-2B data becomes available
+    target_fid: 10          # FID < 10
+    target_psnr_gap: 0.5    # PSNR gap < 0.5 dB
+    target_ks_statistic: 0.15  # KS < 0.15
+    target_corr_diff: 0.1   # Correlation matrix Frobenius diff < 0.1
+
+
+# ============================================================================
+# Alternative Degradation Configs (for ablation)
+# ============================================================================
+# Minimal degradation (bicubic only)
+degradation_bicubic:
+  _target_: src.degradation.alsat2b_degradation.ALSAT2BDegradation
+  mtf_sigma_ms: 0.0
+  mtf_sigma_pan: 0.0
+  snr_db: 100  # Effectively no noise
+  quantization_bits: 16
+  max_registration_error_px: 0.0
+  seed: 42
+
+# Bicubic + noise only
+degradation_bicubic_noise:
+  _target_: src.degradation.alsat2b_degradation.ALSAT2BDegradation
+  mtf_sigma_ms: 0.0
+  mtf_sigma_pan: 0.0
+  snr_db: 20
+  quantization_bits: 10
+  max_registration_error_px: 0.0
+  seed: 42
+
+# Full Wald but with ideal MTF (sigma=0)
+degradation_ideal_optics:
+  _target_: src.degradation.alsat2b_degradation.ALSAT2BDegradation
+  mtf_sigma_ms: 0.0
+  mtf_sigma_pan: 0.0
+  snr_db: 20
+  quantization_bits: 10
+  max_registration_error_px: 0.3
+  seed: 42

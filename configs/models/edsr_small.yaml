@@ -1,0 +1,30 @@
+# EDSR-small Configuration
+# Protocol: 16 resblocks, 64 feats, scale=4, 4 channels
+
+model:
+  _target_: src.models.edsr.EDSR
+  n_resblocks: 16
+  n_feats: 64
+  scale: 4
+  in_channels: 4
+  out_channels: 4
+  res_scale: 1.0
+  rgb_range: 1.0
+
+training:
+  batch_size: 16
+  patch_size: 48
+  lr: 1.0e-4
+  epochs: 300
+  loss_type: "l1"
+  amp: true
+  num_workers: 4
+  seed: 42
+  deterministic: true
+  val_interval: 1
+  checkpoint_interval: 50
+  grad_clip: 1.0
+
+# Pretrained weights (optional)
+# pretrained_path: "experiments/checkpoints/edsr_baseline_x4.pth"
+# pretrained_3ch: true  # adapt from 3-channel pretrained

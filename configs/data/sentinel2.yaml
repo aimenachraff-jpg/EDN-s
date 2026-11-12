@@ -1,0 +1,220 @@
+# Sentinel-2 Data Configuration
+# Primary dataset for ALSAT-2B MS super-resolution proxy
+
+# ============================================================================
+# AOI Definitions (Stratified by Land Cover)
+# ============================================================================
+aois:
+  # Primary AOIs (Algeria - target country)
+  DZ_01:
+    name: "Algiers Urban Coastal"
+    country: "Algeria"
+    bbox: [2.8, 36.5, 3.8, 37.0]  # [min_lon, min_lat, max_lon, max_lat]
+    land_cover: "urban_coastal"
+    size_km: [100, 100]
+    priority: "primary"
+
+  DZ_02:
+    name: "Tell Atlas Agriculture"
+    country: "Algeria"
+    bbox: [2.0, 36.0, 3.5, 36.8]
+    land_cover: "agricultural_forest"
+    size_km: [100, 100]
+    priority: "primary"
+
+  DZ_03:
+    name: "Sahara Desert Ghardaia"
+    country: "Algeria"
+    bbox: [3.5, 32.0, 4.5, 32.8]
+    land_cover: "desert_bare_soil"
+    size_km: [100, 100]
+    priority: "primary"
+
+  DZ_04:
+    name: "Oran Coast Wetland"
+    country: "Algeria"
+    bbox: [-0.8, 35.5, 0.2, 36.0]
+    land_cover: "coastal_wetland"
+    size_km: [100, 100]
+    priority: "primary"
+
+  # Validation AOIs (Global)
+  FR_01:
+    name: "Paris Urban"
+    country: "France"
+    bbox: [2.0, 48.5, 2.8, 49.0]
+    land_cover: "dense_urban"
+    size_km: [50, 50]
+    priority: "validation"
+
+  US_01:
+    name: "Iowa Agriculture"
+    country: "USA"
+    bbox: [-93.5, 41.5, -92.5, 42.0]
+    land_cover: "intensive_agriculture"
+    size_km: [50, 50]
+    priority: "validation"
+
+  CL_01:
+    name: "Atacama Desert"
+    country: "Chile"
+    bbox: [-70.5, -23.5, -69.5, -23.0]
+    land_cover: "hyper_arid_desert"
+    size_km: [50, 50]
+    priority: "validation"
+
+  BR_01:
+    name: "Amazon Mouth Coastal"
+    country: "Brazil"
+    bbox: [-50.0, -1.5, -49.0, -1.0]
+    land_cover: "tropical_coastal"
+    size_km: [50, 50]
+    priority: "validation"
+
+
+# ============================================================================
+# Temporal Splits (No Leakage)
+# ============================================================================
+temporal_splits:
+  train:
+    start_date: "2018-01-01"
+    end_date: "2022-12-31"
+    cloud_filter_max: 0.20  # <20% cloud cover (Sen2Cor SCL)
+    description: "S2 L2A mature processing baseline"
+
+  val:
+    start_date: "2023-01-01"
+    end_date: "2023-12-31"
+    cloud_filter_max: 0.20
+    description: "Independent year"
+
+  test:
+    start_date: "2024-01-01"
+    end_date: "2024-12-31"
+    cloud_filter_max: 1.0  # No filter - realistic conditions
+    description: "Held-out year, all conditions"
+
+
+# ============================================================================
+# Band Configuration
+# ============================================================================
+bands:
+  # HR Target bands (10m) - ALSAT-2B MS equivalent
+  hr_target:
+    - B2   # Blue 490nm
+    - B3   # Green 560nm
+    - B4   # Red 665nm
+    - B8   # NIR 842nm
+
+  # LR Input bands (20m) - Native S2 MS upscaling ×2
+  lr_native_2x:
+    - B5   # Red Edge 705nm
+    - B6   # Red Edge 740nm
+    - B7   # Red Edge 783nm
+    - B8a  # Narrow NIR 865nm
+    - B11  # SWIR 1610nm
+    - B12  # SWIR 2190nm
+
+  # LR Input for ×4 simulation (degraded 10m→40m)
+  lr_sim_4x:
+    - B2
+    - B3
+    - B4
+    - B8
+
+  # PAN simulation (synthetic from HR bands)
+  pan_sim:
+    method: "weighted_sum"
+    weights: [0.15, 0.30, 0.35, 0.20]  # B2, B3, B4, B8
+    target_gsd: 2.5  # meters
+
+
+# ============================================================================
+# Processing Parameters
+# ============================================================================
+processing:
+  # Tiling
+  tile_size_10m: 1024   # pixels at 10m
+  tile_size_20m: 512    # pixels at 20m
+  overlap: 128          # pixels overlap between tiles
+
+  # Normalization (per-band percentiles)
+  normalization:
+    method: "percentile"
+    lower: 2
+    upper: 98
+    clip: true
+    output_range: [0, 1]
+    # Stored in configs/normalization.yaml after computation
+
+  # Data format
+  format: "COG"  # Cloud Optimized GeoTIFF
+  dtype: "float32"
+
+  # Cloud masking
+  cloud_mask:
+    use_scl: true
+    scl_classes_to_mask: [1, 3, 8, 9, 10, 11]  # saturated, cloud shadow, cloud medium/high, cirrus
+    buffer_pixels: 3
+
+  # Metadata
+  metadata:
+    catalog_format: "STAC"
+    index_format: "CSV"
+    index_fields:
+      - tile_id
+      - date
+      - cloud_percent
+      - aoi_id
+      - bounds
+      - split
+      - s2_tile_id
+
+
+# ============================================================================
+# Download Configuration
+# ============================================================================
+download:
+  # Priority order for data access
+  providers:
+    - name: "planetary_computer"
+      type: "stac"
+      endpoint: "https://planetarycomputer.microsoft.com/api/stac/v1"
+      collections: ["sentinel-2-l2a"]
+      requires_auth: false
+
+    - name: "copernicus_dataspace"
+      type: "odata"
+      endpoint: "https://catalogue.dataspace.copernicus.eu/odata/v1"
+      requires_auth: true  # Need credentials
+
+    - name: "aws_s3"
+      type: "s3"
+      bucket: "sentinel-s2-l2a"
+      requester_pays: true
+      requires_auth: true
+
+  # Concurrency
+  max_workers: 4
+  max_retries: 3
+  timeout_seconds: 300
+
+  # Pilot dataset (for validation before full download)
+  pilot:
+    enabled: true
+    max_scenes_per_aoi: 2
+    max_aois: 4
+    description: "Small validation download before scaling"
+
+
+# ============================================================================
+# Split Verification
+# ============================================================================
+split_verification:
+  # Prevent geographical leakage
+  spatial_buffer_pixels: 128
+  temporal_overlap_check: true
+  granule_overlap_check: true
+  iou_threshold: 0.0  # Any overlap triggers error
+
+  # Verification script: src/data/verify_splits.py
