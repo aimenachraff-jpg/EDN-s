@@ -174,7 +174,7 @@ Whenever a project milestone is completed, the agent **must** perform the follow
 
 - ✅ **Dataset Acquisition:** Sentinel-2 DZ_01 (3 scenes, 12 GeoTIFFs, ~2 GB)
 - ✅ **PROBA-V Verification:** Specification confirmed against Zenodo/ESA sources  
-- ✅ **Unit Tests:** All 141 tests passing (data:12, degradation:26, evaluation:33, models:19, hallucination:15, downstream:22, training:14)
+- ✅ **Unit Tests:** All 160 tests passing (data:12, degradation:26, evaluation:33, models:19, hallucination:15, downstream:22, training:14, preprocessing:19)
 - ✅ **Geospatial Verification:** Script created and tested (8.8-11.1m resolution at ~36.5°N)
 - ✅ **License Documentation:** Completed (CC BY 4.0 for both datasets)
 - ✅ **Evaluation Metrics Module:** Implemented (PSNR, SSIM, SAM, ERGAS, SCI, wavelet HH energy, GLCM entropy, TUS)
