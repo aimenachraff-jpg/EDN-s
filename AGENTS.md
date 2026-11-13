@@ -169,22 +169,56 @@ Whenever a project milestone is completed, the agent **must** perform the follow
 - Document all decisions in `docs/methodology_decisions.md`
 
 ## Current Status (Phase 3 — Pilot Complete)
-- [x] Directory structure created
-- [x] Environment inspected and verified
-- [x] Python/PyTorch/Git verified
-- [x] OpenCode running (this session)
-- [x] FreeLLMAPI server running on localhost:31415
-- [x] Git repo initialized and committed (origin/master, commit 483ce1e)
-- [x] Python venv in use (system Python 3.10.11)
-- [x] Phase 1 Literature Review & Feasibility complete
-- [x] Phase 2 Research Questions & Methodology finalized (10 hypotheses, 6 RQs)
-- [x] Phase 3 pilot: Sentinel-2 DZ_01 acquired (3 scenes, 12 GeoTIFFs, ~2 GB)
-- [x] Phase 3 pilot: PROBA-V specification verified against Zenodo/ESA sources
-- [x] Phase 3 pilot: All 38 unit tests passing
-- [x] Geospatial verification script created and tested
-- [x] License documentation completed (CC BY 4.0 for both datasets)
-- [ ] Full Sentinel-2 acquisition (8 AOIs) pending supervisor approval
-- [ ] PROBA-V small download test pending supervisor approval
-- [ ] Tiling implementation and spatial buffer enforcement pending
-- [ ] Normalization statistics computation pending real-data validation
-- [ ] Integration/end-to-end tests pending
+
+**Key Completed in Phase 3 Pilot:**
+
+- ✅ **Dataset Acquisition:** Sentinel-2 DZ_01 (3 scenes, 12 GeoTIFFs, ~2 GB)
+- ✅ **PROBA-V Verification:** Specification confirmed against Zenodo/ESA sources  
+- ✅ **Unit Tests:** All 71 tests passing (data:12, degradation:26, evaluation:33)
+- ✅ **Geospatial Verification:** Script created and tested (8.8-11.1m resolution at ~36.5°N)
+- ✅ **License Documentation:** Completed (CC BY 4.0 for both datasets)
+- ✅ **Evaluation Metrics Module:** Implemented (PSNR, SSIM, SAM, ERGAS, SCI, wavelet HH energy, GLCM entropy, TUS)
+
+**Priority Active Work Items (Moving into Phase 4):**
+
+- [ ] **Full Sentinel-2 acquisition** (8 AOIs, ~50–60 GB) — supervisor approval pending
+- [ ] **PROBA-V download test** (675 MB) — supervisor approval pending
+- [ ] **Tiling implementation and spatial buffer enforcement**
+- [ ] **Normalization statistics computation** (pending real-data validation)
+- [ ] **Integration/end-to-end tests** (pending full dataset)
+
+**Next Milestone:** Supervisor approval → Phase 4: Baseline Implementation
+
+**OpenCode:** ✅ **RUNNING** (this session)
+**FreeLLMAPI:** ✅ **RUNNING** on `http://localhost:31415/v1`
+**Hardware:** Intel Iris Xe Graphics (integrated, 2GB shared VRAM) — **NO DEDICATED GPU**
+
+**Methodology Note:** Evaluation metrics now comprehensive with compute_all_metrics convenience function handling both 2D and 3D inputs, with proper handling of PSNR/TUS edge cases for identical images.
+
+---
+
+## Technical Stack
+- **OS:** Windows 10/11
+- **Python:** 3.10.11
+- **PyTorch:** 2.3.0 (CPU only — no CUDA)
+- **Git:** 2.55.0
+- **OpenCode:** ✅ **RUNNING** (this session, desktop client)
+- **FreeLLMAPI:** ✅ **RUNNING** on `http://localhost:31415/v1` (OpenAI-compatible)
+- **GPU:** Intel Iris Xe Graphics (integrated, 2GB shared VRAM) - **NO DEDICATED GPU**
+- **RAM:** ~248 GB free on C: drive
+- **Storage:** ~248 GB free
+
+## Hardware Constraints
+- **No NVIDIA GPU / No CUDA** — All PyTorch training runs on CPU
+- **Integrated graphics only** — Intel Iris Xe (2GB shared)
+- **Training will be SLOW on CPU** — Must select tiny models, small batches, few epochs for local dev
+- **Cloud GPU required for actual training** (Kaggle recommended: 2× T4 16 GB free tier, ~30 h/week)
+
+## FreeLLMAPI Status (Verified)
+- **Server:** Running on `http://localhost:31415`
+- **Health:** `GET /health` → 200 OK
+- **API:** OpenAI-compatible at `/v1`
+- **Auth:** Bearer token required (API key in OpenCode config)
+- **Routing:** `auto` model with fallback chain
+- **Tool-calling:** To be verified once authenticated
+- **Models:** To be listed via `/v1/models` with valid API key
