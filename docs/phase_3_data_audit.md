@@ -13,6 +13,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 - **Git IS initialized** with remote at `https://github.com/aimenachraff-jpg/MASTER2-A1.git`
 - **Virtual environment exists** at `MASTER2-A1/venv/`
 - **Official PROBA-V-ref variant verified** as real (Nguyen et al., arXiv:2101.10200)
+- **Enhanced geospatial verification script created** with accurate resolution analysis
 
 ### ❌ DOCUMENT INCONSISTENCIES IDENTIFIED
 
@@ -20,7 +21,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 |------- постановка | | | |
 | **PROBA-V Dataset Name** | Audit report says "PROBA-V Super-human Verification Challenge dataset" but official ESA name is "PROBA-V Super-Resolution dataset" | ESA website: `kelvins.esa.int/proba-v-super-resolution/` | HIGH |
 | **Region Count** | Prior audit claimed ESA page said 74 locations, but both Zenodo API and ESA Kelvins page explicitly state "74 hand-selected regions" — `n_regions: 74` in config IS correct | Zenodo API, ESA Kelvins `/data/` page confirm "74" | LOW (prior audit finding was itself incorrect) |
-| **Zenodo Filename/Size** | Config claims `probav-v-super-resolution.zip` (675 MB) but actual file is `probav_data.zip` (708.4 MB, md5:7101101c7c91eeb5979d472861c1b744) | Zenodo record verification | HIGH |
+| **Zenodo Filename/Size** | Config claims `probav-v-super-resolution.zip` (675 MB) but actual file is `probav_data.zip` (708.4 MB, md5:7101101c7c91eeb5979d472861c1b784) | Zenodo record verification | HIGH |
 | **License Documentation** | Dataset is CC BY 4.0 but license is not documented anywhere in project | Zenodo metadata, ESA documentation | MEDIUM |
 | **Stray Files** | Two stray files at project root: `{y.shape}')'` and `LR` containing Windows error messages | File system inspection | LOW |
 
@@ -53,7 +54,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 
 **Correction:** Revert the action item to mark region count as verified correct at 74.
 
-### 2.3**Zenodo Dataset File Mismatch***
+### 2.3**Zenodo Dataset File Mismatch**
 
 **Finding:** Project config specifies wrong Zenodo filename and size.
 
