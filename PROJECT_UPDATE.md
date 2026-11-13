@@ -8,7 +8,7 @@ This document is the permanent development history and handover guide for the MA
 
 | Field | Value |
 |-------|-------|
-| **Latest commit** | `ea608c4` (pushed to origin/master) |
+| **Latest commit** | `5c31d38` (pushed to origin/master) |
 | **Current phase** | Phase 3 — Dataset Acquisition & Preparation (pilot complete) |
 | **Unit tests** | 38 / 38 passing (synthetic data only) |
 | **Pending approval** | Full Sentinel-2 acquisition (~50–60 GB); PROBA-V download test (675 MB) |
@@ -135,7 +135,7 @@ This document is the permanent development history and handover guide for the MA
 
 **Date:** 2026-11-13  
 **Status:** 🔄 Pilot complete; full acquisition pending supervisor approval  
-**Commit chain:** `5b34c08` → `7925e2e` → `4594f21` → `62ad291` → `03db9ef` → `ea608c4`
+**Commit chain:** `5b34c08` → `7925e2e` → `4594f21` → `62ad291` → `03db9ef` → `ea608c4` → `5c31d38`
 
 ### 3.1 PROBA-V Corrections (Completed)
 
@@ -205,25 +205,28 @@ This document is the permanent development history and handover guide for the MA
 ### 3.5 Test Results (Updated)
 
 All 38 unit tests continue to pass (zero regressions from Phase 3 changes):
-- 12 tests in `test_data/` (Sentinel-2 config parsing, AOI properties)
-- 12 tests in `test_degradation/` (MTF application, noise, quantization, downsampling)
-- 14 tests in `test_evaluation/` (PSNR, SSIM, SAM, band-correlation metrics)
+- **12 tests** in `tests/test_data/` (Sentinel-2 config parsing, AOI properties, temporal splits, PROBA-V config)
+- **26 tests** in `tests/test_degradation/` (MTF application, noise, quantization, downsampling, degradation pipeline)
+- **0 tests** in `tests/test_evaluation/` (directory exists but is empty — evaluation metrics tests not yet implemented)
 
 Test command: `python -m pytest tests/ -v --tb=short` → **38 passed in ~7s**
+
+**Note on test count discrepancy:** Previous documentation incorrectly stated 14 tests in `test_evaluation/`. Actual count is 38 tests across 2 test suites (12 + 26 = 38). The `test_evaluation` directory exists but contains no test files.
 
 ### 3.6 Git State Resolution (Completed)
 
 **Issue found:** During Phase 3 work, an earlier commit was discarded, causing local branch to diverge from origin/master.  
-**Resolution:** Force-pushed the corrected clean state (commits `5b34c08` through `ea608c4`) to `origin/master`. No data loss — all work was preserved in the corrected commit chain. Branch is now synced with remote.
+**Resolution:** Force-pushed the corrected clean state (commits `5b34c08` through `ea608c4` and final commit `5c31d38`) to `origin/master`. No data loss — all work was preserved in the corrected commit chain. Branch is now synced with remote.
 
-**Current git log (latest 6):**
+**Current git log (latest 7):**
 ```
-ea608c4 docs: add Phase 3 final status report for supervisor review
+5c31d38 docs: reconcile README with actual project state, add PROJECT_UPDATE continuity log, update AGENTS.md maintenance rules
+0dc6563 docs: add Phase 3 final status report for supervisor review
+ffd858e docs: add Phase 3 final audit report with git state resolution and geospatial verification
+ea608c4 script: enhance geospatial verification with precise resolution analysis
 03db9ef fix: correct PROBA-V checksum in audit report
 62ad291 script: enhance geospatial verification with precise resolution analysis
 4594f21 fix: correct PROBA-V audit documentation (region count and checksum clarification)
-7925e2e docs: add Phase 3 documentation and validation reports
-5b34c08 fix(phase3): correct PROBA-V naming, fix Zenodo URL/checksum, add CC BY 4.0 license doc, Sentinel-2 pilot acquired
 ```
 
 ### 3.7 What Is Still Pending in Phase 3
@@ -237,6 +240,7 @@ ea608c4 docs: add Phase 3 final status report for supervisor review
 | Train-split-only normalization statistics | 🟡 Logic defined but not tested on real data | Awaiting full data |
 | End-to-end pipeline validation | ⏳ Not started | Blocked by tiling + full data |
 | Integration tests on real data | ⏳ Not started | Blocked by full data |
+| Evaluation metrics test suite | ⏳ Not started | `tests/test_evaluation/` empty |
 
 Full audit report: [`docs/phase_3_final_audit.md`](docs/phase_3_final_audit.md)
 
@@ -338,6 +342,8 @@ References + Appendices
 | 6 | FreeLLMAPI API key not extracted | Low | Deferred | Available for LLM assistance; not blocking research |
 | 7 | Tiling implementation pending | Medium | In design | Code structure ready; awaiting data |
 | 8 | Integration tests pending | Medium | Pending | All unit tests pass; integration requires full data |
+| 9 | `test_evaluation/` test suite empty | Medium | Not started | 0 tests; need to implement evaluation metric tests |
+| 10 | File count discrepancies in prior docs | Low | Corrected | docs/ has 15 files (not 10), scripts/ has 4 (not 5), test breakdown was 12+26+0 (not 12+12+14) |
 
 ---
 
@@ -353,6 +359,7 @@ References + Appendices
 8. Compute train-split-only normalization statistics
 9. Execute end-to-end pipeline validation
 10. Begin Phase 4 baseline implementation (EDSR-small, Tiny SwinIR)
+11. Create `tests/test_evaluation/` test suite for metric implementations
 
 ---
 
@@ -368,6 +375,8 @@ References + Appendices
 - [x] All research documents present and internally consistent
 - [x] AGENTS.md updated with documentation maintenance rule
 - [x] Project structure in README matches actual filesystem
+- [x] `scripts/download_probav.py` does NOT exist (referenced in prior docs but not created)
+- [x] `tests/test_evaluation/` directory exists but is empty (0 test files)
 
 ---
 
@@ -387,14 +396,16 @@ References + Appendices
 ### `configs/` (6 YAML files)
 - `data/sentinel2.yaml`, `data/probav.yaml`, `degradation/alsat2b.yaml`, `models/edsr_small.yaml`, `models/swinir_base.yaml`, `models/realesrgan.yaml`
 
-### `tests/` (38 tests across 3 suites)
-- `test_data/`, `test_degradation/`, `test_evaluation/`
+### `tests/` (38 tests across 3 suites, 2 active)
+- `test_data/` (12 tests) — `test_data_pipeline.py`
+- `test_degradation/` (26 tests) — `test_alsat2b_degradation.py`
+- `test_evaluation/` (0 tests) — directory exists but empty
 
-### `docs/` (10 files)
-- `phase_1_report.md`, `phase_2_report.md`, `phase_2_scientific_audit.md`, `phase_3_data_acquisition.md`, `phase_3_pilot_validation.md`, `phase_3_final_audit.md`, `license.md`, `methodology_decisions.md`, `experiment_tracking.md`
+### `docs/` (15 files)
+- `phase_1_report.md`, `phase_2_report.md`, `phase_2_scientific_audit.md`, `phase_3_data_acquisition.md`, `phase_3_pilot_validation.md`, `phase_3_final_audit.md`, `phase_3_data_audit.md`, `phase_3_readiness.md`, `phase_3_scaleup_readiness.md`, `phase_3_supervisor_review.md`, `license.md`, `methodology_decisions.md`, `experiment_tracking.md`, `reproducibility.md`, `supervisor_review_checklist.md`
 
-### `scripts/` (5 files)
-- `download_probav.py`, `verify_geospatial.py`, `validate_pilot.py`, `diag_pilot.py`, `sentinel2_pilot.py`
+### `scripts/` (4 files)
+- `verify_geospatial.py`, `validate_pilot.py`, `diag_pilot.py`, `sentinel2_pilot.py`
 
 ### `data/` (untracked, excluded from git)
 - `raw/sentinel2/DZ_01/` — 12 GeoTIFFs (~2 GB)
@@ -403,3 +414,5 @@ References + Appendices
 ---
 
 *This document is a living record. Update it after every meaningful change — especially when phases complete, methodologies shift, configurations change, or new evidence becomes available. Keep `README.md` as the concise entry point; keep this as the detailed memory.*
+
+**RULE FOR FUTURE AGENTS:** Every agent must read `PROJECT_UPDATE.md` before starting any work and update it after every meaningful change, especially model, methodology, configuration, dataset, or experiment changes.

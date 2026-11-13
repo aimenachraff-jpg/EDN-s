@@ -219,16 +219,23 @@ MASTER2-A1/
 ├── .env.example                      # Environment template
 ├── opencode.json                     # OpenCode configuration
 │
-├── research/                         # All research documents
+├── research/                         # All research documents (16 files)
 │   ├── final_research_questions.md   # 6 primary + 4 secondary RQs (frozen)
 │   ├── final_hypotheses.md           # 10 hypotheses with falsification criteria
 │   ├── methodology.md                # Complete experimental methodology
 │   ├── literature_review.md          # Structured review with citations
 │   ├── paper_database.csv            # 267+ verified papers
+│   ├── paper_database.json           # Machine-readable paper database
 │   ├── feasibility_report.md         # Compute/data/timeline assessment
+│   ├── feasibility_checklist.md      # Itemized feasibility concerns
 │   ├── dataset_investigation.md      # ALSAT-2B specs, substitutes, comparisons
+│   ├── dataset_comparison.md         # Sentinel-2 vs PROBA-V vs NAIP vs PlanetScope
+│   ├── model_comparison.md           # CNN vs Transformer vs GAN vs Diffusion
 │   ├── alsat2b_access.md             # Access status for ALSAT-2B
-│   └── ...                           # Additional research notes
+│   ├── hypotheses.md                 # Initial hypotheses (superseded by final_hypotheses.md)
+│   ├── research_log.md               # Ongoing research log
+│   ├── research_plan.md              # Phase-by-phase plan
+│   └── collect_papers.py             # Paper collection script
 │
 ├── src/                              # Source code
 │   ├── data/                         # Data loaders, datasets
@@ -253,9 +260,9 @@ MASTER2-A1/
 │       └── realesrgan.yaml           # Real-ESRGAN config
 │
 ├── scripts/                          # Utility & acquisition scripts
-│   ├── download_probav.py            # PROBA-V download (pending approval)
 │   ├── verify_geospatial.py          # Resolution & CRS verification
 │   ├── validate_pilot.py             # Post-download pilot validation
+│   ├── diag_pilot.py                 # Quick diagnostic for downloaded files
 │   └── sentinel2_pilot.py            # Sentinel-2 pilot acquisition
 │
 ├── tests/                            # Unit tests (all synthetic)
@@ -263,16 +270,22 @@ MASTER2-A1/
 │   ├── test_degradation/             # Degradation model tests
 │   └── test_evaluation/              # Metric tests
 │
-├── docs/                             # Phase reports & documentation
+├── docs/                             # Phase reports & documentation (15 files)
 │   ├── phase_1_report.md             # Literature review completion
 │   ├── phase_2_report.md             # Research questions finalized
 │   ├── phase_2_scientific_audit.md   # Scientific consistency check
 │   ├── phase_3_data_acquisition.md   # Pilot acquisition report
 │   ├── phase_3_pilot_validation.md   # Pilot validation results
 │   ├── phase_3_final_audit.md        # Pre-approval readiness audit
+│   ├── phase_3_data_audit.md         # Data audit details
+│   ├── phase_3_readiness.md          # Scale-up readiness assessment
+│   ├── phase_3_scaleup_readiness.md  # Scale-up readiness details
+│   ├── phase_3_supervisor_review.md  # Supervisor review package
 │   ├── license.md                    # Dataset & code licensing
 │   ├── methodology_decisions.md      # Decision log with rationale
-│   └── experiment_tracking.md        # MLflow / tracking setup
+│   ├── experiment_tracking.md        # MLflow / tracking setup
+│   ├── reproducibility.md            # Reproducibility documentation
+│   └── supervisor_review_checklist.md # Supervisor review checklist
 │
 ├── data/                             # Satellite imagery (NOT in git — see .gitignore)
 │   ├── raw/
@@ -307,7 +320,7 @@ MASTER2-A1/
 ```
 Branch: master
 Remote: origin/master
-Commits ahead of previous snapshot: ea608c4 (current HEAD)
+Current HEAD: 5c31d38 (synced to origin/master)
 
 Untracked (correctly excluded from git via .gitignore):
   data/raw/        — Raw satellite imagery (~2 GB pilot, up to ~60 GB projected)
@@ -321,9 +334,9 @@ Untracked (correctly excluded from git via .gitignore):
 
 | Suite | Count | Status | Notes |
 |-------|-------|--------|-------|
-| Data pipeline | 12 | ✅ Pass | Sentinel-2 config parsing, AOI properties |
-| Degradation model | 12 | ✅ Pass | MTF application, noise, quantization, downsampling |
-| Evaluation metrics | 14 | ✅ Pass | PSNR, SSIM, SAM, band-correlation |
+| Data pipeline | 12 | ✅ Pass | Sentinel-2 config parsing, AOI properties, temporal splits, PROBA-V config |
+| Degradation model | 26 | ✅ Pass | MTF application, noise, quantization, downsampling, degradation pipeline |
+| Evaluation metrics | 0 | ⏳ Pending | Directory exists but no test files yet |
 | **Total** | **38** | **✅ 38/38 passing** | **Zero regressions** |
 
 Tests run on **synthetic data only**. Integration and end-to-end tests on real satellite imagery are pending (require full dataset before execution).
