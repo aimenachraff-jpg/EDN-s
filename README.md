@@ -320,7 +320,7 @@ MASTER2-A1/
 ```
 Branch: master
 Remote: origin/master
-Current HEAD: 975a7f9 (synced to origin/master)
+Current HEAD: 0480ca2 (synced to origin/master)
 
 Untracked (correctly excluded from git via .gitignore):
   data/raw/        — Raw satellite imagery (~2 GB pilot, up to ~60 GB projected)
