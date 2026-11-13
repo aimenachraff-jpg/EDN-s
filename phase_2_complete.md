@@ -14,7 +14,7 @@ Phase 2 of the MASTER2-A1 thesis project has been **successfully completed** wit
 
 | # | Correction | Status | Key Changes |
 |---|------------|--------|-------------|
-| 1 | PROBA-V naming inconsistencies | ✅ COMPLETE | "PROBA-V MISR" → "PROBA-V Super-human Verification Challenge dataset" |
+| 1 | PROBA-V naming inconsistencies | ✅ COMPLETE | "PROBA-V MISR" shorthand retained in code/config as task-type label; official dataset name corrected to "PROBA-V Super-Resolution dataset" in docs |
 | 2 | H1–H6 hypothesis inconsistencies | ✅ COMPLETE | H1 conditional logic clarified, TinySwinIR params corrected (1.11M) |
 | 3 | Downstream tasks audit | ✅ COMPLETE | Fixed-backbone protocol validated |
 | 4 | Degradation engine audit | ✅ COMPLETE | Wald protocol with estimated/documented parameters |

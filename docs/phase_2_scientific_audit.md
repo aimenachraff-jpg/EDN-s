@@ -14,7 +14,7 @@ Phase 2 of the MASTER2-A1 project has been completed with all 11 required correc
 **Finding:** Multiple instances of "PROBA-V MISR" throughout the codebase
 **Evidence:** SEARCH across README.md, configs/data/probav.yaml, src/data/probav_loader.py
 **Impact:** Incorrect terminology used in project documentation
-**Correction:** Changed to "PROBA-V Super-human Verification Challenge dataset"
+**Correction:** Changed to "PROBA-V Super-Resolution dataset" (official ESA/Zenodo name). Note: "PROBA-V MISR" in code/comments is a task-type abbreviation meaning "Multi-Image Super-Resolution", not part of the dataset name.
 **Resolved:** ✅ All instances corrected (README, configs, loader)
 
 ### 2. H1–H6 Hypothesis Inconsistencies (Fixed)
@@ -52,7 +52,7 @@ Phase 2 of the MASTER2-A1 project has been completed with all 11 required correc
 - "~150K"
 **Impact:** Documentation errors mislead users
 **Correction:** 
-- PROBA-V MISR → PROBA-V Super-human Verification Challenge dataset
+- PROBA-V MISR → PROBA-V Super-Resolution dataset (task-type abbreviation "MISR" kept in code/config comments)
 - near-perfect → spectrally comparable
 - ~150K → 1.11M
 **Resolved:** ✅ All README corrections implemented

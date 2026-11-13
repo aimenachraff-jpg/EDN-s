@@ -12,7 +12,7 @@ dataset:
   name: "PROBA-V MISR"
   source: "ESA Kelvin Platform"
   challenge_url: "https://kelvins.esa.int/proba-v-super-resolution/"
-  data_url: "https://zenodo.org/record/6327426"  # 675 MB zip
+  data_url: "https://zenodo.org/record/6327426"  # 675 MB (708,416,603 bytes) probav_data.zip
   variant: "proba_v_ref"  # Use reference-aware variant
 
   # Scene counts (official split)
@@ -166,8 +166,9 @@ splits:
 # Download Configuration
 # ============================================================================
 download:
-  url: "https://zenodo.org/record/6327426/files/proba-v-super-resolution.zip"
+  url: "https://zenodo.org/api/records/6327426/files/probav_data.zip/content"
   size_mb: 675
-  checksum: "sha256:verify_after_download"  # TODO: add actual checksum
+  size_bytes: 708416603
+  checksum: "md5:7101101c7c91eeb5979d472861c1b784"
   extract: true
   target_dir: "data/raw/proba_v"
