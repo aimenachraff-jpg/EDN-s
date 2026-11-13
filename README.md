@@ -320,7 +320,7 @@ MASTER2-A1/
 ```
 Branch: master
 Remote: origin/master
-Current HEAD: 9a524c9 (synced to origin/master)
+Current HEAD: 483ce1e (synced to origin/master)
 
 Untracked (correctly excluded from git via .gitignore):
   data/raw/        — Raw satellite imagery (~2 GB pilot, up to ~60 GB projected)
@@ -336,8 +336,8 @@ Untracked (correctly excluded from git via .gitignore):
 |-------|-------|--------|-------|
 | Data pipeline | 12 | ✅ Pass | Sentinel-2 config parsing, AOI properties, temporal splits, PROBA-V config |
 | Degradation model | 26 | ✅ Pass | MTF application, noise, quantization, downsampling, degradation pipeline |
-| Evaluation metrics | 0 | ⏳ Pending | Directory exists but no test files yet |
-| **Total** | **38** | **✅ 38/38 passing** | **Zero regressions** |
+| Evaluation metrics | 33 | ✅ Pass | PSNR, SSIM, SAM, ERGAS, SCI, wavelet HH energy, GLCM entropy, TUS |
+| **Total** | **71** | **✅ 71/71 passing** | **Zero regressions** |
 
 Tests run on **synthetic data only**. Integration and end-to-end tests on real satellite imagery are pending (require full dataset before execution).
 
