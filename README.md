@@ -154,7 +154,7 @@ MASTER2-A1/
 ### Data Access — SUBSTITUTE COMMITTED
 - **ALSAT-2B data access blocked** (asal.dz inaccessible)
 - **4-week gate** (until ~2026-12-10) then formal substitute commitment
-- **Sentinel-2 selected as primary proxy** (near-perfect spectral match to ALSAT-2B MS at 10m)
+- **Sentinel-2 selected as primary proxy** (spectrally comparable but not identical to ALSAT-2B MS at 10m)
 - **PROBA-V MISR selected as MISR benchmark** (only established benchmark, 74 regions, 1160/290 split)
 - **PlanetScope academic license pending** (2-4 week approval for cross-sensor validation)
 
@@ -258,7 +258,7 @@ python -m venv venv
 venv\Scripts\activate
 
 # 3. Install local dependencies
-pip install -r requirements.txt  # To be created from imports
+uv pip install -r requirements.txt  # To be created from imports
 
 # 4. Verify implementation
 python -m pytest tests/ -v
