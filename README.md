@@ -320,7 +320,7 @@ MASTER2-A1/
 ```
 Branch: master
 Remote: origin/master
-Current HEAD: 0480ca2 (synced to origin/master)
+Current HEAD: c8fbcfe (synced to origin/master)
 
 Untracked (correctly excluded from git via .gitignore):
   data/raw/        — Raw satellite imagery (~2 GB pilot, up to ~60 GB projected)
@@ -339,8 +339,8 @@ Untracked (correctly excluded from git via .gitignore):
 | Evaluation metrics | 33 | ✅ Pass | PSNR, SSIM, SAM, ERGAS, SCI, wavelet HH energy, GLCM entropy, TUS |
 | SR models | 19 | ✅ Pass | EDSR, SwinIR, Real-ESRGAN forward pass, shape, gradient flow |
 | Hallucination detection | 15 | ✅ Pass | Spectral, structural, textural, semantic detection, annotation |
-| Downstream tasks | 22 | ✅ Pass | UNet, DeepLab, SiameseUNet, BuildingDetector, metrics |
-| **Total** | **127** | **✅ 127/127 passing** | **Zero regressions** |
+| Training pipeline | 14 | ✅ Pass | TrainingConfig, CharbonnierLoss, SRLoss, SRDataset, SRTrainer, CPU smoke |
+| **Total** | **141** | **✅ 141/141 passing** | **Zero regressions** |
 
 Tests run on **synthetic data only**. Integration and end-to-end tests on real satellite imagery are pending (require full dataset before execution).
 
