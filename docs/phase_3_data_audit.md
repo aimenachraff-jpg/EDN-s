@@ -19,8 +19,8 @@ This audit identifies **multiple critical inconsistencies** between the project'
 | Issue | Description | Evidence | Impact |
 |------- постановка | | | |
 | **PROBA-V Dataset Name** | Audit report says "PROBA-V Super-human Verification Challenge dataset" but official ESA name is "PROBA-V Super-Resolution dataset" | ESA website: `kelvins.esa.int/proba-v-super-resolution/` | HIGH |
-| **Region Count** | Prior audit claimed ESA page said 78 locations, but both Zenodo API and ESA Kelvins page explicitly state "74 hand-selected regions" — `n_regions: 74` in config IS correct | Zenodo API, ESA Kelvins `/data/` page confirm "74" | LOW (prior audit finding was itself incorrect) |
-| **Zenodo Filename/Size** | Config claims `probav-v-super-resolution.zip` (675 MB) but actual file is `probav_data.zip` (708.4 MB, md5:7101101c7c91eeb5979d472861c1b784) | Zenodo record verification | HIGH |
+| **Region Count** | Prior audit claimed ESA page said 74 locations, but both Zenodo API and ESA Kelvins page explicitly state "74 hand-selected regions" — `n_regions: 74` in config IS correct | Zenodo API, ESA Kelvins `/data/` page confirm "74" | LOW (prior audit finding was itself incorrect) |
+| **Zenodo Filename/Size** | Config claims `probav-v-super-resolution.zip` (675 MB) but actual file is `probav_data.zip` (708.4 MB, md5:7101101c7c91eeb5979d472861c1b744) | Zenodo record verification | HIGH |
 | **License Documentation** | Dataset is CC BY 4.0 but license is not documented anywhere in project | Zenodo metadata, ESA documentation | MEDIUM |
 | **Stray Files** | Two stray files at project root: `{y.shape}')'` and `LR` containing Windows error messages | File system inspection | LOW |
 
@@ -41,7 +41,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 
 ### 2.2**PROBA-V Region Count — Verified as Correct (74)**
 
-**Finding:** Prior audit claimed ESA page stated 78 regions; verified against both Zenodo API and ESA Kelvins data page — both explicitly state **"74 hand-selected regions"**. The `n_regions: 74` in all project configs is correct. No change needed.
+**Finding:** Prior audit claimed ESA page stated 74 regions; verified against both Zenodo API and ESA Kelvins data page — both explicitly state **"74 hand-selected regions"**. The `n_regions: 74` in all project configs is correct. No change needed.
 
 **Evidence:**
 - Zenodo API (`metadata.description`): "…from **74** hand-selected regions around the globe…"
@@ -49,7 +49,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 - `configs/data/probav.yaml` line 22: `n_regions: 74` ✅ matches both sources
 - `research/final_experimental_protocol.md` line 96: claims 74 regions ✅ correct
 
-**Impact:** None — configuration is accurate. Prior audit's claim of "78" was a misreading.
+**Impact:** None — configuration is accurate. Prior audit's claim of "74" was a misreading.
 
 **Correction:** Revert the action item to mark region count as verified correct at 74.
 
@@ -59,7 +59,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 
 **Evidence:**
 - `configs/data/probav.yaml` line 15: Claims `probav-v-super-resolution.zip` (675 MB)
-- Actual Zenodo record: `probav_data.zip` (708.4 MB, md5:7101101c7c91eeb5979d472861c1b784)
+- Actual Zenodo record: `probav_data.zip` (708.4 MB, md5:7101101c7c91eeb5979d472861c1b744)
 - Zenodo metadata confirms 708.4 MB file size
 
 **Impact:** Incorrect download instructions, potential file validation failures.
@@ -98,7 +98,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 - [x] Git repository initialized with 3 commits on master
 - [x] All 38 unit tests pass on synthetic data
 - [x] PROBA-V-ref variant (arXiv:2101.10200) verified as real
-- [x] cPSNR scoring verified (3px border crop → 378×384)
+- [x] cPSNR scoring verified (3px border crop → 374×384)
 - [x] ESA Kelvins + Zenodo + arXiv official sources verified
 
 ### ❌ Unverified Claims (Phase 3 Required)
@@ -112,7 +112,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 ### Critical (Must Fix Before Phase 3)
 1. **Remove stray files** `{y.shape}')'` and `LR` from project root *(already done in prior session)*
 2. **Correct PROBA-V dataset name** — replace all instances of fabricated "Super-human Verification Challenge dataset" with official "PROBA-V Super-Resolution dataset"
-3. **Mark PROBA-V region count as verified correct** — `n_regions: 74` confirmed by Zenodo + ESA; revert prior "update to 78" action
+3. **Mark PROBA-V region count as verified correct** — `n_regions: 74` confirmed by Zenodo + ESA; revert prior "update to 74" action
 4. **Correct Zenodo filename** in `probav.yaml` download URL from `probav-v-super-resolution.zip` to `probav_data.zip`
 5. **Add CC BY 4.0 license documentation** for PROBA-V dataset
 
@@ -143,7 +143,7 @@ This audit identifies **multiple critical inconsistencies** between the project'
 
 **Key discoveries:**
 1. Fabricated dataset name "PROBA-V Super-human Verification Challenge dataset" vs official "PROBA-V Super-Resolution dataset"
-2. Region count verified correct at 74 (prior "78" claim was a misreading; both Zenodo and ESA confirm 74)
+2. Region count verified correct at 74 (prior "74" claim was a misreading; both Zenodo and ESA confirm 74)
 3. Zenodo filename/size mismatch: `probav-v-super-resolution.zip` (675MB) vs `probav_data.zip` (708.4MB)
 4. Missing CC BY 4.0 license documentation
 5. Two stray Windows error files in project root
