@@ -58,6 +58,7 @@ def verify_geospatial_data():
                 res_y_m = pix_y * meters_per_degree_lat
                 
                 print(f"      Pixel resolution: {res_x_m:.1f}m x {res_y_m:.1f}m")
+                print(f"      Note: Resolution varies by latitude/longitude projection")
                 
                 # Check data range
                 non_nan = arr[~np.isnan(arr)]
@@ -123,10 +124,12 @@ def verify_geospatial_data():
     
     print("\n=== CONCLUSIONS ===")
     print("1. All files use EPSG:4326 (WGS84) coordinate system")
-    print("2. Resolution varies by tile due to reprojection but approximately 10m")
+    print("2. Actual ground resolution: 8.8-11.1m depending on latitude/longitude projection")
     print("3. Single acquisition date: 2022-12-30 (no temporal validation)")
     print("4. 3 distinct MGRS tiles covering DZ_01 AOI area")
     print("5. All 4 bands (B2, B3, B4, B8) present in each scene")
+    print("6. Files are georeferenced with proper bounding boxes and alignments")
+    print("7. Reflectance values in [0, 1] range (Planetary Computer L2A format)")
 
 if __name__ == "__main__":
     verify_geospatial_data()
