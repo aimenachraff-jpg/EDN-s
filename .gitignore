@@ -52,6 +52,7 @@ data/raw/
 data/interim/
 data/processed/
 data/splits/
+data/metadata/
 *.tif
 *.tiff
 *.geotiff

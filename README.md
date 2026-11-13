@@ -1,341 +1,425 @@
-# MASTER2-A1: Hallucination-Aware Super-Resolution Evaluation for ALSAT-2B
+# MASTER2-A1 — Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery
 
-> **Master 2 Research Project** — Computer Science / Artificial Intelligence  
-> **Working Title:** *Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery*  
-> **Status:** Phase 2 Complete — Experimental Protocol Finalized  
-> **Last Updated:** 2026-11-12
+> **Master 2 Thesis** — Computer Science / Artificial Intelligence, Algeria  
+> **Working title:** *Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery*  
+> **Status:** Phase 3 pilot complete · Full acquisition pending supervisor approval  
+> **Last updated:** 2026-11-13
 
 ---
 
-## 🎯 Research Objective
+## Research Objective
 
 Investigate whether deep-learning super-resolution (SR) methods improve **actual information usefulness** for ALSAT-2B satellite imagery, or merely produce visually convincing but **hallucinated details** that degrade downstream task performance (land-cover classification, building detection, semantic segmentation, change detection).
 
-### Final Research Questions
+---
+
+## Research Questions
 
 | ID | Question | Status |
 |----|----------|--------|
-| **RQ1** | How do SR methods perform on ALSAT-2B imagery under controlled degradation? | Protocol finalized |
-| **RQ2** | How can hallucinated/unsupported details be detected and quantified? | Taxonomy + detectors implemented |
-| **RQ3** | Does improved visual quality translate to improved downstream task performance? | Fixed-backbone protocol defined |
-| **RQ4** | Which methods balance perceptual quality, structural fidelity, and task performance? | Evaluation framework complete |
-| **RQ5** | How does sensor-specific degradation (MTF, SRF, noise) affect SR method ranking? | Wald protocol with ALSAT-2B params |
-| **RQ6** | What is the sensitivity of hallucination metrics to degradation parameters? | Sensitivity analysis in protocol |
+| **RQ1** | Can a Wald-protocol degradation model using estimated NAOMI parameters produce synthetic LR data statistically indistinguishable from real ALSAT-2B? | Protocol designed · Awaiting data |
+| **RQ2** | Do hallucinations in RS-SR cluster into four distinct measurable categories (Spectral, Structural, Textural, Semantic)? | Taxonomy defined · Awaiting annotation |
+| **RQ3** | Does the Spectral Consistency Index (SCI) correlate with downstream task utility better than PSNR, SSIM, or LPIPS? | Metric designed · Awaiting experiments |
+| **RQ4** | Which SR model family (CNN, Transformer, GAN, Diffusion) maximizes task utility per unit of hallucination? | Experimental protocol defined · Awaiting training |
+| **RQ5** | When tested on target sensors (NAIP, PlanetScope, Sim. ALSAT-2B), does the domain gap follow: Diffusion > GAN > Transformer > CNN? | Protocol defined · Conditional on cross-sensor data |
+| **RQ6** | Can tiny models (<10% FLOPs) achieve >90% task utility of large counterparts on CPU inference? | Designed · Pending validation |
+
+**Secondary RQs** (H7–H10): Task-dependent hallucination profiles (H7), physics-informed loss ablation (H8), MISR vs SISR comparison on PROBA-V (H9), no-reference model-selection proxy (H10).
+
+Full research questions: [`research/final_research_questions.md`](research/final_research_questions.md)
 
 ---
 
-## 📁 Project Structure
+## Hypotheses (Testable & Falsifiable)
+
+Ten hypotheses are pre-registered with explicit falsification criteria. Priority tiers:
+
+| Tier | Hypotheses | Description |
+|------|-----------|-------------|
+| **P0 — Must** | H1–H6 | Core thesis claims; failure invalidates central contribution |
+| **P1 — Should** | H5*, H7 | Significant contributions if confirmed |
+| **P2 — Could** | H8, H9 | Mechanistic ablations; enriches discussion |
+| **P3 — Exploratory** | H10 | Nice-to-have; not required for defense |
+
+**Key P0 summary:**
+
+- **H1** Degradation model fidelity (FID < 10, PSD KS < 0.15, correlation Frobenius < 0.1) — conditional on any ALSAT-2B sample availability
+- **H2** Hallucination taxonomy validity (silhouette > 0.5, Fleiss' κ > 0.7 for 4 clusters)
+- **H3** SCI correlates with task utility (ρ > 0.7) better than PSNR (ρ < 0.4)
+- **H4** SwinIR (Transformer) achieves highest Task-Utility / Hallucination ratio among 4 families
+- **H5** Cross-sensor gap ordering: Diffusion > GAN > Transformer > CNN
+- **H6** Tiny models reach >90% task utility at <10% FLOPs, CPU inference < 1s
+
+Full hypotheses: [`research/final_hypotheses.md`](research/final_hypotheses.md)
+
+---
+
+## Current Project Status
+
+| Phase | Title | Status |
+|-------|-------|--------|
+| 0 | Infrastructure & Environment Audit | ✅ Completed (2026-11-12) |
+| 1 | Literature Review & Research Feasibility | ✅ Completed (2026-11-13) |
+| 2 | Research Questions & Methodology | ✅ Completed (2026-11-12) |
+| 3 | Dataset Acquisition & Preparation | 🔄 Pilot acquired; full-scale pending approval |
+| 4 | Baseline Implementation | ⏳ Pending |
+| 5 | Super-Resolution Experiments | ⏳ Pending |
+| 6 | Hallucination-Aware Evaluation | ⏳ Pending |
+| 7 | Downstream Task Evaluation | ⏳ Pending |
+| 8 | Statistical Analysis & Discussion | ⏳ Pending |
+| 9 | Thesis Writing & Final Validation | ⏳ Pending |
+
+---
+
+## Datasets
+
+### Primary Dataset: Sentinel-2 (Proxy for ALSAT-2B MS)
+
+Sentinel-2 Level-2A (Surface Reflectance) is used as a spectral proxy for the unavailable ALSAT-2B multi-spectral band. Both share similar blue-green-red-NIR band positions, making it a scientifically justified substitute for methodological development — though results apply to Sentinel-2, not ALSAT-2B directly.
+
+| Property | Value |
+|----------|-------|
+| **Source** | Microsoft Planetary Computer STAC API (`sentinel-2-l2a`) |
+| **License** | Copernicus / Sentinel-2 Data, CC BY 4.0 |
+| **Attribution** | "Sentinel-2 Level-2A surface reflectance. European Space Agency." |
+| **Processing level** | L2A (surface reflectance, values in [0, 1]) |
+| **Bands acquired** | B2 (Blue 490 nm), B3 (Green 560 nm), B4 (Red 665 nm), B8 (NIR 842 nm) |
+| **Native resolution** | 10 m |
+| **Actual CRS in download** | EPSG:4326 (reprojected from native UTM); ground resolution ≈ 8.8–11.1 m at ~36.5°N latitude due to geographic-coordinate distortion |
+
+**Eight Area-of-Interest (AOI) plan** (stratified by land cover):
+
+| AOI ID | Location | Land Cover | Size |
+|--------|----------|------------|------|
+| DZ_01 | Algiers, Algeria | Urban / Coastal | 100 × 100 km |
+| DZ_02 | Tell Atlas, Algeria | Agricultural / Forest | 100 × 100 km |
+| DZ_03 | Sahara (Ghardaïa), Algeria | Desert / Bare soil | 100 × 100 km |
+| DZ_04 | Oran Coast, Algeria | Coastal / Wetland | 100 × 100 km |
+| FR_01 | Paris, France | Dense Urban | 50 × 50 km |
+| US_01 | Iowa, USA | Intensive Agriculture | 50 × 50 km |
+| CL_01 | Atacama, Chile | Hyper-arid Desert | 50 × 50 km |
+| BR_01 | Amazon Mouth, Brazil | Tropical Coastal | 50 × 50 km |
+
+**Temporal splits** (no leakage): Train = 2018–2022, Val = 2023, Test = 2024 (held-out year, no cloud filter).
+
+#### Pilot Acquisition (Completed)
+
+- **Acquisition date:** 2026-11-13
+- **AOI:** DZ_01 (Algiers)
+- **Scenes:** 3 (MGRS tiles 31SEB, 31SEA, 31SDB) — same overpass date 2022-12-30
+- **Files:** 12 GeoTIFFs (B2/B3/B4/B8 per scene)
+- **Storage:** ~2 014 MB (~2.0 GB) raw
+- **Manifest:** [`data/metadata/sentinel2/pilot_manifest.json`](data/metadata/sentinel2/pilot_manifest.json) — contains source provenance, per-band MD5 checksums, shapes, bounds, geotransform
+- **Validation:** All 12 files pass checksum verification; reflectance range [0, 1]; CRS consistent
+
+#### Pilot Limitations (Explicit)
+
+1. **Single date** (2022-12-30) — does not validate temporal splits
+2. **Single AOI** (DZ_01) — does not test multi-region generalization or spatial leakage prevention
+3. **No preprocessing pipeline applied** — tiling, normalization, splitting remain untested on real data
+4. **Proxy data only** — Sentinel-2 ≠ ALSAT-2B; spectral characteristics differ
+
+Full acquisition of all 8 AOIs (~50–60 GB) remains pending **supervisor approval**. See [`docs/phase_3_data_acquisition.md`](docs/phase_3_data_acquisition.md) and [`docs/phase_3_pilot_validation.md`](docs/phase_3_pilot_validation.md).
+
+---
+
+### Secondary Dataset: PROBA-V Super-Resolution Dataset
+
+**Official name:** PROBA-V Super-Resolution dataset (not "Super-human Verification Challenge").
+
+| Property | Value |
+|----------|-------|
+| **Source** | ESA Kelvins Platform / Zenodo record 6327426 |
+| **URL** | `https://zenodo.org/api/records/6327426/files/probav_data.zip/content` |
+| **File size** | 708 416 603 bytes (~675 MB) |
+| **MD5 checksum** | `7101101c7c91eeb5979d472861c1b784` |
+| **License** | CC BY 4.0 |
+| **Regions** | 74 hand-selected globally |
+| **Scenes** | 1 450 total (1 160 train / 290 test, official challenge split) |
+| **Bands** | RED (620–690 nm), NIR (770–890 nm) — 2 bands at 300 m → 100 m (×3 scale) |
+| **Format** | 14-bit PNG; includes quality masks (QM) and status maps (SM) |
+| **Registration** | Not pre-registered; sub-pixel shifts present (scoring is shift-invariant via cPSNR) |
+
+**Correct attribution (CC BY 4.0 requirement):**
+
+> Märtens M., Izzo D., Krzic A. and Cox D. "Super-resolution of PROBA-V images using convolutional neural networks." Astrodynamics 3.4 (2019): 387–402. [arXiv:1907.01821](https://arxiv.org/abs/1907.01821)
+
+Zenodo DOI: `https://doi.org/10.5281/zenodo.6327426`
+
+#### Verification Status
+
+- **Name, region count (74), URL, file size, MD5 checksum** — verified against Zenodo API and ESA Kelvins documentation ✅
+- **Configuration file** (`configs/data/probav.yaml`) — corrected and accurate ✅
+- **Small download test** (≈675 MB) — **pending supervisor approval** 🔒
+- **Full structural validation** (1 450 scenes) — **pending download test** 🔒
+
+See [`configs/data/probav.yaml`](configs/data/probav.yaml) and [`docs/license.md`](docs/license.md).
+
+---
+
+### Cross-Sensor Datasets (Conditional)
+
+| Dataset | Role | Access | Notes |
+|---------|------|--------|-------|
+| **NAIP** | HR target for S2 ×10 cross-sensor test | AWS S3 (US AOIs only) | Open; RGBN only |
+| **PlanetScope** | HR target for S2 ×3 cross-sensor test | Academic license pending | Apply early |
+| **Simulated ALSAT-2B** | Target domain for H5 | Generated via degradation model | No external dependency |
+
+---
+
+## Code License & Data Attribution
+
+| Component | License | Terms |
+|-----------|---------|-------|
+| **Code** | MIT | Free use, modification, distribution with attribution |
+| **Sentinel-2 data** | CC BY 4.0 | Attribution required — see dataset section above |
+| **PROBA-V data** | CC BY 4.0 | Attribution required — citation and Zenodo DOI mandatory |
+
+Full licensing terms and attribution requirements: [`docs/license.md`](docs/license.md)
+
+---
+
+## Technical Stack
+
+| Component | Version / Status |
+|-----------|-----------------|
+| **OS** | Windows 10/11 |
+| **Python** | 3.10.11 |
+| **PyTorch** | 2.3.0 (**CPU build** — NO CUDA) |
+| **torchvision** | 0.18.0 |
+| **rasterio** | 1.3.10 (GeoTIFF / geospatial I/O) |
+| **geopandas** | 0.14.3 |
+| **Git** | 2.55.0 |
+| **OpenCode** | ✅ Running (this session, desktop client) |
+| **FreeLLMAPI** | ✅ Running on `http://localhost:31415` (OpenAI-compatible) |
+
+### Hardware Constraints
+
+| Resource | Available | Suitable For |
+|----------|-----------|--------------|
+| **CPU (Python/PyTorch)** | ✅ | Development, debugging, tiny-model smoke tests, evaluation |
+| **Integrated GPU** | Intel Iris Xe, 2 GB shared | Display only; CUDA NOT available |
+| **Dedicated GPU / CUDA** | ❌ None | Training requires cloud |
+| **RAM** | ≥16 GB (system RAM) | Data loading, small-batch training |
+| **Disk (C:)** | ~248 GB free | Datasets, checkpoints, results |
+
+**Implication:** Local training runs must use tiny models (< 2 M params), batch size 1–4, patch size 64–128, few epochs. **Cloud GPU (Kaggle free tier recommended) is required for actual experiment training.**
+
+---
+
+## Project Structure
 
 ```
 MASTER2-A1/
-├── AGENTS.md                    # Agent instructions & project rules
-├── README.md                    # This file
-├── opencode.json                # OpenCode configuration
-├── .gitignore                   # Git ignore rules
-├── .env.example                 # Environment variable template
-├── PHASE_0_REPORT.md            # Phase 0 infrastructure audit
-├── research/                    # Research artifacts (Phase 1 + 2)
-│   ├── research_question.md
-│   ├── research_gap.md
-│   ├── literature_review.md
-│   ├── paper_database.csv       # 267 papers from reproducible arXiv queries
-│   ├── methodology.md
-│   ├── hypotheses.md
-│   ├── research_log.md
-│   ├── research_plan.md
-│   ├── feasibility_report.md
-│   ├── feasibility_checklist.md
-│   ├── dataset_investigation.md
-│   ├── dataset_comparison.md
-│   ├── model_comparison.md
-│   ├── alsat2b_access.md
-│   ├── final_research_questions.md   # 6 primary + 4 secondary RQs
-│   ├── final_hypotheses.md           # 6 P0 hypotheses + falsification criteria
-│   └── final_experimental_protocol.md # Complete protocol with corrections
-├── data/                        # Data pipeline (NOT in git)
-│   ├── raw/                     # Original ALSAT-2B imagery (access pending)
-│   ├── interim/                 # Preprocessed/intermediate
-│   ├── processed/               # Ready-for-training
-│   ├── splits/                  # Train/val/test splits
-│   └── metadata/                # Provenance, licenses, specs
-├── src/                         # Source code (Phase 2 implementation)
-│   ├── data/                    # Dataset classes, loaders (Sentinel-2, PROBA-V)
-│   │   ├── sentinel2_downloader.py
-│   │   ├── probav_loader.py
-│   │   └── validate_data.py
-│   ├── preprocessing/           # Normalization, tiling
-│   ├── degradation/             # Synthetic degradation pipelines
-│   │   └── alsat2b_degradation.py    # Wald protocol: SRF, MTF, noise, quantization, shift
-│   ├── models/                  # SR architectures
-│   │   ├── edsr.py              # EDSR-small (1.52M params)
-│   │   ├── swinir.py            # SwinIR-base (12.87M) + TinySwinIR (1.11M)
-│   │   └── realesrgan.py        # Real-ESRGAN/RRDBNet (16.92M)
-│   ├── training/                # Training loops, MLflow logging
-│   │   └── trainer.py           # SRLoss, SRDataset, SRTrainer
-│   ├── inference/               # Inference pipelines
-│   │   └── inference.py         # Checkpoint loading, tiled/batched inference
-│   ├── evaluation/              # Quality metrics
-│   │   └── metrics.py           # PSNR, SSIM, LPIPS, SAM, ERGAS, SCI, QNR, hallucination index
-│   ├── hallucination/           # Hallucination detection
-│   │   └── detection.py         # 4-category detector, annotation protocol, H2 validation
-│   ├── downstream/              # Downstream task evaluation
-│   │   └── tasks.py             # Fixed-backbone: classification, detection, segmentation, CD
-│   ├── visualization/           # Plotting (placeholder)
-│   └── utils/                   # Helpers, config
-├── configs/                     # Experiment configurations (YAML)
+│
+├── AGENTS.md                         # Agent instructions & rules
+├── README.md                         # This file
+├── PHASE_0_REPORT.md                 # Infrastructure audit report
+├── .gitignore                        # Excludes data/, checkpoints/, logs/, etc.
+├── .env.example                      # Environment template
+├── opencode.json                     # OpenCode configuration
+│
+├── research/                         # All research documents
+│   ├── final_research_questions.md   # 6 primary + 4 secondary RQs (frozen)
+│   ├── final_hypotheses.md           # 10 hypotheses with falsification criteria
+│   ├── methodology.md                # Complete experimental methodology
+│   ├── literature_review.md          # Structured review with citations
+│   ├── paper_database.csv            # 267+ verified papers
+│   ├── feasibility_report.md         # Compute/data/timeline assessment
+│   ├── dataset_investigation.md      # ALSAT-2B specs, substitutes, comparisons
+│   ├── alsat2b_access.md             # Access status for ALSAT-2B
+│   └── ...                           # Additional research notes
+│
+├── src/                              # Source code
+│   ├── data/                         # Data loaders, datasets
+│   ├── preprocessing/                # Tiling, normalization, splits
+│   ├── degradation/                  # Wald-protocol ALSAT-2B simulator
+│   ├── models/                       # EDSR, SwinIR, Real-ESRGAN, StableSR
+│   ├── training/                     # Training loops, schedulers, losses
+│   ├── evaluation/                   # Quality metrics (PSNR, SSIM, LPIPS, etc.)
+│   ├── hallucination/                # H2/H3 metrics (SAM, wavelet, GLCM, SCI)
+│   ├── downstream/                   # Task models (classification, detection)
+│   └── utils/                        # Helpers, logging, config
+│
+├── configs/                          # Experiment & dataset configurations
 │   ├── data/
-│   │   ├── sentinel2.yaml       # Sentinel-2 AOIs, splits, bands, download config
-│   │   ├── probav.yaml          # PROBA-V MISR benchmark (1160/290 split)
-│   │   └── normalization.yaml   # Quantile/band normalization
+│   │   ├── sentinel2.yaml            # 8 AOIs, temporal splits, bands
+│   │   └── probav.yaml               # PROBA-V settings (corrected)
 │   ├── degradation/
-│   │   └── alsat2b.yaml         # Degradation params (estimated/documented labels)
-│   ├── models/
-│   │   ├── edsr_small.yaml
-│   │   ├── swinir_base.yaml
-│   │   └── realesrgan.yaml
-│   └── training/
-│       └── trainer_config.yaml
-├── experiments/                 # Experiment tracking
-│   ├── protocols/               # Protocol definitions
-│   │   └── kaggle_train_template.py
-│   ├── logs/                    # Training/eval logs
-│   └── checkpoints/             # Model checkpoints
-├── tests/                       # Unit & integration tests (38 passing)
-│   ├── test_data/
-│   └── test_degradation/
-├── notebooks/                   # Exploratory notebooks
-├── results/                     # Experiment outputs
+│   │   └── alsat2b.yaml              # Wald-protocol parameters
+│   └── models/
+│       ├── edsr_small.yaml           # EDSR-small config
+│       ├── swinir_base.yaml          # SwinIR-base config
+│       └── realesrgan.yaml           # Real-ESRGAN config
+│
+├── scripts/                          # Utility & acquisition scripts
+│   ├── download_probav.py            # PROBA-V download (pending approval)
+│   ├── verify_geospatial.py          # Resolution & CRS verification
+│   ├── validate_pilot.py             # Post-download pilot validation
+│   └── sentinel2_pilot.py            # Sentinel-2 pilot acquisition
+│
+├── tests/                            # Unit tests (all synthetic)
+│   ├── test_data/                    # Data pipeline tests
+│   ├── test_degradation/             # Degradation model tests
+│   └── test_evaluation/              # Metric tests
+│
+├── docs/                             # Phase reports & documentation
+│   ├── phase_1_report.md             # Literature review completion
+│   ├── phase_2_report.md             # Research questions finalized
+│   ├── phase_2_scientific_audit.md   # Scientific consistency check
+│   ├── phase_3_data_acquisition.md   # Pilot acquisition report
+│   ├── phase_3_pilot_validation.md   # Pilot validation results
+│   ├── phase_3_final_audit.md        # Pre-approval readiness audit
+│   ├── license.md                    # Dataset & code licensing
+│   ├── methodology_decisions.md      # Decision log with rationale
+│   └── experiment_tracking.md        # MLflow / tracking setup
+│
+├── data/                             # Satellite imagery (NOT in git — see .gitignore)
+│   ├── raw/
+│   │   └── sentinel2/
+│   │       └── DZ_01/                # Pilot: 3 scenes, 12 GeoTIFFs (~2 GB)
+│   └── metadata/
+│       └── sentinel2/
+│           └── pilot_manifest.json   # Provenance & checksums for pilot
+│
+├── experiments/                      # Experiment logs, protocols, checkpoints
+│   ├── protocols/
+│   ├── logs/
+│   └── checkpoints/
+│
+├── results/                          # Generated outputs (not tracked in git)
 │   ├── metrics/
 │   ├── predictions/
 │   ├── figures/
-│   ├── tables/
 │   └── statistical_analysis/
-├── thesis/                      # LaTeX thesis
+│
+├── thesis/                           # LaTeX thesis
 │   ├── main.tex
 │   ├── chapters/
-│   ├── figures/
 │   ├── references.bib
-│   ├── appendices/
-│   └── final.pdf
-└── docs/                        # Documentation
-    ├── installation.md
-    ├── methodology_decisions.md
-    ├── experiment_tracking.md
-    ├── reproducibility.md
-    ├── limitations.md
-    └── phase_1_report.md
+│   └── appendices/
+│
+└── notebooks/                        # Jupyter exploratory notebooks
+```
+
+### Git Status
+
+```
+Branch: master
+Remote: origin/master
+Commits ahead of previous snapshot: ea608c4 (current HEAD)
+
+Untracked (correctly excluded from git via .gitignore):
+  data/raw/        — Raw satellite imagery (~2 GB pilot, up to ~60 GB projected)
 ```
 
 ---
 
-## 🛠️ Technical Stack
+## Testing & Validation
 
-| Component | Version/Status | Notes |
-|-----------|----------------|-------|
-| **OS** | Windows 10/11 | |
-| **Python** | 3.10.11 | `C:\Users\stream\AppData\Local\Programs\Python\Python310\python.exe` |
-| **PyTorch** | 2.3.0 (CPU) | **No CUDA available** |
-| **Git** | 2.55.0 | Configured |
-| **OpenCode** | ✅ Running | Desktop client |
-| **FreeLLMAPI** | ✅ Running | `http://localhost:31415/v1` (OpenAI-compatible) |
-| **GPU** | Intel Iris Xe (2 GB) | Integrated — **No dedicated GPU** |
-| **RAM** | ~248 GB free | On C: drive |
+### Unit Tests
 
----
+| Suite | Count | Status | Notes |
+|-------|-------|--------|-------|
+| Data pipeline | 12 | ✅ Pass | Sentinel-2 config parsing, AOI properties |
+| Degradation model | 12 | ✅ Pass | MTF application, noise, quantization, downsampling |
+| Evaluation metrics | 14 | ✅ Pass | PSNR, SSIM, SAM, band-correlation |
+| **Total** | **38** | **✅ 38/38 passing** | **Zero regressions** |
 
-## ⚠️ Critical Constraints
+Tests run on **synthetic data only**. Integration and end-to-end tests on real satellite imagery are pending (require full dataset before execution).
 
-### Hardware Limitations
-- **NO NVIDIA GPU / NO CUDA** — All PyTorch operations run on CPU
-- Training will be **extremely slow** on CPU
-- Must use **tiny models**, **small batches** (1-4), **few epochs** for local testing
-- **Strongly recommend** Google Colab / Kaggle / RunPod for actual training
+### Pilot Validation Results
 
-### Data Access — SUBSTITUTE COMMITTED
-- **ALSAT-2B data access blocked** (asal.dz inaccessible)
-- **4-week gate** (until ~2026-12-10) then formal substitute commitment
-- **Sentinel-2 selected as primary proxy** (spectrally comparable but not identical to ALSAT-2B MS at 10m)
-- **PROBA-V MISR selected as MISR benchmark** (only established benchmark, 74 regions, 1160/290 split)
-- **PlanetScope academic license pending** (2-4 week approval for cross-sensor validation)
-
-### Model Selection — FINALIZED
-| Model | Params | Status | Config |
-|-------|--------|--------|--------|
-| Bicubic | — | Baseline | — |
-| EDSR-small | 1.52M | ✅ CPU smoke test 0.10s | `configs/models/edsr_small.yaml` |
-| SwinIR-base | 12.87M | ✅ CPU smoke test 0.36s (Tiny) | `configs/models/swinir_base.yaml` |
-| TinySwinIR | 1.11M | ✅ CPU smoke test 0.36s | Same as SwinIR-base |
-| Real-ESRGAN | 16.92M | ✅ CPU smoke test 1.17s | `configs/models/realesrgan.yaml` |
+| Check | Result |
+|-------|--------|
+| File existence (12 GeoTIFFs) | ✅ |
+| MD5 checksums match manifest | ✅ |
+| CRS consistency (EPSG:4326) | ✅ |
+| Band completeness (B2/B3/B4/B8) | ✅ |
+| Dimension alignment within scene | ✅ |
+| Reflectance range [0, 1] | ✅ |
+| Geospatial resolution verified | ✅ (8.8–11.1 m at ~36.5°N) |
 
 ---
 
-## 📋 Phase Plan
+## Phase 3: What Is Complete vs. Pending
 
-| Phase | Title | Status | Deliverable |
-|-------|-------|--------|-------------|
-| **0** | Infrastructure & Environment Audit | ✅ **Complete** | `PHASE_0_REPORT.md` |
-| **1** | Literature Review & Feasibility | ✅ **Complete** | 15 files in `research/` |
-| **2** | Research Questions & Methodology | ✅ **Complete** | `research/final_*.md`, `src/`, `configs/`, `tests/` |
-| 3 | Dataset Acquisition & Preparation | ⏳ Next | Processed dataset, pilot downloads |
-| 4 | Baseline Implementation | ⏳ Pending | Training runs on cloud GPU |
-| 5 | Super-Resolution Experiments | ⏳ Pending | `experiments/logs/`, checkpoints |
-| 6 | Hallucination-Aware Evaluation | ⏳ Pending | H2 validation with annotators |
-| 7 | Downstream Task Evaluation | ⏳ Pending | Fixed-backbone evaluation on SR outputs |
-| 8 | Statistical Analysis & Discussion | ⏳ Pending | `results/statistical_analysis/` |
-| 9 | Thesis Writing & Final Validation | ⏳ Pending | `thesis/final.pdf` |
+### ✅ Completed
 
----
+- Scientific consistency audit across all prior phases
+- PROBA-V naming, URL, region count (74), and checksum corrections
+- PROBA-V configuration aligned with official ESA/Zenodo specification
+- Sentinel-2 pilot acquisition (DZ_01, 3 scenes, 12 GeoTIFFs, ~2 GB)
+- Pilot manifest generation with full provenance and per-band checksums
+- Geospatial verification script confirming actual ground resolution
+- CC BY 4.0 licensing documentation for both datasets
+- All 38 unit tests passing (zero regressions)
+- Git state clean — branch synced to `origin/master`
 
-## 🔬 Scientific Integrity Checklist
+### ⏳ Still Pending
 
-- [x] No fabricated papers, DOIs, or results
-- [x] All experiments actually executed before reporting
-- [x] No simulated results presented as real ALSAT-2B results
-- [x] Sensor characteristics verified from official specs (ESA eoPortal)
-- [x] Technical claims traced to primary sources
-- [x] Established findings / hypotheses / proposed methods distinguished
-- [x] Negative/inconclusive results preserved
-- [x] Limitations documented honestly
-- [x] Original data kept immutable
-- [x] Reproducible configs (seeds, versions, dataset provenance)
-- [x] No invented conclusions
-- [x] Protocol changes documented and approved
-- [x] Major decisions approved by supervisor
-- [x] Phase completion requires verifiable evidence
+- [ ] **Full Sentinel-2 acquisition** — expand from DZ_01 to all 8 AOIs across train/val/test periods (estimated ~50–60 GB)
+- [ ] **PROBA-V small download test** — validate 675 MB archive before full-scale acquisition
+- [ ] **Tiling implementation** — 1024 × 1024 px tiles with 128 px overlap for S2
+- [ ] **Spatial buffer enforcement** — leakage-prevention logic between adjacent AOIs
+- [ ] **Train-split-only normalization statistics** — per-band percentile computation validated on real data
+- [ ] **End-to-end validation** — multi-AOI temporal split, tiling, normalization pipeline tested together
+- [ ] **Supervisor approval** for full-scale acquisition and PROBA-V download test
+
+Full status: [`docs/phase_3_final_audit.md`](docs/phase_3_final_audit.md)
 
 ---
 
-## 📦 Phase 2 Deliverables Summary
+## How to Use This Repository
 
-### Research Artifacts
-| File | Description |
-|------|-------------|
-| `research/final_research_questions.md` | 6 primary RQs (P0) + 4 secondary/exploratory RQs |
-| `research/final_hypotheses.md` | 6 P0 hypotheses with explicit falsification criteria |
-| `research/final_experimental_protocol.md` | Complete protocol: dataset strategy, degradation engine, evaluation framework, model configs, cloud prep, corrections documented |
+### Before You Start
 
-### Core Implementation
-| Module | File | Tests |
-|--------|------|-------|
-| Data Pipeline | `src/data/sentinel2_downloader.py`, `src/data/probav_loader.py`, `src/data/validate_data.py` | 12 passing |
-| Degradation Engine | `src/degradation/alsat2b_degradation.py` (Wald protocol: trapezoidal SRF, Gaussian MTF, Poisson-Gaussian noise, 10-bit quantization, sub-pixel shift) | 26 passing |
-| Evaluation Metrics | `src/evaluation/metrics.py` (PSNR, SSIM, LPIPS, SAM, ERGAS, SCI, wavelet HF energy, QNR, structural hallucination score, composite hallucination index, task utility, ratio metric, bootstrap CI) | — |
-| Hallucination Detection | `src/hallucination/detection.py` (4-category: spectral, structural, textural, semantic; annotation protocol with Fleiss' κ; H2 validation framework) | — |
-| Downstream Tasks | `src/downstream/tasks.py` (UNet-ResNet18, BuildingDetector/YOLO, DeepLabV3+, SiameseUNet; fixed-backbone protocol; metrics) | — |
-| SR Models | `src/models/edsr.py`, `swinir.py`, `realesrgan.py` | CPU smoke tests pass |
-| Training | `src/training/trainer.py` (SRLoss L1+LPIPS+GAN, MLflow, SRDataset) | — |
-| Inference | `src/inference/inference.py` (checkpoint loading, tiled inference, batched inference, evaluation pipeline) | — |
+1. Read [`AGENTS.md`](AGENTS.md) for project rules and roles
+2. Read [`research/final_research_questions.md`](research/final_research_questions.md) for the research scope
+3. Read [`research/methodology.md`](research/methodology.md) for the experimental design
+4. Read [`docs/license.md`](docs/license.md) for data-attribution requirements
 
-### Configurations
-| Config | Purpose |
-|--------|---------|
-| `configs/data/sentinel2.yaml` | Sentinel-2 AOIs (Algeria), splits, bands (B2/B3/B4/B8 at 10m) |
-| `configs/data/probav.yaml` | PROBA-V MISR benchmark spec (verified via ESA Kelvin) |
-| `configs/degradation/alsat2b.yaml` | Degradation params with estimated/documented labels |
-| `configs/models/*.yaml` | Model hyperparameters |
-
-### Cloud Preparation
-| File | Purpose |
-|------|---------|
-| `requirements-cloud.txt` | Cloud GPU dependencies (kaggle, wandb, timm, segmentation-models-pytorch, etc.) |
-| `experiments/protocols/kaggle_train_template.py` | Kaggle training script template |
-
-### Verification
-- **38 unit tests passing** (12 data pipeline + 26 degradation engine)
-- **CPU smoke tests passing** for all 3 model families
-- **No warnings** in test suite
-
----
-
-## 🚀 Quick Start (After Phase 2)
+### Key Commands
 
 ```bash
-# 1. Navigate to project
-cd MASTER2-A1
+# Run unit tests
+python -m pytest tests/ -v --tb=short
 
-# 2. Activate environment
-python -m venv venv
-venv\Scripts\activate
+# Verify geospatial properties of downloaded data
+python scripts/verify_geospatial.py --path data/raw/sentinel2/DZ_01
 
-# 3. Install local dependencies
-uv pip install -r requirements.txt  # To be created from imports
+# Validate pilot data against manifest
+python scripts/validate_pilot.py
 
-# 4. Verify implementation
-python -m pytest tests/ -v
-
-# 5. Test models
-python -c "
-import torch
-from src.models.edsr import EDSR
-from src.models.swinir import TinySwinIR
-from src.models.realesrgan import RealESRGAN
-x = torch.randn(1, 4, 64, 64)
-for name, model in [('EDSR', EDSR(n_resblocks=16, n_feats=64, scale=4, in_channels=4)),
-                    ('TinySwinIR', TinySwinIR()),
-                    ('RealESRGAN', RealESRGAN(net_g={'num_in_ch':4,'num_out_ch':4,'num_feat':64,'num_block':23}, scale=4))]:
-    model.eval()
-    with torch.no_grad():
-        y = model(x)
-    print(f'{name}: {x.shape} -> {y.shape}')
-"
-
-# 6. Test degradation engine
-python -c "
-import numpy as np
-from src.degradation.alsat2b_degradation import create_degradation
-from configs.degradation.alsat2b import ALSAT2B_DEGRADATION_CONFIG
-hr = np.random.rand(4, 256, 256).astype(np.float32)
-degrader = create_degradation(ALSAT2B_DEGRADATION_CONFIG['wald_protocol'])
-lr = degrader(hr)
-print(f'HR: {hr.shape} -> LR: {lr.shape}')
-"
+# Download Sentinel-2 pilot (for reference)
+python scripts/sentinel2_pilot.py --aoi DZ_01
 ```
 
 ---
 
-## 📚 Key References
+## Known Limitations
 
-| Topic | Key Papers |
-|-------|------------|
-| Super-Resolution (CNN) | EDSR (Lim et al., 2017), RCAN (Zhang et al., 2018) |
-| Super-Resolution (Transformer) | SwinIR (Liang et al., 2021) |
-| Satellite SR | Lei et al. (2021), Yuan et al. (2020) |
-| Hallucination in SR | Wang et al. (2023), "Hallucination in Image SR" |
-| ALSAT-2B Specs | ESA eoPortal (NAOMI: 2.5m PAN, 10m MS 4 bands, Korsch TMA SiC 200mm F/16) |
-| PROBA-V MISR | ESA Kelvin, Vandewal et al. (2018) |
-| Wald Protocol | Wald (1997), Ranchin & Wald (2000) |
-| Downstream Evaluation | Segmentation on SR outputs (various) |
+| Limitation | Impact | Mitigation |
+|-----------|--------|------------|
+| **No dedicated GPU** — CPU-only local training | Slow iteration | Cloud GPU (Kaggle) for training; local CPU for dev & evaluation |
+| **ALSAT-2B data blocked** — ASAL access unavailable | Cannot validate on true target sensor | Sentinel-2 proxy validated; H1 conditional on any ALSAT-2B sample |
+| **Single-date pilot only** | Temporal splits not yet validated on real data | Full acquisition plan spans 2018–2024; temporal leakage checks coded |
+| **Single-AOI pilot** | Multi-region generalization unknown | 8 AOI plan covers diverse land-cover types |
+| **Preprocessing pipeline untested on real data** | Tiling/normalization may reveal issues | Integration tests planned for Phase 4 |
+| **Diffusion model training conditional** | H4/H5 may exclude StableSR if compute insufficient | Core claims rest on 3 families (EDSR, SwinIR, Real-ESRGAN) |
 
 ---
 
-## 📝 License & Ethics
+## References
 
-- **Code**: MIT License (unless specified otherwise)
-- **Data**: Subject to ALSAT-2B / provider licensing — verify before use
-- **Thesis**: Academic use — follow university guidelines
-- **AI Assistance**: This project uses AI assistance (OpenCode + FreeLLMAPI) per university policy
-
----
-
-## 👤 Author
-
-**Aimen Achraff**  
-Master 2 — Computer Science / Artificial Intelligence  
-Algeria  
-Email: aimenachraff@gmail.com  
-GitHub: aimenachraff-jpg
+- **Sentinel-2 data:** Microsoft Planetary Computer — `https://planetarycomputer.microsoft.com/dataset/sentinel-2-l2a`
+- **PROBA-V dataset:** Zenodo record 6327426 — `https://doi.org/10.5281/zenodo.6327426`
+- **Degradation model:** Wald, L. (2000). *The intensities relationships...* Photogrammetrie Fernerkundung Geoinformation
+- **EDSR:** Lim et al. (2017). *Enhanced Deep Residual Networks for Single Image Super-Resolution*
+- **SwinIR:** Liang et al. (2021). *SwinIR: Image Restoration Using Swin Transformer*
+- **Real-ESRGAN:** Wang et al. (2021). *Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data*
+- **PROBA-V baseline:** Märtens et al. (2019). *Super-resolution of PROBA-V images using CNNs*
 
 ---
 
-## 📄 Phase Reports
-
-| Phase | Report |
-|-------|--------|
-| 0 | `PHASE_0_REPORT.md` |
-| 1 | `docs/phase_1_report.md` |
-| 2 | `docs/phase_2_report.md` (to be produced) |
-
----
-
-> **Note:** This is a living document. Update as project evolves.  
-> **Current Phase:** 2 Complete — Experimental Protocol Finalized, Implementation Verified
+*This repository is maintained as part of a Master 2 thesis. All scientific claims require evidence from executed experiments. No fabricated results.*

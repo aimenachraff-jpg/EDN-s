@@ -41,7 +41,7 @@
 - **No NVIDIA GPU / No CUDA** - All PyTorch training runs on CPU
 - **Integrated graphics only** - Intel Iris Xe (2GB shared)
 - **Training will be SLOW on CPU** - Must select tiny models, small batches, few epochs for local dev
-- **Cloud GPU required for actual training** (Kaggle, Colab, RunPod)
+- **Cloud GPU required for actual training** (Kaggle recommended: 2× T4 16 GB free tier, ~30 h/week)
 
 ## FreeLLMAPI Status (Verified)
 - **Server**: Running on `http://localhost:31415`
@@ -124,16 +124,16 @@ MASTER2-A1/
 ```
 
 ## Phase Workflow
-- **Phase 0**: Infrastructure & Environment Audit ✅ **COMPLETE (Corrected)**
-- **Phase 1**: Literature Review & Research Feasibility 🔄 **IN PROGRESS**
-- **Phase 2**: Research Questions & Methodology
-- **Phase 3**: Dataset Acquisition & Preparation
-- **Phase 4**: Baseline Implementation
-- **Phase 5**: Super-Resolution Experiments
-- **Phase 6**: Hallucination-Aware Evaluation
-- **Phase 7**: Downstream Task Evaluation
-- **Phase 8**: Statistical Analysis & Discussion
-- **Phase 9**: Thesis Writing & Final Validation
+- **Phase 0**: Infrastructure & Environment Audit ✅ **COMPLETE** (2026-11-12)
+- **Phase 1**: Literature Review & Research Feasibility ✅ **COMPLETE** (2026-11-13)
+- **Phase 2**: Research Questions & Methodology ✅ **COMPLETE** (2026-11-12/13)
+- **Phase 3**: Dataset Acquisition & Preparation 🔄 **Pilot complete; full acquisition pending approval**
+- **Phase 4**: Baseline Implementation ⏳ **Pending**
+- **Phase 5**: Super-Resolution Experiments ⏳ **Pending**
+- **Phase 6**: Hallucination-Aware Evaluation ⏳ **Pending**
+- **Phase 7**: Downstream Task Evaluation ⏳ **Pending**
+- **Phase 8**: Statistical Analysis & Discussion ⏳ **Pending**
+- **Phase 9**: Thesis Writing & Final Validation ⏳ **Pending**
 
 ## Approval Gates
 **Must request human approval before:**
@@ -145,21 +145,46 @@ MASTER2-A1/
 - Publishing/submitting anything
 - Claiming thesis complete
 
+## Documentation Maintenance Rule (Non-Negotiable)
+
+Whenever a project milestone is completed, the agent **must** perform the following steps in order:
+
+1. **Update the relevant phase report** with verified results, evidence, and any corrections made during execution.
+2. **Update `README.md`** to reflect the new verified state — including phase statuses, dataset availability, test counts, hardware info, and project structure. Never let README drift from reality.
+3. **Update the project structure** in README if new files or directories were added, or existing ones removed/renamed.
+4. **Update testing and dataset status** sections to match actual results (passing tests, data integrity checks, provenance records).
+5. **Keep all claims consistent** across README, phase reports, configs, and implementation code. If code changes contradict documentation, fix the documentation.
+6. **Never report a task as complete without evidence.** Every completion claim must reference actual command output, file existence, checksums, or test results.
+
+### Why This Matters
+- `README.md` is the primary entry point for anyone (including future AI sessions) understanding this project. An outdated README creates false assumptions that propagate into incorrect decisions.
+- `PROJECT_UPDATE.md` serves as the permanent development history and handover guide. It must be updated after every meaningful change so that context is never lost between sessions.
+
+---
+
 ## Communication Protocol
 - Report findings with evidence (file paths, command outputs)
 - Distinguish: **Fact** (verified) vs **Assumption** vs **Hypothesis** vs **TODO**
 - Flag risks and blockers early
 - Document all decisions in `docs/methodology_decisions.md`
 
-## Current Status (Phase 1)
+## Current Status (Phase 3 — Pilot Complete)
 - [x] Directory structure created
 - [x] Environment inspected and verified
 - [x] Python/PyTorch/Git verified
 - [x] OpenCode running (this session)
 - [x] FreeLLMAPI server running on localhost:31415
-- [ ] FreeLLMAPI API key extracted/configured
-- [ ] Model connectivity tested
-- [ ] Tool-calling verified
-- [ ] Git repo initialized
-- [ ] Python venv created
-- [ ] Phase 1 research started
+- [x] Git repo initialized and committed (origin/master, commit ea608c4)
+- [x] Python venv in use (system Python 3.10.11)
+- [x] Phase 1 Literature Review & Feasibility complete
+- [x] Phase 2 Research Questions & Methodology finalized (10 hypotheses, 6 RQs)
+- [x] Phase 3 pilot: Sentinel-2 DZ_01 acquired (3 scenes, 12 GeoTIFFs, ~2 GB)
+- [x] Phase 3 pilot: PROBA-V specification verified against Zenodo/ESA sources
+- [x] Phase 3 pilot: All 38 unit tests passing
+- [x] Geospatial verification script created and tested
+- [x] License documentation completed (CC BY 4.0 for both datasets)
+- [ ] Full Sentinel-2 acquisition (8 AOIs) pending supervisor approval
+- [ ] PROBA-V small download test pending supervisor approval
+- [ ] Tiling implementation and spatial buffer enforcement pending
+- [ ] Normalization statistics computation pending real-data validation
+- [ ] Integration/end-to-end tests pending
