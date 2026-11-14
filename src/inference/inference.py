@@ -400,41 +400,31 @@ def evaluate_on_pairs(model: nn.Module, lr_paths: List[str], hr_paths: List[str]
 
 
 def _aggregate_metrics(all_metrics: List[Dict]) -> Dict[str, Any]:
-    """Aggregate metrics across samples."""
+    """Aggregate metrics across samples.
+
+    Handles flat format: {'psnr': value, 'ssim': value} - raw values from evaluate_sr
+    Returns nested dict: {'metric_name': {'mean': ..., 'std': ...}}
+    """
     if not all_metrics:
         return {}
     
-    # Get all keys
-    cats = set()
-    for m in all_metrics:
-        cats.update(m.keys())
-    
     results = {}
-    for cat in cats:
-        results[cat] = {}
-        # Get all metric names for this category
-        metric_names = set()
+    for metric in all_metrics[0].keys():
+        vals = []
         for m in all_metrics:
-            if cat in m:
-                metric_names.update(m[cat].keys())
+            val = m.get(metric)
+            if isinstance(val, (int, float)):
+                vals.append(val)
         
-        for metric in metric_names:
-            vals = []
-            for m in all_metrics:
-                if cat in m and metric in m[cat]:
-                    val = m[cat][metric]
-                    if isinstance(val, (int, float)):
-                        vals.append(val)
-            
-            if vals:
-                results[cat][metric] = {
-                    'mean': float(np.mean(vals)),
-                    'std': float(np.std(vals)),
-                    'min': float(np.min(vals)),
-                    'max': float(np.max(vals)),
-                    'median': float(np.median(vals)),
-                    'n': len(vals)
-                }
+        if vals:
+            results[metric] = {
+                'mean': float(np.mean(vals)),
+                'std': float(np.std(vals)),
+                'min': float(np.min(vals)),
+                'max': float(np.max(vals)),
+                'median': float(np.median(vals)),
+                'n': len(vals)
+            }
     
     return results
 

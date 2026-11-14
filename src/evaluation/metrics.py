@@ -391,10 +391,9 @@ def task_utility_score(
     return float(np.clip(tus, 0.0, 1.0))
 
 
-# Convenience function to compute all metrics at once
 def compute_all_metrics(
-    hr: ArrayLike,
     sr: ArrayLike,
+    hr: ArrayLike,
     baseline: Optional[ArrayLike] = None,
     scale: int = 4,
 ) -> dict:
@@ -457,3 +456,41 @@ def compute_all_metrics(
                         results[f'tus_{metric_name}'] = tus
 
     return results
+
+
+def evaluate_sr(
+    sr: ArrayLike,
+    hr: ArrayLike,
+    task_model: Optional[Any] = None,
+    task_metric: Optional[Callable] = None,
+    compute_all: bool = True,
+) -> dict:
+    """
+    Comprehensive SR evaluation combining quality metrics and hallucination detection.
+
+    Args:
+        sr: Super-resolved image [C, H, W] or [H, W]
+        hr: High-resolution reference [C, H, W] or [H, W]
+        task_model: Optional task model for semantic hallucination
+        task_metric: Optional task metric function
+        compute_all: Whether to compute all metrics
+
+    Returns:
+        Dictionary with metric categories and values
+    """
+    sr_np = _to_numpy(sr)
+    hr_np = _to_numpy(hr)
+
+    # Quality metrics
+    metrics = compute_all_metrics(sr, hr)
+
+    # Hallucination detection (if requested)
+    try:
+        from src.hallucination.detection import HallucinationDetector
+        detector = HallucinationDetector()
+        hallucination_results = detector.detect_all(sr_np, hr_np, task_model, task_metric)
+        metrics['hallucination'] = hallucination_results
+    except ImportError:
+        metrics['hallucination'] = None
+
+    return metrics
