@@ -8,7 +8,7 @@ This document is the permanent development history and handover guide for the MA
 
 | Field | Value |
 |-------|-------|
-| **Latest commit** | `a0bbb08` (pushed to origin/master) |
+| **Latest commit** | `8e4b28c` (to be pushed to origin/master) |
 | **Current phase** | Phase 3 — Dataset Acquisition & Preparation (pilot complete) |
 | **Unit tests** | 217 / 217 passing (synthetic data only) |
 | **Pending approval** | Full Sentinel-2 acquisition (~50–60 GB); PROBA-V download test (675 MB) |
