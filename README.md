@@ -116,7 +116,7 @@ Sentinel-2 Level-2A (Surface Reflectance) is used as a spectral proxy for the un
 
 1. **Single date** (2022-12-30) — does not validate temporal splits
 2. **Single AOI** (DZ_01) — does not test multi-region generalization or spatial leakage prevention
-3. **No preprocessing pipeline applied** — tiling, normalization, splitting remain untested on real data
+3. **No preprocessing pipeline applied** — tiling/normalization/splitting are implemented and unit-tested (66 tests) on synthetic data, but not yet validated on real satellite imagery
 4. **Proxy data only** — Sentinel-2 ≠ ALSAT-2B; spectral characteristics differ
 
 Full acquisition of all 8 AOIs (~50–60 GB) remains pending **supervisor approval**. See [`docs/phase_3_data_acquisition.md`](docs/phase_3_data_acquisition.md) and [`docs/phase_3_pilot_validation.md`](docs/phase_3_pilot_validation.md).
@@ -341,8 +341,9 @@ Untracked (correctly excluded from git via .gitignore):
 | Hallucination detection | 15 | ✅ Pass | Spectral, structural, textural, semantic detection, annotation |
 | Downstream tasks | 22 | ✅ Pass | UNet, DeepLab, SiameseUNet, BuildingDetector, metrics |
 | Training pipeline | 14 | ✅ Pass | TrainingConfig, CharbonnierLoss, SRLoss, SRDataset, SRTrainer, CPU smoke |
-| Preprocessing | 19 | ✅ Pass | Percentile normalize, cloud mask, tiling, band alignment, SAM |
-| **Total** | **160** | **✅ 160/160 passing** | **Zero regressions** |
+| Preprocessing | 66 | ✅ Pass | Normalize, cloud mask, tiling (tile/untile, tile grid, blend kernel), spatial buffers (padding, edge pad, validity, buffer requirements) |
+| Inference | 10 | ✅ Pass | Model creation, tiled inference, batch inference, bicubic upscale, pair evaluation |
+| **Total** | **217** | **✅ 217/217 passing** | **Zero regressions** |
 
 Tests run on **synthetic data only**. Integration and end-to-end tests on real satellite imagery are pending (require full dataset before execution).
 
@@ -371,15 +372,15 @@ Tests run on **synthetic data only**. Integration and end-to-end tests on real s
 - Pilot manifest generation with full provenance and per-band checksums
 - Geospatial verification script confirming actual ground resolution
 - CC BY 4.0 licensing documentation for both datasets
-- All 38 unit tests passing (zero regressions)
+- All 217 unit tests passing (66 preprocessing incl. tiling & spatial buffers; zero regressions)
 - Git state clean — branch synced to `origin/master`
 
 ### ⏳ Still Pending
 
 - [ ] **Full Sentinel-2 acquisition** — expand from DZ_01 to all 8 AOIs across train/val/test periods (estimated ~50–60 GB)
 - [ ] **PROBA-V small download test** — validate 675 MB archive before full-scale acquisition
-- [ ] **Tiling implementation** — 1024 × 1024 px tiles with 128 px overlap for S2
-- [ ] **Spatial buffer enforcement** — leakage-prevention logic between adjacent AOIs
+- [x] **Tiling implementation** — `tile_image`/`untile_image` (overlap + feathered blending), `calculate_tiles`, `create_weight_kernel` — implemented & unit-tested on synthetic data (real-data validation pending)
+- [x] **Spatial buffer utilities** — padding, edge-padding to tile multiples, validity checks, buffer requirements, hierarchical buffers — implemented & unit-tested (real-data validation pending)
 - [ ] **Train-split-only normalization statistics** — per-band percentile computation validated on real data
 - [ ] **End-to-end validation** — multi-AOI temporal split, tiling, normalization pipeline tested together
 - [ ] **Supervisor approval** for full-scale acquisition and PROBA-V download test
