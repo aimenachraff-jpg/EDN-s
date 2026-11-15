@@ -25,6 +25,7 @@ Rulings (recorded 2026-11-14):
 import hashlib
 import json
 import logging
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -94,14 +95,35 @@ def search_aoi(client, aoi_id: str, aoi: dict, split: str) -> list:
     return items
 
 
+def load_rejected() -> set:
+    """Item IDs previously rejected as degenerate — never re-selected."""
+    f = OUT_META / "rejected_items.json"
+    if f.exists():
+        try:
+            return set(json.loads(f.read_text()))
+        except Exception:
+            pass
+    return set()
+
+
+def record_rejected(item_id: str) -> None:
+    f = OUT_META / "rejected_items.json"
+    ids = load_rejected()
+    ids.add(item_id)
+    f.write_text(json.dumps(sorted(ids), indent=2))
+
+
 def select_scenes(items: list, quota: int) -> list:
     """Pick `quota` scenes: distinct dates evenly spread over the period,
     preferring distinct MGRS tiles within each date."""
     # Dedupe by (tile, date); reject partial granules (ruling: eo:cloud_cover
     # passes for granules covering only ~13% of the tile — verified
     # s2:nodata_pixel_percentage=87.1 on 31SEB_20201228 — so filter on nodata)
+    rejected = load_rejected()
     seen, uniq = set(), []
     for it in items:
+        if it.id in rejected:
+            continue
         nodata_pct = it.properties.get("s2:nodata_pixel_percentage", 0.0)
         if nodata_pct is not None and nodata_pct > 50.0:
             continue
@@ -152,6 +174,20 @@ def select_scenes(items: list, quota: int) -> list:
     return selected[:quota]
 
 
+def _resign(item) -> None:
+    """Refresh PC SAS signatures on all asset hrefs.
+
+    Tokens expire (~1 h); a multi-hour run crosses expiry boundaries
+    (observed: 403 mid-scene at FR_01/val on 2026-11-14).
+    """
+    import planetary_computer as pc
+    for a in item.assets.values():
+        try:
+            a.href = pc.sign(a.href)
+        except Exception:
+            pass  # non-PC hrefs stay unchanged
+
+
 def download_scene(item, aoi_id: str) -> Optional[Tuple[str, Dict]]:
     import odc.stac as odc_stac
 
@@ -164,25 +200,25 @@ def download_scene(item, aoi_id: str) -> Optional[Tuple[str, Dict]]:
         logger.info(f"[{aoi_id}] Scene already complete, skipping: {tile}_{dt_str}")
         return ("skipped", {"scene_dir": str(scene_dir), "tile": tile, "date": dt_str})
 
-    try:
-        xx = odc_stac.load(
-            [item],
-            bands=ODC_BANDS,
-            crs="EPSG:4326",
-            resolution=0.0001,       # ~10 m at mid latitudes
-            chunks={"x": 2048, "y": 2048},
-        )
-    except Exception as e:
-        logger.error(f"[{aoi_id}] odc.stac load failed for {item.id}: {e}")
-        return None
-
     file_info: Dict = {}
-    for s2_band, odc_var in zip(TARGET_BANDS, ODC_BANDS):
-        if odc_var not in xx.data_vars:
-            logger.warning(f"[{aoi_id}] {s2_band} ({odc_var}) missing — skipping band")
-            continue
-        da = xx[odc_var]
-        arr = da.values.astype(np.float32)
+    # Per-band load: each band gets a fresh signed href immediately before
+    # its read, isolating transient token/network failures per band.
+    for s2_band in TARGET_BANDS:
+        odc_var = ODC_BAND_MAP[s2_band]
+        try:
+            _resign(item)
+            xx = odc_stac.load(
+                [item],
+                bands=[odc_var],
+                crs="EPSG:4326",
+                resolution=0.0001,       # ~10 m at mid latitudes
+                chunks={"x": 2048, "y": 2048},
+            )
+            da = xx[odc_var]
+            arr = da.values.astype(np.float32)
+        except Exception as e:
+            logger.error(f"[{aoi_id}] load/read failed for {item.id} {s2_band}: {e}")
+            return None
         if arr.ndim == 3:
             arr = arr.squeeze(0)
         # Ruling (verified 2026-11-14): PC assets for pre-baseline-04.00 scenes
@@ -195,6 +231,18 @@ def download_scene(item, aoi_id: str) -> Optional[Tuple[str, Dict]]:
                 arr = arr / 10000.0
                 logger.info(f"[{aoi_id}]   {s2_band}: raw DN detected -> rescaled /10000")
         arr = np.clip(arr, 0.0, 1.0)
+
+        # Degeneracy check (verified 2026-11-15: 31SDB_20201223 is 96-98% raw
+        # DN=0/1 (nodata/saturated) -> ~0.0001 after rescale; passed cloud and
+        # nodata filters because nodata% only counts DN=0). Reject and delete.
+        with np.errstate(invalid="ignore"):
+            finite = arr[np.isfinite(arr)]
+            if finite.size and float((finite <= 0.001).mean()) > 0.9:
+                frac = float((finite <= 0.001).mean())
+                logger.error(f"[{aoi_id}] DEGENERATE scene {tile}_{dt_str} "
+                             f"({s2_band}): {frac:.0%} pixels <= 0.001 — rejecting")
+                shutil.rmtree(scene_dir, ignore_errors=True)
+                return ("degenerate", {"tile": tile, "date": dt_str})
 
         lons = da.coords["longitude"].values
         lats = da.coords["latitude"].values
@@ -265,6 +313,29 @@ def build_manifest(aoi_id: str, aoi: dict, split: str, entries: List[dict]) -> P
     return out
 
 
+def _backfill_file_info(scene_dir: Path, tile: str, dt_str: str) -> Dict:
+    """Build file info for pre-existing scenes by reading GeoTIFF headers
+    (cheap: metadata only, no pixel reads)."""
+    finfo = {}
+    for b in TARGET_BANDS:
+        f = scene_dir / f"{tile}_{dt_str}_{b}.tif"
+        with rasterio.open(f) as src:
+            bounds = [float(x) for x in src.bounds]
+            transform = [float(t) for t in src.transform][:6]
+            shape = [src.height, src.width]
+        finfo[b] = {
+            "path": str(f.relative_to(PROJECT_ROOT)),
+            "size_bytes": f.stat().st_size,
+            "md5": md5_file(f),
+            "shape": shape,
+            "bounds": bounds,
+            "transform": transform,
+            "valid_fraction": None,
+            "preexisting": True,
+        }
+    return finfo
+
+
 def main():
     only = sys.argv[1:] or None  # optional AOI filter args
     aoi_ids = [k for k in CFG["aois"] if not only or k in only]
@@ -285,30 +356,49 @@ def main():
             selected = select_scenes(items, quota)
             logger.info(f"[{aoi_id}/{split}] Selected {len(selected)}/{quota} scenes")
             entries = []
+            # Existing manifest (if any): reused for already-complete scenes
+            # so re-runs never degrade rich metadata into skip-only stubs.
+            existing: Dict = {}
+            mf_path = OUT_META / f"{aoi_id}_{split}_manifest.json"
+            if mf_path.exists():
+                try:
+                    for e in json.loads(mf_path.read_text()).get("scenes", []):
+                        key = (e.get("mgrs_tile"),
+                               e.get("datetime", "")[:10].replace("-", ""))
+                        existing[key] = e
+                except Exception as e:
+                    logger.warning(f"[{aoi_id}/{split}] Could not load existing manifest: {e}")
             for it in selected:
                 result = download_scene(it, aoi_id)
                 if result is None:
                     logger.warning(f"[{aoi_id}] Skipped (load failed) {it.id}")
                     continue
                 sid, payload = result
+                if sid == "degenerate":
+                    record_rejected(it.id)
+                    logger.warning(
+                        f"[{aoi_id}] Scene rejected (degenerate granule): "
+                        f"{payload['tile']}_{payload['date']} — recorded; "
+                        f"quota shortfall documented"
+                    )
+                    continue
                 if sid == "skipped":
-                    # Already-complete scene: reuse existing files without
-                    # re-hashing odc output (crash fix: payload has no files dict)
                     tile, dt_str = payload["tile"], payload["date"]
+                    old = existing.get((tile, dt_str))
+                    if old is not None:
+                        # Reuse the rich entry; refresh checksums against disk
+                        for v in old.get("files", {}).values():
+                            f = PROJECT_ROOT / v["path"]
+                            if f.exists():
+                                v["md5"] = md5_file(f)
+                        old["checksums_valid"] = all(
+                            md5_file(PROJECT_ROOT / v["path"]) == v["md5"]
+                            for v in old["files"].values()
+                        )
+                        entries.append(old)
+                        continue
                     scene_dir = OUT_RAW / aoi_id / f"{tile}_{dt_str}"
-                    finfo = {}
-                    for b in TARGET_BANDS:
-                        f = scene_dir / f"{tile}_{dt_str}_{b}.tif"
-                        finfo[b] = {
-                            "path": str(f.relative_to(PROJECT_ROOT)),
-                            "size_bytes": f.stat().st_size,
-                            "md5": md5_file(f),
-                            "shape": None,
-                            "bounds": None,
-                            "transform": None,
-                            "valid_fraction": None,
-                            "preexisting": True,
-                        }
+                    finfo = _backfill_file_info(scene_dir, tile, dt_str)
                     sid = f"{tile}_{dt_str}"
                 else:
                     finfo = payload
