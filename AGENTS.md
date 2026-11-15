@@ -127,7 +127,11 @@ MASTER2-A1/
 - **Phase 0**: Infrastructure & Environment Audit ✅ **COMPLETE** (2026-11-12)
 - **Phase 1**: Literature Review & Research Feasibility ✅ **COMPLETE** (2026-11-13)
 - **Phase 2**: Research Questions & Methodology ✅ **COMPLETE** (2026-11-12/13)
-- **Phase 3**: Dataset Acquisition & Preparation 🔄 **Pilot complete; full acquisition pending approval**
+## Phase Workflow
+- **Phase 0**: Infrastructure & Environment Audit ✅ **COMPLETE** (2026-11-12)
+- **Phase 1**: Literature Review & Research Feasibility ✅ **COMPLETE** (2026-11-13)
+- **Phase 2**: Research Questions & Methodology ✅ **COMPLETE** (2026-11-12/13)
+- **Phase 3**: Dataset Acquisition & Preparation ✅ **COMPLETE** (2026-11-15; full acquisition approved 2026-11-14)
 - **Phase 4**: Baseline Implementation ⏳ **Pending**
 - **Phase 5**: Super-Resolution Experiments ⏳ **Pending**
 - **Phase 6**: Hallucination-Aware Evaluation ⏳ **Pending**
@@ -168,26 +172,18 @@ Whenever a project milestone is completed, the agent **must** perform the follow
 - Flag risks and blockers early
 - Document all decisions in `docs/methodology_decisions.md`
 
-## Current Status (Phase 3 — Pilot Complete)
+## Current Status (Phase 3 — COMPLETE, 2026-11-15)
 
-**Key Completed in Phase 3 Pilot:**
+**Full acquisition completed and verified (supervisor approved 2026-11-14):**
 
-- ✅ **Dataset Acquisition:** Sentinel-2 DZ_01 (3 scenes, 12 GeoTIFFs, ~2 GB)
-- ✅ **PROBA-V Verification:** Specification confirmed against Zenodo/ESA sources  
-- ✅ **Unit Tests:** All 217 tests passing (data:12, degradation:26, evaluation:33, models:19, hallucination:15, downstream:22, training:14, preprocessing:66, inference:10)
-- ✅ **Geospatial Verification:** Script created and tested (8.8-11.1m resolution at ~36.5°N)
-- ✅ **License Documentation:** Completed (CC BY 4.0 for both datasets)
-- ✅ **Evaluation Metrics Module:** Implemented (PSNR, SSIM, SAM, ERGAS, SCI, wavelet HH energy, GLCM entropy, TUS)
+- ✅ **PROBA-V:** 1,450 imgsets (1,160 train / 290 test), 58,202 PNGs, ~698 MB; MD5 `7101101c7c91eeb5979d472861c1b784` matches Zenodo
+- ✅ **Sentinel-2:** 87/88 scenes (67.86 GB) across 8 AOIs; DZ_01 train = 5/6 (degenerate granule `31SDB_20201223` rejected + recorded in `rejected_items.json`); sanity scan 89/89 OK, 0 flags
+- ✅ **Tiling:** 14,748 tiles (7,968 train / 2,712 val / 4,068 test), 1024×1024, overlap 128, float32, 100.15 GB; 24 tile-index CSVs verified
+- ✅ **Void-fill bug fixed:** no nodata tag in raw GeoTIFFs → rotated-granule voids were silent exact-0 fill; 14/87 train scenes affected (>5% void, up to 44%); fixed (all-4-band-zero → NaN), affected scenes re-tiled, indexes + stats regenerated. See `docs/phase_3_full_acquisition.md` §5.
+- ✅ **Normalization stats:** train-only, NaN-excluded, percentile 2–98 + mean/std (`data/metadata/sentinel2/normalization_stats.json`)
+- ✅ **Unit Tests:** All 245 tests passing (incl. 12 PROBA-V loader tests against the real archive, 16 normalization tests, 82 preprocessing tests)
 
-**Priority Active Work Items (Moving into Phase 4):**
-
-- [ ] **Full Sentinel-2 acquisition** (8 AOIs, ~50–60 GB) — supervisor approval pending
-- [ ] **PROBA-V download test** (675 MB) — supervisor approval pending
-- [ ] **Tiling implementation and spatial buffer enforcement**
-- [ ] **Normalization statistics computation** (pending real-data validation)
-- [ ] **Integration/end-to-end tests** (pending full dataset)
-
-**Next Milestone:** Supervisor approval → Phase 4: Baseline Implementation
+**Phase 4 — Baseline Implementation:** next up (Kaggle 2× T4 for training; CPU-only locally).
 
 **OpenCode:** ✅ **RUNNING** (this session)
 **FreeLLMAPI:** ✅ **RUNNING** on `http://localhost:31415/v1`

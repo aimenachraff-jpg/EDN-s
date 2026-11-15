@@ -51,6 +51,9 @@
     "shell": ["python *", "pip *", "git *", "mkdir *", "cd *"],
     "network": ["https://api.github.com/*", "https://arxiv.org/*", "https://scholar.google.com/*", "https://*.freellmapi.*/*"]
   },
+  "plugins": [
+    "superpowers@git+https://github.com/obra/superpowers.git"
+  ],
   "hooks": {
     "preWrite": [
       "echo 'Writing file: {{path}}'"

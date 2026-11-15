@@ -53,13 +53,26 @@ NORM = CFG["processing"]["normalization"]  # percentile 2-98, clip [0,1]
 
 
 def load_scene_stack(scene_dir: Path, tile: str, dt: str) -> np.ndarray:
-    """Load the 4 band GeoTIFFs of one scene as a [4, H, W] float32 stack."""
+    """Load the 4 band GeoTIFFs of one scene as a [4, H, W] float32 stack.
+
+    The raw GeoTIFFs carry no nodata tag: the EPSG:4326 reprojection fills
+    the voids around the rotated granule with exact 0.0 (verified
+    22MFD_20190630: 37% of pixels exactly 0 in B2, tile r0c0 AND r3c3 fully
+    void). A pixel that is exactly 0.0 in ALL four bands simultaneously is
+    fill, not surface (real reflectance is >0 in NIR); such pixels are
+    converted to NaN so the tile nan_fraction is truthful and downstream
+    loaders can filter void tiles.
+    """
     planes = []
     for b in BANDS:
         f = scene_dir / f"{tile}_{dt}_{b}.tif"
         with rasterio.open(f) as src:
             planes.append(src.read(1).astype(np.float32))
-    return np.stack(planes, axis=0)
+    stack = np.stack(planes, axis=0)
+    with np.errstate(invalid="ignore"):
+        void = (stack == 0).all(axis=0) & np.isfinite(stack).all(axis=0)
+    stack[:, void] = np.nan
+    return stack
 
 
 def process_scene(aoi_id: str, split: str, entry: dict) -> list:
@@ -104,8 +117,15 @@ def process_scene(aoi_id: str, split: str, entry: dict) -> list:
 
 def compute_train_stats(train_index_rows: list):
     """Percentile + mean/std stats over TRAIN tiles only (streaming)."""
+    n_total = len(train_index_rows)
+
     def tile_gen():
-        for row in train_index_rows:
+        for i, row in enumerate(train_index_rows):
+            if i % 250 == 0:
+                # Progress heartbeat with flush: the stats pass is otherwise
+                # silent, and stdout is block-buffered when piped, so
+                # monitors (shell widget) would see no activity at all.
+                print(f"STATS {i}/{n_total}", flush=True)
             with rasterio.open(PROJECT_ROOT / row["path"]) as src:
                 yield np.moveaxis(src.read(), 0, -1)  # [H, W, C]
 

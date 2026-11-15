@@ -2,7 +2,7 @@
 
 > **Master 2 Thesis** — Computer Science / Artificial Intelligence, Algeria  
 > **Working title:** *Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery*  
-> **Status:** Phase 3 pilot complete · Full acquisition pending supervisor approval  
+> **Status:** Phase 3 COMPLETE (2026-11-15) · Both datasets acquired, tiled & normalized · Phase 4 next
 > **Last updated:** 2026-11-13
 
 ---
@@ -61,7 +61,7 @@ Full hypotheses: [`research/final_hypotheses.md`](research/final_hypotheses.md)
 | 0 | Infrastructure & Environment Audit | ✅ Completed (2026-11-12) |
 | 1 | Literature Review & Research Feasibility | ✅ Completed (2026-11-13) |
 | 2 | Research Questions & Methodology | ✅ Completed (2026-11-12) |
-| 3 | Dataset Acquisition & Preparation | 🔄 Pilot acquired; full-scale pending approval |
+| 3 | Dataset Acquisition & Preparation | ✅ Complete (2026-11-15): both datasets acquired, tiled, normalized |
 | 4 | Baseline Implementation | ⏳ Pending |
 | 5 | Super-Resolution Experiments | ⏳ Pending |
 | 6 | Hallucination-Aware Evaluation | ⏳ Pending |
@@ -112,14 +112,23 @@ Sentinel-2 Level-2A (Surface Reflectance) is used as a spectral proxy for the un
 - **Manifest:** [`data/metadata/sentinel2/pilot_manifest.json`](data/metadata/sentinel2/pilot_manifest.json) — contains source provenance, per-band MD5 checksums, shapes, bounds, geotransform
 - **Validation:** All 12 files pass checksum verification; reflectance range [0, 1]; CRS consistent
 
-#### Pilot Limitations (Explicit)
+#### Full Acquisition (COMPLETE, 2026-11-15 — supervisor approved 2026-11-14)
 
-1. **Single date** (2022-12-30) — does not validate temporal splits
-2. **Single AOI** (DZ_01) — does not test multi-region generalization or spatial leakage prevention
-3. **No preprocessing pipeline applied** — tiling/normalization/splitting are implemented and unit-tested (66 tests) on synthetic data, but not yet validated on real satellite imagery
-4. **Proxy data only** — Sentinel-2 ≠ ALSAT-2B; spectral characteristics differ
+- **Scenes:** 87/88 (67.86 GB) across all 8 AOIs — DZ_01 train = 5/6 documented (its 2020-12-23 date had only one candidate granule, rejected as degenerate: 99% of pixels raw DN 0/1; recorded in `data/metadata/sentinel2/full/rejected_items.json`)
+- **Manifests:** `data/metadata/sentinel2/full/{AOI}_{split}_manifest.json` (24 files, counts verified)
+- **Quality audit:** independent scan of all 89 scene dirs — **89/89 OK, 0 flags** (`sanity_scan.json`)
+- **Tiling:** **14,748 tiles** (7,968 train / 2,712 val / 4,068 test), 1024×1024, overlap 128, float32, 100.15 GB; 24 tile-index CSVs row-verified
+- **Void-fill bug fixed:** raw GeoTIFFs carry no nodata tag; rotated-granule voids are silent exact-0 fill (14/87 train scenes >5% void, up to 44%). Fix: all-4-band-zero → NaN; affected scenes re-tiled; verified (`void_scan.json`, phase report §5)
+- **Normalization stats:** train-only, NaN-excluded — `data/metadata/sentinel2/normalization_stats.json` (percentile 2–98 + mean/std)
 
-Full acquisition of all 8 AOIs (~50–60 GB) remains pending **supervisor approval**. See [`docs/phase_3_data_acquisition.md`](docs/phase_3_data_acquisition.md) and [`docs/phase_3_pilot_validation.md`](docs/phase_3_pilot_validation.md).
+#### Limitations (Explicit)
+
+1. **Proxy data only** — Sentinel-2 ≠ ALSAT-2B; spectral characteristics differ
+2. **DZ_01 train shortfall** — 5/6 scenes (no alternative granule for the rejected date)
+3. **No SCL/cloud masking** — SCL bands not downloaded; tiles record NaN fraction for loader-side filtering
+4. **PROBA-V region leakage** — no official region→imgset mapping; split by scene ID (seed 42)
+
+See [`docs/phase_3_full_acquisition.md`](docs/phase_3_full_acquisition.md) for the full report with evidence.
 
 ---
 
@@ -150,8 +159,9 @@ Zenodo DOI: `https://doi.org/10.5281/zenodo.6327426`
 
 - **Name, region count (74), URL, file size, MD5 checksum** — verified against Zenodo API and ESA Kelvins documentation ✅
 - **Configuration file** (`configs/data/probav.yaml`) — corrected and accurate ✅
-- **Small download test** (≈675 MB) — **pending supervisor approval** 🔒
-- **Full structural validation** (1 450 scenes) — **pending download test** 🔒
+- **Downloaded & checksum-verified** (2026-11-14): 708 416 603 bytes, MD5 match, extracted 58 202 PNGs + `norm.csv` ✅
+- **Layout verified:** imgset IDs partition by band — train/RED 0000–0593 (594), train/NIR 0594–1159 (566), test/RED 1160–1305 (146), test/NIR 1306–1449 (144); totals match spec (1 160 train + 290 test) ✅
+- **Loader:** `src/data/probav_loader.py` single-band semantics, 12 tests against the real archive ✅
 
 See [`configs/data/probav.yaml`](configs/data/probav.yaml) and [`docs/license.md`](docs/license.md).
 
@@ -320,10 +330,12 @@ MASTER2-A1/
 ```
 Branch: master
 Remote: origin/master
-Current HEAD: 8e4b28c (docs: sync test counts to 217/217)
+Current HEAD: Phase 3 completion batch (see git log)
 
 Untracked (correctly excluded from git via .gitignore):
-  data/raw/        — Raw satellite imagery (~2 GB pilot, up to ~60 GB projected)
+  data/raw/        — Raw satellite imagery (68 GB: PROBA-V archive + 87 Sentinel-2 scenes)
+  data/processed/  — 14,748 tiles (100.15 GB)
+  data/metadata/   — manifests, tile indexes, sanity/void scans, normalization stats
 ```
 
 ---
@@ -334,18 +346,19 @@ Untracked (correctly excluded from git via .gitignore):
 
 | Suite | Count | Status | Notes |
 |-------|-------|--------|-------|
-| Data pipeline | 12 | ✅ Pass | Sentinel-2 config parsing, AOI properties, temporal splits, PROBA-V config |
+| Data pipeline | 12 | ✅ Pass | Sentinel-2 config parsing, AOI properties, temporal splits, split verification |
+| PROBA-V loader | 12 | ✅ Pass | Real-archive tests: band-ID partitioning, scene ranges, masks {0,1}, test-scene SM semantics, split reproducibility |
 | Degradation model | 26 | ✅ Pass | MTF application, noise, quantization, downsampling, degradation pipeline |
 | Evaluation metrics | 33 | ✅ Pass | PSNR, SSIM, SAM, ERGAS, SCI, wavelet HH energy, GLCM entropy, TUS |
 | SR models | 19 | ✅ Pass | EDSR, SwinIR, Real-ESRGAN forward pass, shape, gradient flow |
 | Hallucination detection | 15 | ✅ Pass | Spectral, structural, textural, semantic detection, annotation |
 | Downstream tasks | 22 | ✅ Pass | UNet, DeepLab, SiameseUNet, BuildingDetector, metrics |
 | Training pipeline | 14 | ✅ Pass | TrainingConfig, CharbonnierLoss, SRLoss, SRDataset, SRTrainer, CPU smoke |
-| Preprocessing | 66 | ✅ Pass | Normalize, cloud mask, tiling (tile/untile, tile grid, blend kernel), spatial buffers (padding, edge pad, validity, buffer requirements) |
+| Preprocessing | 82 | ✅ Pass | Normalize (mean/std + percentile, streaming, NaN-safe), cloud mask, tiling (tile/untile, tile grid, blend kernel), spatial buffers, band alignment |
 | Inference | 10 | ✅ Pass | Model creation, tiled inference, batch inference, bicubic upscale, pair evaluation |
-| **Total** | **217** | **✅ 217/217 passing** | **Zero regressions** |
+| **Total** | **245** | **✅ 245/245 passing** | **Zero regressions** |
 
-Tests run on **synthetic data only**. Integration and end-to-end tests on real satellite imagery are pending (require full dataset before execution).
+Tests run on synthetic data plus the **real PROBA-V archive** (12 loader tests read actual PNGs and verify the band-ID partitioning). Integration and end-to-end tests on Sentinel-2 tiles are pending (Phase 4).
 
 ### Pilot Validation Results
 

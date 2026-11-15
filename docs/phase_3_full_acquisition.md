@@ -1,8 +1,8 @@
 # Phase 3 — Full-Scale Data Acquisition Report
 
 **Date:** 2026-11-15
-**Status:** Acquisition COMPLETE — tiling & normalization in progress
-**Commits:** `bde23c9` (PROBA-V), `c39ccac` (normalization+tiling), `11234a2` (acquisition hardening)
+**Status:** COMPLETE — acquisition, tiling, and train-only normalization all verified
+**Commits:** `bde23c9` (PROBA-V), `c39ccac` (normalization+tiling), `11234a2` (acquisition hardening), `42edbca` (tiling parse fix), void-fix commit (this batch)
 
 ---
 
@@ -130,7 +130,7 @@ pilot-validation scenes kept outside the manifests).
 
 ---
 
-## 5. Tiling & Normalization (in progress)
+## 5. Tiling & Normalization (COMPLETE)
 
 - `scripts/generate_tiles.py`: 1024×1024 tiles, 128 px overlap (per
   `configs/data/sentinel2.yaml`), per-scene 4-band stacks, per-AOI/split tile
@@ -140,20 +140,61 @@ pilot-validation scenes kept outside the manifests).
   reference. Implemented in `src/preprocessing/normalization.py`
   (16 tests, TDD; caught a real variance bug before any real data was
   processed). Output: `data/metadata/sentinel2/normalization_stats.json`.
-- Results to be recorded here when the current run completes.
 
-### Limitation (documented)
-SCL (scene classification) bands were not downloaded; cloud masking at tile
-level is not yet applied. Tiles record NaN fraction so loaders can filter
-high-cloud tiles later. Candidate mitigation: re-download SCL for masked
-tiling in Phase 4, or accept cloud content as realistic degradation.
+### Tiling results (verified on disk)
+
+| Item | Value |
+|---|---|
+| Tiles | **14,748** (7,968 train / 2,712 val / 4,068 test), one 4-band float32 GeoTIFF each |
+| Size on disk | 100.15 GB under `data/processed/sentinel2/{AOI}/{split}/{mgrs}_{date}/` |
+| Index CSVs | 24 files, row counts match per-scene logs exactly |
+| Train stats from | 7,968 train tiles, all valid pixels streamed (n_pixels ≈ 7.63e9 per band); percentiles from a seeded 2,000-pixel/tile subsample (15,468,142 → after void fix 14,364,742 samples) |
+
+### Void-fill bug found and fixed (verified)
+
+The raw GeoTIFFs carry **no nodata tag**: the EPSG:4326 reprojection fills the
+voids around the rotated granule with exact 0.0. First-pass tiles preserved
+these zeros, so fully-void tiles were recorded with `nan_fraction ≈ 0`
+(indistinguishable from clean data) and the first-pass train statistics were
+computed partly on fake zeros.
+
+- **Scan** (`void_scan.json`): 14/87 scenes have >5% void (BR_01 ×4 up to 43%,
+  DZ_01 ×2, DZ_02 ×2 up to 44%, DZ_03 ×2, FR_01 ×3 up to 27%, US_01 ×1 41%);
+  **all 14 are train scenes** — val/test splits are void-free.
+- **Fix**: a pixel that is exactly 0.0 in all four bands simultaneously is
+  fill, not surface; converted to NaN at scene load. Void-affected scenes
+  re-tiled from the untouched raw data; indexes and stats regenerated.
+- **Verification**: the previously all-zero tile (BR_01 `22MFD_20190630`
+  r0c0) now reads `nan_fraction = 1.0`; regenerated stats (void pixels
+  excluded) show every band mean rising (B2 0.1469→0.1608, B3 0.1757→0.1924,
+  B4 0.2076→0.2273, B8 0.2906→0.3183) and p2 > 0 — a real dark-pixel floor
+  instead of void-fill zeros.
+
+### Final normalization statistics (train-only, NaN-excluded)
+
+| Band | p2 | p98 | mean | std |
+|---|---|---|---|---|
+| B2 | 0.0040 | 0.9216 | 0.1608 | 0.2112 |
+| B3 | 0.0010 | 0.9216 | 0.1924 | 0.2102 |
+| B4 | 0.0001 | 0.9384 | 0.2273 | 0.2294 |
+| B8 | 0.0001 | 0.9384 | 0.3183 | 0.2240 |
+
+### Limitations (documented)
+
+1. SCL (scene classification) bands were not downloaded; cloud masking at
+   tile level is not yet applied. Tiles record NaN fraction so loaders can
+   filter high-cloud tiles later. Candidate mitigation: re-download SCL for
+   masked tiling in Phase 4, or accept cloud content as realistic degradation.
+2. Void-tile filtering (tiles that are mostly NaN) happens at loader time;
+   no tiles were deleted — loaders choose their own NaN-fraction threshold
+   from the tile index.
 
 ---
 
 ## 6. Test Suite
 
-239 tests passing (incl. 12 PROBA-V loader tests against the real archive,
-16 normalization tests, 66 preprocessing tests).
+245 tests passing, including 12 PROBA-V loader tests against the real
+archive, 16 normalization tests, and 82 preprocessing tests.
 
 ## 7. Reproducibility
 
@@ -162,8 +203,12 @@ PROBA-V:    python scripts/download_probav.py            # checksum-verified
 Sentinel-2: python scripts/sentinel2_full.py [AOI...]    # resumable
 Sanity:     python scan_all_scenes.py                    # 89/89 OK
 Tiling:     python scripts/generate_tiles.py             # resumable
+Stats only: python scripts/stats_only.py                 # stats from existing indexes
 ```
 
 Manifests: `data/metadata/probav/probav_manifest.json`,
-`data/metadata/sentinel2/full/{AOI}_{split}_manifest.json` (+ tile index CSVs
-and `normalization_stats.json` as they complete).
+`data/metadata/sentinel2/full/{AOI}_{split}_manifest.json`,
+`.../{AOI}_{split}_tile_index.csv` (24 files),
+`data/metadata/sentinel2/normalization_stats.json` (train-only),
+`data/metadata/sentinel2/void_scan.json` (void audit), and
+`data/metadata/sentinel2/sanity_scan.json` (89/89 OK).

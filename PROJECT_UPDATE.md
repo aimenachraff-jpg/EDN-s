@@ -8,12 +8,12 @@ This document is the permanent development history and handover guide for the MA
 
 | Field | Value |
 |-------|-------|
-| **Latest commit** | `8e4b28c` (to be pushed to origin/master) |
-| **Current phase** | Phase 3 — Dataset Acquisition & Preparation (pilot complete) |
-| **Unit tests** | 217 / 217 passing (synthetic data only) |
-| **Pending approval** | Full Sentinel-2 acquisition (~50–60 GB); PROBA-V download test (675 MB) |
-| **Next milestone** | Supervisor approval → full-scale Sentinel-2 acquisition across 8 AOIs |
-| **Last update** | 2026-11-14 |
+| **Latest commit** | Phase 3 completion batch (see §Phase 3 — Full Acquisition below) |
+| **Current phase** | Phase 3 ✅ COMPLETE (2026-11-15) — Phase 4 next |
+| **Unit tests** | 245 / 245 passing |
+| **Datasets ready** | PROBA-V (58,202 PNGs, MD5-verified) + Sentinel-2 (87/88 scenes, 67.86 GB) + 14,748 tiles (100.15 GB) + train-only normalization stats |
+| **Next milestone** | Phase 4: Baseline Implementation (Kaggle 2× T4 for training) |
+| **Last update** | 2026-11-15 |
 
 ---
 
@@ -443,6 +443,31 @@ References + Appendices
 
 ---
 
-*This document is a living record. Update it after every meaningful change — especially when phases complete, methodologies shift, configurations change, or new evidence becomes available. Keep `README.md` as the concise entry point; keep this as the detailed memory.*
+## Phase 3 — Full-Scale Acquisition & Preparation (COMPLETE)
+
+**Date:** 2026-11-15 (full acquisition approved by supervisor 2026-11-14, "ALL APPROVED")
+**Report:** [`docs/phase_3_full_acquisition.md`](docs/phase_3_full_acquisition.md) — all results with evidence
+**Commits:** `bde23c9` (PROBA-V), `c39ccac` (normalization+tiling driver), `11234a2` (acquisition hardening), `42edbca` (tiling parse fix), Phase 3 completion batch
+
+### Verified results
+
+1. **PROBA-V**: 708,416,603 bytes downloaded, MD5 `7101101c7c91eeb5979d472861c1b784` matches Zenodo record 6327426; 58,202 PNGs; totals match spec (1,160 train + 290 test). Key finding: imgset IDs partition by band (train/RED 0000–0593, train/NIR 0594–1159, test/RED 1160–1305, test/NIR 1306–1449). Loader rewritten single-band (12 tests). Limitation: no official region→imgset mapping exists; train/val split by scene ID, seed 42 (documented potential-leakage limitation).
+2. **Sentinel-2 full acquisition**: 87/88 scenes, 67.86 GB, 24 manifests verified (DZ_01 train 5/6 documented — degenerate granule `31SDB_20201223` rejected: 99% of pixels raw DN 0/1; recorded in `rejected_items.json`). Independent sanity scan: 89/89 scene dirs OK, 0 flags.
+3. **Five root-caused failure modes fixed with evidence** (see phase report §4): partial granules passing cloud filter; raw-DN saturation (pre-baseline-04.00); SAS token expiry 403; degenerate granule; skip-entry manifest crash.
+4. **Tiling**: 14,748 tiles (7,968 train / 2,712 val / 4,068 test), 1024×1024, overlap 128, float32, 100.15 GB; 24 tile-index CSVs row-verified.
+5. **Void-fill bug found & fixed**: raw GeoTIFFs have no nodata tag → rotated-granule voids are silent exact-0 fill; 14/87 scenes >5% void (ALL train scenes; up to 44%), void tiles looked clean and contaminated first-pass stats. Fix: all-4-band-zero → NaN; affected scenes re-tiled from untouched raw data. Verified: previously-void tile now `nan_fraction=1.0`; stats means rose (B2 0.1469→0.1608, B3 0.1757→0.1924, B4 0.2076→0.2273, B8 0.2906→0.3183), p2 now > 0.
+6. **Normalization stats (train-only, NaN-excluded)**: `data/metadata/sentinel2/normalization_stats.json` — percentile 2–98 + mean/std; full streaming (n_pixels ≈ 7.63e9/band), percentiles from seeded 2,000/tile subsample (14,364,742 samples).
+7. **Tooling**: `scripts/stats_only.py` (stats recovery without re-tiling, with progress heartbeat); floating desktop progress widget (`tools/shell_widget.py` + packaged `ShellWidget.exe`, outside the repo).
+
+### Phase 3 limitations (documented, not hidden)
+
+- DZ_01 train = 5/6 scenes (no alternative granule for the rejected date)
+- SCL bands not downloaded; cloud masking deferred (tile NaN-fraction filterable at loader time)
+- PROBA-V region leakage limitation (split by scene ID)
+- Void-heavy tiles are not deleted; loaders choose NaN-fraction thresholds from the index
+
+---
+
+*This document is a living record. Update it after every meaningful change ― especially when phases complete, methodologies shift, configurations change, or new evidence becomes available. Keep `README.md` as the concise entry point; keep this as the detailed memory.*
 
 **RULE FOR FUTURE AGENTS:** Every agent must read `PROJECT_UPDATE.md` before starting any work and update it after every meaningful change, especially model, methodology, configuration, dataset, or experiment changes.
