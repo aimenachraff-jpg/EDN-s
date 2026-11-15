@@ -90,8 +90,17 @@ rebuilding a 16/64 EDSR under `strict=False` and crashing on size
 mismatch. Fixed (explicit argument wins) + regression test; inference
 suite 10 → 11 tests, all passing (commit `b564900`).
 
-## M4 — Kaggle notebook for Phase 5 (pending)
+## M4 — Kaggle notebook (DRAFT COMPLETE, execution approved 2026-11-15)
 
-Draft notebook + approval request (real training >30 min, cloud GPU,
-full-scale pair generation, PROBA-V MISR dataset class, optional 20m-band
-acquisition for the ×2 track).
+`experiments/phase5/phase5_notebook_draft.py` (cell-by-cell draft) +
+`experiments/phase5/kaggle_upload_checklist.md` (concrete upload plan).
+
+**User approval received (2026-11-15):**
+1. Upload train+val tiles (~72 GB) to a private Kaggle dataset — approved
+2. EDSR-small trains first (GPU 0); GPU 1 idle for now — approved
+3. S2 20m bands (B5–B12, ×2 native track) — DEFERRED until ×4 results exist
+4. Timing-probe cell is mandatory before committing to 300 epochs
+   (honest estimates only after measurement)
+
+Phase 5 execution may start once the user completes the browser upload
+(checklist has realistic transfer-time estimates).
