@@ -2,8 +2,8 @@
 
 > **Master 2 Thesis** — Computer Science / Artificial Intelligence, Algeria  
 > **Working title:** *Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery*  
-> **Status:** Phase 4 in progress · M1–M3 complete (pairs, bicubic baseline, smoke train) · 246/246 tests · Phase 5 next (Kaggle)
-> **Last updated:** 2026-11-13
+> **Status:** Phase 4 complete (M1-M4 done); Phase 5 in progress: Kaggle single-version upload underway (20/33 blobs, resumable) · M1–M3 complete (pairs, bicubic baseline, smoke train) · 246/246 tests · Phase 5 next (Kaggle)
+> **Last updated:** 2026-11-16
 
 ---
 
@@ -62,7 +62,7 @@ Full hypotheses: [`research/final_hypotheses.md`](research/final_hypotheses.md)
 | 1 | Literature Review & Research Feasibility | ✅ Completed (2026-11-13) |
 | 2 | Research Questions & Methodology | ✅ Completed (2026-11-12) |
 | 3 | Dataset Acquisition & Preparation | ✅ Complete (2026-11-15): both datasets acquired, tiled, normalized |
-| 4 | Baseline Implementation | 🔄 M1–M3 complete: 149 sim-×4 pairs, bicubic baseline (PSNR 37.59 dB), CPU smoke train + roundtrip; M4 Kaggle notebook pending |
+| 4 | Baseline Implementation | 🔄 M1–M3 complete: 149 sim-×4 pairs, bicubic baseline (PSNR 37.59 dB), CPU smoke train + roundtrip; M4 approvals received; Kaggle single-version upload in progress (20/33 blobs saved, resumable) |
 | 4 | Baseline Implementation | ⏳ Pending |
 | 5 | Super-Resolution Experiments | ⏳ Pending |
 | 6 | Hallucination-Aware Evaluation | ⏳ Pending |
