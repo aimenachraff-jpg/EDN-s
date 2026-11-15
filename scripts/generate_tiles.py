@@ -134,8 +134,9 @@ def main():
     train_rows: list = []
     total_tiles = 0
     for mf in manifests:
-        parts = mf.stem.split("_")  # {AOI}_{split}_manifest
-        aoi_id, split = parts[0], parts[1]
+        # Manifest stem is "{AOI}_{split}_manifest" and AOI IDs contain
+        # underscores (BR_01) — split from the right, never from the left.
+        aoi_id, split, _ = mf.stem.rsplit("_", 2)
         if only and aoi_id not in only:
             continue
         manifest = json.loads(mf.read_text())
