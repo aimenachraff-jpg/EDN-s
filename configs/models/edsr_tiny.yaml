@@ -1,0 +1,28 @@
+# EDSR-tiny Configuration (Phase 4 M3 CPU smoke test)
+# NOT a thesis model — exists only to prove the training/eval/checkpoint
+# roundtrip end-to-end on CPU in <30 min (methodology §9.1: local runs <30 min).
+# Real training uses edsr_small.yaml (16 blocks / 64 feats) on Kaggle T4.
+
+model:
+  _target_: src.models.edsr.EDSR
+  n_resblocks: 4
+  n_feats: 32
+  scale: 4
+  in_channels: 4
+  out_channels: 4
+  res_scale: 1.0
+  rgb_range: 1.0
+
+training:
+  batch_size: 2
+  patch_size: 48
+  lr: 1.0e-4
+  epochs: 2
+  loss_type: "l1"
+  amp: false          # CPU only
+  num_workers: 0      # CPU smoke; keep simple
+  seed: 42
+  deterministic: true
+  val_interval: 1
+  checkpoint_interval: 1
+  grad_clip: 1.0
