@@ -90,15 +90,16 @@ def push_version(msg: str) -> None:
 
 
 def create_dataset_first_version(username: str) -> None:
-    """Version 1: only the metadata files (17 loose files, under the limit)."""
+    """Version 1: only the metadata files (17 loose files, under the limit).
+
+    NOTE: files sit FLAT in the stage root — `dir-mode skip` skips
+    subfolders entirely, so a metadata/ subfolder would never upload.
+    """
     STAGE.mkdir(parents=True, exist_ok=True)
-    meta_out = STAGE / "metadata"
-    meta_out.mkdir(exist_ok=True)
-    for csv in META_FULL.glob("*_train_tile_index.csv"):
-        (meta_out / csv.name).write_bytes(csv.read_bytes())
-    for csv in META_FULL.glob("*_val_tile_index.csv"):
-        (meta_out / csv.name).write_bytes(csv.read_bytes())
-    (meta_out / "normalization_stats.json").write_bytes(STATS.read_bytes())
+    for csv in list(META_FULL.glob("*_train_tile_index.csv")) + \
+            list(META_FULL.glob("*_val_tile_index.csv")):
+        (STAGE / csv.name).write_bytes(csv.read_bytes())
+    (STAGE / "normalization_stats.json").write_bytes(STATS.read_bytes())
     (STAGE / "dataset-metadata.json").write_text(json.dumps({
         "title": DATASET_TITLE,
         "id": f"{username}/{DATASET_TITLE}",
