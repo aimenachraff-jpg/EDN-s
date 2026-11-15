@@ -11,7 +11,7 @@ Approved decisions (user, 2026-11-15):
 | Local path | Kaggle dataset name | Size (verified) |
 |---|---|---|
 | `data/processed/sentinel2/` (train+val tiles only) | `s2-tiles-trainval` | ~72.2 GB (7,968 + 2,712 tiles) |
-| `data/metadata/sentinel2/full/*_tile_index.csv` (12 train + 12 val) | same dataset, `metadata/` folder | a few MB |
+| `data/metadata/sentinel2/full/*_tile_index.csv` (8 train + 8 val) | same dataset, `metadata/` folder | ~1.7 MB |
 | `data/metadata/sentinel2/normalization_stats.json` | same dataset | ~1 KB |
 | `src/`, `configs/`, `scripts/prepare_pairs.py` | `master2-a1-code` | ~1 MB |
 
