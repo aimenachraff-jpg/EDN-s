@@ -511,3 +511,16 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
 *This document is a living record. Update it after every meaningful change ― especially when phases complete, methodologies shift, configurations change, or new evidence becomes available. Keep `README.md` as the concise entry point; keep this as the detailed memory.*
 
 **RULE FOR FUTURE AGENTS:** Every agent must read `PROJECT_UPDATE.md` before starting any work and update it after every meaningful change, especially model, methodology, configuration, dataset, or experiment changes.
+---
+
+## Kaggle Upload Status (in progress, paused 2026-11-16)
+
+- Single-version upload script: scripts/kaggle_upload_single_version.py (resumable).
+- Progress saved: 20/33 blobs (17 metadata + 3 tile zips: BR_01_train, BR_01_val, CL_01_train).
+- CL_01_val zip complete on disk, pending upload.
+- 12 tile zips remaining.
+- Resume command: python scripts/kaggle_upload_single_version.py (skips already-uploaded blobs).
+- Partial/corrupt zips are auto-discarded and re-created on resume.
+- Target: one dataset version ymencharafedn/s2-tiles-trainval containing all 10,680 train+val tiles.
+- Note: earlier per-zip versioning (kaggle_upload_staged.py) left only the last batch in the current version; superseded by the single-version approach.
+
