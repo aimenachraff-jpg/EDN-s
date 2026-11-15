@@ -9,10 +9,10 @@ This document is the permanent development history and handover guide for the MA
 | Field | Value |
 |-------|-------|
 | **Latest commit** | Phase 4 M1–M3 batch (see §Phase 4 — Baseline Implementation below) |
-| **Current phase** | Phase 4 🔄 IN PROGRESS (M1–M3 complete, M4 pending) |
+| **Current phase** | Phase 4 ✅ COMPLETE (2026-11-15) — Phase 5 approved, starts with Kaggle upload |
 | **Unit tests** | 246 / 246 passing |
 | **Datasets ready** | PROBA-V (58,202 PNGs, MD5-verified) + Sentinel-2 (87/88 scenes, 67.86 GB) + 14,748 tiles (100.15 GB) + train-only normalization stats + 149 sim-×4 training pairs |
-| **Next milestone** | M4: Kaggle notebook for Phase 5 (user approval required before real training) |
+| **Next milestone** | User completes ~72 GB browser upload to private Kaggle dataset (checklist in `experiments/phase5/`), then Phase 5 training (timing probe → pair precompute → EDSR-small 300 epochs) |
 | **Last update** | 2026-11-15 |
 
 ---
@@ -496,8 +496,11 @@ References + Appendices
    in favor of `checkpoint['config']` (the training config), silently
    rebuilding a wrong-architecture EDSR under `strict=False`. Fixed +
    regression test (inference suite 10 → 11; total 246/246).
-4. **M4 Kaggle notebook (PENDING):** draft + user approval before any
-   real training run (approval gate: training >30 min, cloud).
+4. **M4 Kaggle notebook (COMPLETE):** draft `experiments/phase5/
+   phase5_notebook_draft.py` + upload checklist
+   `experiments/phase5/kaggle_upload_checklist.md`. User approvals
+   received 2026-11-15: upload ~72 GB train+val tiles; EDSR-small first
+   (GPU 1 idle); 20m bands deferred until ×4 results exist.
 
 **Phase 4 deferrals (documented):** S2 ×2 native track needs the 20m bands
 (B5–B12, not acquired — approval-gated Phase 5 download); PROBA-V MISR

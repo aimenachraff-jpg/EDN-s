@@ -132,7 +132,7 @@ MASTER2-A1/
 - **Phase 1**: Literature Review & Research Feasibility ✅ **COMPLETE** (2026-11-13)
 - **Phase 2**: Research Questions & Methodology ✅ **COMPLETE** (2026-11-12/13)
 - **Phase 3**: Dataset Acquisition & Preparation ✅ **COMPLETE** (2026-11-15; full acquisition approved 2026-11-14)
-- **Phase 4**: Baseline Implementation 🔄 **M1–M3 COMPLETE** (pairs, bicubic baseline, smoke train); M4 Kaggle notebook pending
+- **Phase 4**: Baseline Implementation ✅ **COMPLETE** (2026-11-15; M4 draft + user approvals recorded; execution starts with the Kaggle upload)
 - **Phase 5**: Super-Resolution Experiments ⏳ **Pending**
 - **Phase 6**: Hallucination-Aware Evaluation ⏳ **Pending**
 - **Phase 7**: Downstream Task Evaluation ⏳ **Pending**
@@ -187,7 +187,7 @@ Whenever a project milestone is completed, the agent **must** perform the follow
 - ✅ **M1 Pairs:** 149 Sim-ALSAT-2B ×4 pairs (119 train / 30 val) in `data/interim/pairs/` — HR = clean 10m tiles (nan==0.0 pools: 4,212 train / 1,060 val), LR = Wald degradation (`forward_ms_only`); verified shapes, finiteness, degradation sanity (diff 0.0288 vs naive resize). Commit `81f1ac0`
 - ✅ **M2 Bicubic baseline:** first real numbers — `results/metrics/baseline_bicubic.json`: PSNR 37.59 dB (std 6.97), SSIM 0.899, SAM 0.0204, ERGAS 0.0311, wavelet HH ≈ 0 (TUS rationale). 30 val pairs, 40.3 s
 - ✅ **M3 Smoke train:** EDSR-tiny (0.160M params) CPU train 12 s → checkpoint save/reload roundtrip → full-tile eval 23.32 dB. Found+fixed real checkpoint-load bug in `load_model_from_checkpoint` (explicit config was ignored; commit `b564900`, regression test added, 11 inference tests)
-- ⏳ **M4:** Kaggle notebook for Phase 5 — draft + user approval required before any real training
+- ⏳ **M4:** ✅ DONE — draft `experiments/phase5/phase5_notebook_draft.py` + upload checklist; **user approvals received 2026-11-15** (upload ~72 GB train+val tiles; EDSR-small first, GPU 1 idle; 20m bands deferred). Commit `25dab66`
 - Deferred: S2 ×2 native track (20m bands not acquired — approval-gated Phase 5 download); PROBA-V MISR pairs (needs MISR dataset class)
 
 **Phase 5 — Super-Resolution Experiments:** next (Kaggle 2× T4; user approval required).
