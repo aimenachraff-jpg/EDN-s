@@ -8,11 +8,11 @@ This document is the permanent development history and handover guide for the MA
 
 | Field | Value |
 |-------|-------|
-| **Latest commit** | Phase 3 completion batch (see §Phase 3 — Full Acquisition below) |
-| **Current phase** | Phase 3 ✅ COMPLETE (2026-11-15) — Phase 4 next |
-| **Unit tests** | 245 / 245 passing |
-| **Datasets ready** | PROBA-V (58,202 PNGs, MD5-verified) + Sentinel-2 (87/88 scenes, 67.86 GB) + 14,748 tiles (100.15 GB) + train-only normalization stats |
-| **Next milestone** | Phase 4: Baseline Implementation (Kaggle 2× T4 for training) |
+| **Latest commit** | Phase 4 M1–M3 batch (see §Phase 4 — Baseline Implementation below) |
+| **Current phase** | Phase 4 🔄 IN PROGRESS (M1–M3 complete, M4 pending) |
+| **Unit tests** | 246 / 246 passing |
+| **Datasets ready** | PROBA-V (58,202 PNGs, MD5-verified) + Sentinel-2 (87/88 scenes, 67.86 GB) + 14,748 tiles (100.15 GB) + train-only normalization stats + 149 sim-×4 training pairs |
+| **Next milestone** | M4: Kaggle notebook for Phase 5 (user approval required before real training) |
 | **Last update** | 2026-11-15 |
 
 ---
@@ -465,6 +465,43 @@ References + Appendices
 - SCL bands not downloaded; cloud masking deferred (tile NaN-fraction filterable at loader time)
 - PROBA-V region leakage limitation (split by scene ID)
 - Void-heavy tiles are not deleted; loaders choose NaN-fraction thresholds from the index
+
+---
+
+## Phase 4 — Baseline Implementation (IN PROGRESS)
+
+**Date:** 2026-11-15
+**Report:** [`docs/phase_4_baseline.md`](docs/phase_4_baseline.md)
+**Commits:** `81f1ac0` (M1 pairs), `f8a54d6` (M2 baseline), `b564900` (checkpoint-load bug fix)
+
+1. **M1 pair preparation (COMPLETE, commit `81f1ac0`):** `scripts/prepare_pairs.py` —
+   149 Sim-ALSAT-2B ×4 pairs (119 train / 30 val) in
+   `data/interim/pairs/s2_{train,val}/{lr,hr}/*.npy`. HR = strictly clean
+   10m tiles (nan_fraction==0.0; pools 4,212 train / 1,060 val), LR =
+   `ALSAT2BDegradation.forward_ms_only` (Wald). Verified: shapes
+   [4,256,256]/[4,1024,1024], all finite, degradation sanity (mean abs
+   diff 0.0288 vs naive INTER_AREA — MTF+noise+quant demonstrably present).
+   Seeded rng(42); full-scale pair generation deferred to Phase 5 (Kaggle).
+2. **M2 bicubic baseline (COMPLETE):** first real evaluation numbers —
+   `results/metrics/baseline_bicubic.json` (30 val pairs, 40.3 s): PSNR
+   37.59 dB (std 6.97, range 22.0–57.2), SSIM 0.899, SAM 0.0204, ERGAS
+   0.0311, wavelet HH ≈ 0 (the TUS rationale), GLCM entropy 6.29. Honest
+   context: high PSNR because degradation is exactly simulated (paired,
+   perfectly registered). NOTE: `results/metrics/` is gitignored — JSONs
+   live on disk only.
+3. **M3 EDSR-tiny CPU smoke train (COMPLETE):** 0.160M params, 2 epochs /
+   119 pairs in 12 s; checkpoint save → reload → full-tile eval roundtrip
+   (23.32 dB on 3 val pairs, 17.5 s total). Found and fixed a real bug:
+   `load_model_from_checkpoint` ignored the explicitly passed model config
+   in favor of `checkpoint['config']` (the training config), silently
+   rebuilding a wrong-architecture EDSR under `strict=False`. Fixed +
+   regression test (inference suite 10 → 11; total 246/246).
+4. **M4 Kaggle notebook (PENDING):** draft + user approval before any
+   real training run (approval gate: training >30 min, cloud).
+
+**Phase 4 deferrals (documented):** S2 ×2 native track needs the 20m bands
+(B5–B12, not acquired — approval-gated Phase 5 download); PROBA-V MISR
+pairs need a MISR dataset class (`SRDataset` is single-LR only).
 
 ---
 
