@@ -26,7 +26,7 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import rasterio
 from src.preprocessing.tiling import tile_image
