@@ -17,7 +17,39 @@ from src.inference import (
     batch_inference,
     bicubic_upscale,
     evaluate_on_pairs,
+    load_model_from_checkpoint,
 )
+
+
+class TestLoadModelFromCheckpoint:
+    """Checkpoint loading must respect an explicitly passed model config."""
+
+    def test_explicit_config_overrides_checkpoint_config(self, tmp_path):
+        """Explicit model config wins over checkpoint['config'].
+
+        Regression: checkpoints store the TRAINING config, which lacks
+        model keys (n_resblocks, n_feats). Loading a tiny-model checkpoint
+        without honoring the explicit config silently rebuilt a 16/64 EDSR
+        (strict=False hid the mismatch) and crashed on size mismatch.
+        """
+        from src.models.edsr import EDSR
+
+        model_cfg = {'n_resblocks': 2, 'n_feats': 16, 'scale': 2,
+                     'in_channels': 4, 'out_channels': 4}
+        model = EDSR(**model_cfg)
+        ckpt = tmp_path / "m.pt"
+        # checkpoint['config'] = training config WITHOUT model keys,
+        # exactly like SRTrainer.save_checkpoint does
+        torch.save({'epoch': 0, 'model_state_dict': model.state_dict(),
+                    'config': {'epochs': 2, 'lr': 1e-4}}, ckpt)
+
+        reloaded = load_model_from_checkpoint(str(ckpt), 'edsr',
+                                              config=model_cfg, device='cpu')
+        assert isinstance(reloaded, EDSR)
+        # weights must actually match the saved model
+        for (k1, v1), (k2, v2) in zip(model.state_dict().items(),
+                                      reloaded.state_dict().items()):
+            assert k1 == k2 and v1.shape == v2.shape
 
 
 class TestCreateModel:

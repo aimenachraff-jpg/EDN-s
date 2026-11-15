@@ -48,11 +48,17 @@ def load_model_from_checkpoint(checkpoint_path: str,
     """
     checkpoint = torch.load(checkpoint_path, map_location=device)
     
-    # Extract model config from checkpoint if available
-    if 'config' in checkpoint:
-        model_config = checkpoint['config']
-    elif config is not None:
+    # Extract model config from checkpoint if available.
+    # NOTE: an explicitly passed `config` wins over checkpoint['config']:
+    # the checkpoint stores the TRAINING config (epochs, lr, ...), which
+    # lacks the model keys (n_resblocks, ...) needed to rebuild the right
+    # architecture — silently loading a wrong-shaped model under
+    # strict=False. A tiny-model checkpoint must be loadable with an
+    # explicit model config (Phase 4 M3 smoke train hit exactly this).
+    if config is not None:
         model_config = config
+    elif 'config' in checkpoint:
+        model_config = checkpoint['config']
     else:
         model_config = {}
     
