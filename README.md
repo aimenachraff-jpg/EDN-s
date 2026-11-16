@@ -2,7 +2,7 @@
 
 > **Master 2 Thesis** — Computer Science / Artificial Intelligence, Algeria  
 > **Working title:** *Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery*  
-> **Status:** Phase 4 complete (M1-M4 done); Phase 5 in progress: Kaggle single-version upload underway (20/33 blobs, resumable) · M1–M3 complete (pairs, bicubic baseline, smoke train) · 246/246 tests · Phase 5 next (Kaggle)
+> **Status:** Phase 5 starting - Kaggle upload COMPLETE and VERIFIED (10,697 files / 78.16 GB in one version: 10,680 train+val tiles, 16 CSVs, 1 stats JSON; all 16 AOIxsplit groups match local indexes); code dataset master2-a1-code uploaded · M1–M3 complete (pairs, bicubic baseline, smoke train) · 246/246 tests · Phase 5 next (Kaggle)
 > **Last updated:** 2026-11-16
 
 ---

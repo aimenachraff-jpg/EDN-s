@@ -98,6 +98,10 @@ def main():
             print("  ", k)
         return
 
+    if "--version-only" in sys.argv:
+        _create_version(tokens)
+        return
+
     # --- 1. metadata files (CSVs + stats) ---
     meta_files = []
     for csv in sorted(META_FULL.glob("*_train_tile_index.csv")) + \
@@ -141,6 +145,10 @@ def main():
             print(f"  DELETED {zip_name} (disk freed)  [{i}/{len(zs)}]", flush=True)
 
     # --- 3. create ONE version with all tokens ---
+    _create_version(tokens)
+
+
+def _create_version(tokens):
     print("=== Creating single dataset version with all files ===", flush=True)
     from kagglesdk.datasets.types.dataset_api_service import (
         ApiCreateDatasetVersionRequest,
@@ -151,7 +159,11 @@ def main():
     body = ApiCreateDatasetVersionRequestBody()
     body.version_notes = ("Single version containing all 16 train/val tile zips "
                           "(accumulated via blob upload).")
-    body.files = [ApiDatasetNewFile(token=t) for t in tokens.values()]
+    body.files = []
+    for t in tokens.values():
+        nf = ApiDatasetNewFile()
+        nf.token = t
+        body.files.append(nf)
 
     req = ApiCreateDatasetVersionRequest()
     req.owner_slug = OWNER

@@ -524,3 +524,23 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
 - Target: one dataset version ymencharafedn/s2-tiles-trainval containing all 10,680 train+val tiles.
 - Note: earlier per-zip versioning (kaggle_upload_staged.py) left only the last batch in the current version; superseded by the single-version approach.
 
+---
+
+## Kaggle Upload COMPLETE and VERIFIED (2026-11-16)
+
+- Single-version upload (scripts/kaggle_upload_single_version.py) finished:
+  version 18 of ymencharafedn/s2-tiles-trainval is the current version,
+  78.16 GB, containing ALL 33 files.
+- Independent verification (scripts/verify_kaggle_files.py): 10,697 files
+  = 10,680 train+val TIFs + 16 tile-index CSVs + 1 normalization JSON.
+  Every one of the 16 AOI x split group counts matches the local
+  tile-index CSVs exactly (RESULT: ALL DATA PRESENT).
+- Note: the earlier per-zip versioning (kaggle_upload_staged.py, versions
+  1-17) did NOT accumulate; superseded by blob-token accumulation into
+  version 18. Old versions remain on Kaggle but are unused.
+- Code dataset ymencharafedn/master2-a1-code created (80 KB zip:
+  src/, configs/, scripts/prepare_pairs.py).
+- Outage mid-upload (electricity) recovered via resumable tokens file
+  data/kaggle_stage/upload_tokens.json (33 blobs).
+- Next: Phase 5 Kaggle notebook - timing probe first, then full-scale pair
+  precompute, then EDSR-small on GPU 0 (user-approved 2026-11-15).
