@@ -1,7 +1,7 @@
 # Phase 4 — Baseline Implementation
 
 **Date:** 2026-11-15
-**Status:** COMPLETE — M1–M4 done, Phase 5 execution approved (starts with the Kaggle upload)
+**Status:** COMPLETE — M1–M4 done; Phase 5 and Phase 6 also complete (see docs/phase_5_sr_experiments.md, docs/phase_6_hallucination.md)
 **Commits:** `81f1ac0` (M1 pairs), `f8a54d6` (M2 baseline), `b564900` (checkpoint-load bug fix), `045fae4` (M3 + docs), `e61d687` (M4 draft), `25dab66` (M4 approvals)
 
 ## Scope (fixed by methodology §7.2, §9.1)
