@@ -673,7 +673,12 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
   6-stage window attention). Root cause: SwinIR's window attention + 6 transformer stages
   are far more memory-hungry than the CNN EDSR baseline.
 - Fix: batch 16 -> 8 (patch 64 kept for convergence parity). Pushed as v2, now running.
-- Real-ESRGAN (CNN-based, 16.7M params) was unaffected and is still running.
+
+### Real-ESRGAN v1 failure (2026-11-18)
+- v1 crashed at model construction with `AttributeError: 'RRDBNet' object has no attribute 'get'`
+  (line 183 of realesrgan.py). The script passed an RRDBNet *instance* as `net_g`, but
+  RealESRGAN.__init__ expects a *config dict* and builds the RRDBNet itself.
+- Fix: pass `mcfg["model"]["net_g"]` dict directly. Pushed as v2, now running.
 
 ### Goal
 3-way comparison (EDSR vs SwinIR vs Real-ESRGAN) for fidelity (PSNR/SSIM/SAM/ERGAS)
