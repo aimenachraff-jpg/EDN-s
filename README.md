@@ -62,11 +62,10 @@ Full hypotheses: [`research/final_hypotheses.md`](research/final_hypotheses.md)
 | 1 | Literature Review & Research Feasibility | ✅ Completed (2026-11-13) |
 | 2 | Research Questions & Methodology | ✅ Completed (2026-11-12) |
 | 3 | Dataset Acquisition & Preparation | ✅ Complete (2026-11-15): both datasets acquired, tiled, normalized |
-| 4 | Baseline Implementation | 🔄 M1–M3 complete: 149 sim-×4 pairs, bicubic baseline (PSNR 37.59 dB), CPU smoke train + roundtrip; M4 approvals received; Kaggle single-version upload in progress (20/33 blobs saved, resumable) |
-| 4 | Baseline Implementation | ⏳ Pending |
-| 5 | Super-Resolution Experiments | ⏳ Pending |
-| 6 | Hallucination-Aware Evaluation | ⏳ Pending |
-| 7 | Downstream Task Evaluation | ⏳ Pending |
+| 4 | Baseline Implementation | ✅ Complete (M1-M4): 149 sim-×4 pairs, bicubic baseline (PSNR 37.59 dB), CPU smoke train + roundtrip; Kaggle upload verified (10,697 files, v18) |
+| 5 | Super-Resolution Experiments | ✅ Complete (2026-11-18): EDSR-small 24.86 dB vs bicubic 21.83 dB (+3.03 dB) on Kaggle 2×T4 |
+| 6 | Hallucination-Aware Evaluation | ✅ Complete (2026-11-18): 1,742 clean test tiles; EDSR hallucination 6.89% vs bicubic 13.03% |
+| 7 | Downstream Task Evaluation | ⏳ Optional (task model training needed; framework implemented in src/downstream/tasks.py) |
 | 8 | Statistical Analysis & Discussion | ⏳ Pending |
 | 9 | Thesis Writing & Final Validation | ⏳ Pending |
 
