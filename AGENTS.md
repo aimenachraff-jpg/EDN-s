@@ -133,11 +133,11 @@ MASTER2-A1/
 - **Phase 2**: Research Questions & Methodology ✅ **COMPLETE** (2026-11-12/13)
 - **Phase 3**: Dataset Acquisition & Preparation ✅ **COMPLETE** (2026-11-15; full acquisition approved 2026-11-14)
 - **Phase 4**: Baseline Implementation ✅ **COMPLETE** (2026-11-15; M4 draft + user approvals recorded; execution starts with the Kaggle upload)
-- **Phase 5**: Super-Resolution Experiments ⏳ **Pending**
-- **Phase 6**: Hallucination-Aware Evaluation ⏳ **Pending**
-- **Phase 7**: Downstream Task Evaluation ⏳ **Pending**
-- **Phase 8**: Statistical Analysis & Discussion ⏳ **Pending**
-- **Phase 9**: Thesis Writing & Final Validation ⏳ **Pending**
+- **Phase 5**: Super-Resolution Experiments ✅ **COMPLETE** (2026-11-18)
+- **Phase 6**: Hallucination-Aware Evaluation ✅ **COMPLETE** (2026-11-18)
+- **Phase 7**: Downstream Task Evaluation ⏳ **Optional** (framework implemented, task model training needed)
+- **Phase 8**: Statistical Analysis & Discussion ✅ **COMPLETE** (2026-11-18)
+- **Phase 9**: Thesis Writing & Final Validation 🔄 **In progress**
 
 ## Approval Gates
 **Must request human approval before:**
@@ -172,7 +172,7 @@ Whenever a project milestone is completed, the agent **must** perform the follow
 - Flag risks and blockers early
 - Document all decisions in `docs/methodology_decisions.md`
 
-## Current Status (Phase 3 — COMPLETE, 2026-11-15)
+## Current Status (Phase 9 — In progress, 2026-11-18)
 
 **Full acquisition completed and verified (supervisor approved 2026-11-14):**
 
@@ -190,9 +190,15 @@ Whenever a project milestone is completed, the agent **must** perform the follow
 - ⏳ **M4:** ✅ DONE — draft `experiments/phase5/phase5_notebook_draft.py` + upload checklist; **user approvals received 2026-11-15** (upload ~72 GB train+val tiles; EDSR-small first, GPU 1 idle; 20m bands deferred). Commit `25dab66`
 - Deferred: S2 ×2 native track (20m bands not acquired — approval-gated Phase 5 download); PROBA-V MISR pairs (needs MISR dataset class)
 
-**Phase 5 — Super-Resolution Experiments:** next (Kaggle 2× T4; user approval required).
+**Phase 5 — Super-Resolution Experiments:** ✅ COMPLETE (2026-11-18): EDSR-small 24.86 dB vs bicubic 21.83 dB (+3.03 dB) on Kaggle 2× T4; best checkpoint + metrics saved locally.
 
-**OpenCode:** ✅ **RUNNING** (this session)
+**Phase 6 — Hallucination-Aware Evaluation:** ✅ COMPLETE (2026-11-18): 1,742 clean test tiles; EDSR hallucination 6.89% vs bicubic 13.03%.
+
+**Phase 7 — Downstream Task Evaluation:** ⏳ Optional (task model training needed; framework implemented in src/downstream/tasks.py)
+
+**Phase 8 — Statistical Analysis & Discussion:** ✅ COMPLETE (2026-11-18): Cohen's d 6.19, McNemar p<0.001 for textural/spectral.
+
+**Phase 9 — Thesis Writing & Final Validation:** 🔄 In progress (thesis outline + draft complete; writing underway).
 **FreeLLMAPI:** ✅ **RUNNING** on `http://localhost:31415/v1`
 **Hardware:** Intel Iris Xe Graphics (integrated, 2GB shared VRAM) — **NO DEDICATED GPU**
 
