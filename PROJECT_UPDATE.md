@@ -680,6 +680,16 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
   RealESRGAN.__init__ expects a *config dict* and builds the RRDBNet itself.
 - Fix: pass `mcfg["model"]["net_g"]` dict directly. Pushed as v2, now running.
 
+### Real-ESRGAN v2 failure (2026-11-18)
+- v2 failed at `trainer._setup_loss` line 345 with `NameError: name 'lr' is not defined` when
+  building the discriminator optimizer. `lr` is only defined in `_setup_optimizer`, not in scope
+  of `_setup_loss`.
+- Fix: replaced `lr=lr` with `lr=self.config.get('lr', 1e-4)` in trainer.py. Since the Kaggle
+  `master2-a1-code` dataset can't be versioned (Kaggle API returns 404 on dataset-version
+  creation — the upload path is broken on this account), the fix is applied **inline** in
+  the kernel script: it reads `src/training/trainer.py` from the mounted dataset and rewrites
+  the buggy line before training starts. Pushed as v3, now running.
+
 ### Goal
 3-way comparison (EDSR vs SwinIR vs Real-ESRGAN) for fidelity (PSNR/SSIM/SAM/ERGAS)
 and hallucination rates. Download checkpoints when done, re-run eval + hallucination
