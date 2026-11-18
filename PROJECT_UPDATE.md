@@ -605,3 +605,50 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
 - Phase 6: hallucination detection (src/hallucination/detection.py) on the
   4,068 test tiles (kept local, never uploaded) + downstream task metrics
   (src/downstream/tasks.py). All test tiles + raw scenes remain on local disk.
+
+
+## Phase 6 COMPLETE (2026-11-18) - Hallucination detection on test set
+
+### Scope
+- 1,823 clean test tiles (nan_fraction==0.0) across 8 AOIs; 1,742 processed
+  (81 skipped: missing files or non-finite pixels on read - same exclusion rule
+  as Phase 5, never filled).
+- Per tile: HR test tile -> Wald degradation (seed 42) -> LR [4,256,256] ->
+  SR via EDSR-small (best.pt, CPU, ~1.05 s/tile) and bicubic x4 ->
+  HallucinationDetector.detect_all (spectral/structural/textural; semantic
+  skipped - no task model provided).
+- Runtime 163.7 min (~0.18 tiles/s including inference + detection).
+
+### Results (any-hallucination rate)
+| Category   | EDSR-small | Bicubic x4 |
+|------------|------------|------------|
+| Spectral   | 2.53% (44) | 3.62% (63) |
+| Structural | 0.11% (2)  | 0.00% (0)  |
+| Textural   | 4.54% (79) | 9.82% (171)|
+| ANY        | 6.89% (120)| 13.03% (226)|
+
+- EDSR-small produces roughly HALF the hallucination rate of bicubic (6.89% vs 13.03%).
+- Textural hallucinations are the dominant category for both models and show the
+  largest gap (4.54% vs 9.82%) - consistent with EDSR's learned texture prior
+  vs bicubic's smoothing/overshoot.
+- Spectral hallucinations are rare for both (2.53% vs 3.62%), indicating both
+  respect band correlations reasonably well.
+- Structural hallucinations are negligible (0.11% EDSR, 0% bicubic).
+
+### Artifacts
+- results/metrics/phase6_per_tile.jsonl (1,742 per-tile records: classification,
+  detected_types, confidences, per-category metrics for both models)
+- results/metrics/phase6_hallucination.json (aggregated summary)
+- scripts/phase6_hallucination.py (resume-safe, --max_tiles cap for pilots)
+
+### H2 / downstream tasks
+- Semantic detection skipped (no trained task model). FixedBackboneEvaluator
+  (src/downstream/tasks.py) is available but requires a trained task model on
+  HR - a follow-up sub-project if task-level impact is needed.
+- Expert annotation validation (validate_hallucination_metrics) requires manual
+  labels - out of scope for automated run.
+
+### Thesis headline so far
+- Phase 5: EDSR-small 24.86 dB vs bicubic 21.83 dB (+3.03 dB) on full-tile eval.
+- Phase 6: EDSR-small hallucination rate 6.89% vs bicubic 13.03% (-6.14 pp).
+  EDSR improves both fidelity AND reduces hallucinations.
