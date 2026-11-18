@@ -665,8 +665,15 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
   patch 128, lr 1e-4, seed 456). Perceptual loss already handles 4 channels.
 
 ### Kernels (both RUNNING)
-- aymencharafedn/phase-5-swinir-base-x4-training (v1, GPU, internet, both datasets)
+- aymencharafedn/phase-5-swinir-base-x4-training-v2 (v2, GPU, internet, both datasets)
 - aymencharafedn/phase-5-real-esrgan-x4-training (v1, GPU, internet, both datasets)
+
+### SwinIR v1 failure (2026-11-18)
+- v1 (batch 16, patch 64) hit CUDA OOM after 49 min of training (14.56 GiB GPU, 12.87M params,
+  6-stage window attention). Root cause: SwinIR's window attention + 6 transformer stages
+  are far more memory-hungry than the CNN EDSR baseline.
+- Fix: batch 16 -> 8 (patch 64 kept for convergence parity). Pushed as v2, now running.
+- Real-ESRGAN (CNN-based, 16.7M params) was unaffected and is still running.
 
 ### Goal
 3-way comparison (EDSR vs SwinIR vs Real-ESRGAN) for fidelity (PSNR/SSIM/SAM/ERGAS)
