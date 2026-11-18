@@ -652,3 +652,23 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
 - Phase 5: EDSR-small 24.86 dB vs bicubic 21.83 dB (+3.03 dB) on full-tile eval.
 - Phase 6: EDSR-small hallucination rate 6.89% vs bicubic 13.03% (-6.14 pp).
   EDSR improves both fidelity AND reduces hallucinations.
+
+
+## Phase 5b IN PROGRESS (2026-11-18) - Multi-model training (SwinIR + Real-ESRGAN)
+
+### Scripts
+- data/kaggle_stage_swinir/phase5_swinir.py: SwinIR-base (6 layers, 180 embed, 6 heads,
+  200 epochs, L1+LPIPS weight 0.1, patch 64, lr 2e-4, seed 123). LPIPS 4-channel
+  fix patched (uses first 3 channels for AlexNet backbone).
+- data/kaggle_stage_realesrgan/phase5_realesrgan.py: Real-ESRGAN (RRDBNet 23 blocks,
+  64 feats + VGGStyleDiscriminator, max 50k iters capped from 400k, L1+perceptual+GAN,
+  patch 128, lr 1e-4, seed 456). Perceptual loss already handles 4 channels.
+
+### Kernels (both RUNNING)
+- aymencharafedn/phase-5-swinir-base-x4-training (v1, GPU, internet, both datasets)
+- aymencharafedn/phase-5-real-esrgan-x4-training (v1, GPU, internet, both datasets)
+
+### Goal
+3-way comparison (EDSR vs SwinIR vs Real-ESRGAN) for fidelity (PSNR/SSIM/SAM/ERGAS)
+and hallucination rates. Download checkpoints when done, re-run eval + hallucination
+detection, update thesis.

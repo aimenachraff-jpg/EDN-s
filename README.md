@@ -2,7 +2,7 @@
 
 > **Master 2 Thesis** — Computer Science / Artificial Intelligence, Algeria  
 > **Working title:** *Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery*  
-> **Status:** Phase 6 COMPLETE - Hallucination detection on 1,742 clean test tiles: EDSR-small any-hallucination rate 6.89% vs bicubic 13.03% (textural 4.54% vs 9.82%, spectral 2.53% vs 3.62%). Phase 5 eval: 24.86 dB vs 21.83 dB (+3.03 dB). All results in results/metrics/.
+> **Status:** Phase 5b IN PROGRESS - SwinIR-base + Real-ESRGAN training on Kaggle (2 models, ~2-3h each). Phase 6 complete: hallucination 6.89% (EDSR) vs 13.03% (bicubic). Phase 5 eval: EDSR-small 24.86 dB vs 21.83 dB (+3.03 dB). All results in results/metrics/.
 > **Last updated:** 2026-11-18
 
 ---
