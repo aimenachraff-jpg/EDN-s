@@ -544,3 +544,64 @@ pairs need a MISR dataset class (`SRDataset` is single-LR only).
   data/kaggle_stage/upload_tokens.json (33 blobs).
 - Next: Phase 5 Kaggle notebook - timing probe first, then full-scale pair
   precompute, then EDSR-small on GPU 0 (user-approved 2026-11-15).
+
+
+## Phase 5 COMPLETE (2026-11-18) - EDSR-small on Kaggle 2xT4
+
+### Training
+- Kernel: aymencharafedn/phase-5-edsr-small-x4-training-s2-sim-alsat-2b (v2, API-pushed)
+- EDSR-small (16 resblocks / 64 feats / scale 4, 1.52M params), 300 epochs, batch 16,
+  patch 48, L1 loss, fp16 AMP, AdamW lr=1e-4 (cosine), seed 42, deterministic.
+- GPU 0 only (GPU 1 idle per approval). Training time 6.82 h, 78,020 steps.
+- Best val-patch PSNR 25.169 dB (epoch 239); final epoch val-patch PSNR ~24.95 dB,
+  val SSIM ~0.76. Checkpoint: experiments/checkpoints/edsr_small_phase5_best.pt (18.3 MB).
+
+### Data used
+- 4,154 train + 995 val LR/HR pairs (Wald degradation, seed 42) generated on Kaggle.
+  123 of 5,272 clean-indexed tiles (58 train / 65 val) were excluded at read time
+  because nan_fraction==0.0 in the index but still contained non-finite pixels
+  (data-quality note: the index nan_fraction metric misses some voids; excluded,
+  never filled - per project honesty rule).
+- HR streamed via windowed rasterio reads (192x192 patch region only) to keep
+  memory/IO bounded; LR precomputed as float32 .npy (~5.4 GB total).
+- Degradation: ALSAT2BDegradation.forward_ms_only (MTF sigma=0.35, area x4
+  downsample, Poisson-Gaussian noise SNR 20dB, 10-bit quantization).
+
+### Evaluation (full-tile, 30 val pairs, same pairs as bicubic baseline)
+- EDSR-small: PSNR 24.86 dB, SSIM 0.771, MSE 0.00329, MAE 0.0370,
+  ERGAS 0.0514, SAM 0.0203, SCI 0.9966.
+- Bicubic x4:   PSNR 21.83 dB, SSIM 0.629, MSE 0.00659, MAE 0.0552,
+  ERGAS 0.1032, SAM 0.0364.
+- VERDICT: EDSR-small BEATS bicubic by +3.03 dB PSNR. Artifact:
+  results/metrics/phase5_edsr_small_eval.json.
+- Note: the Phase 4 reference 37.59 dB bicubic figure was computed on the
+  smoke-subset val pairs (30 of the 120 local tiles), which are NOT the same
+  tiles as the Kaggle full-scale pool; the eval above recomputes bicubic on the
+  exact same 30 pairs the model is evaluated on, for a fair head-to-head.
+
+### Infrastructure lessons (for reproducibility / Phase 6)
+- Kaggle input layout is now /kaggle/input/datasets/<owner>/<slug>, not
+  /kaggle/input/<slug>. Dataset attachment must be declared in kernel-metadata
+  as dataset_sources (not dataset_data) - the latter is silently dropped.
+- Python glob with recursive=True is unreliable on Kaggle's virtual mount
+  (saw 204 of 10,680 tifs); os.walk sees all of them.
+- PyTorch 2.6 changed torch.load default to weights_only=True; loading our
+  checkpoints requires weights_only=False (trusted source). SRTrainer's own
+  load_checkpoint uses torch.load without weights_only and is unaffected, but
+  src/inference/inference.py::load_model_from_checkpoint needs the flag.
+- Kaggle interactive sessions die ~20 min after the tab closes; headless
+  (kernels push) runs are the reliable cloud path for long training.
+- Kaggle datasets auto-unzip uploaded zips; very large file counts (>~500 per
+  dataset) are not fully visible in the notebook mount unless walked.
+
+### Artifacts
+- experiments/checkpoints/edsr_small_phase5_best.pt (18.3 MB)
+- results/metrics/phase5_edsr_small_eval.json (full metric suite, 30 pairs)
+- results/metrics/phase5_train_summary.json (best_val_psnr, epochs, elapsed)
+- Kaggle kernels: phase-5-edsr-small-x4-training-s2-sim-alsat-2b (training, v2),
+  phase-5-edsr-small-eval-vs-bicubic (eval, v2).
+
+### Next
+- Phase 6: hallucination detection (src/hallucination/detection.py) on the
+  4,068 test tiles (kept local, never uploaded) + downstream task metrics
+  (src/downstream/tasks.py). All test tiles + raw scenes remain on local disk.
