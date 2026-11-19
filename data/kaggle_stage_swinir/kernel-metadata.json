@@ -1,0 +1,18 @@
+{
+  "id": "aymencharafedn/phase-5-swinir-base-x4-training-v2",
+  "title": "Phase 5 SwinIR-base x4 training v2",
+  "code_file": "phase5_swinir.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "aymencharafedn/s2-tiles-trainval",
+    "aymencharafedn/master2-a1-code"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

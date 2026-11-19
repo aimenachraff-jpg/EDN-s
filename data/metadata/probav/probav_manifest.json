@@ -1,0 +1,68 @@
+{
+  "dataset": "PROBA-V Super-Resolution dataset",
+  "generated_at": "2026-11-14T16:04:00.825883Z",
+  "source": {
+    "provider": "Zenodo (ESA Kelvins challenge mirror)",
+    "url": "https://zenodo.org/api/records/6327426/files/probav_data.zip/content",
+    "record": "https://zenodo.org/record/6327426",
+    "license": "CC BY 4.0",
+    "citation": "Märtens et al. 'Super-resolution of PROBA-V images using CNNs', Astrodynamics 3.4 (2019); PROBA-V Super-Resolution dataset, Zenodo 6327426."
+  },
+  "download": {
+    "zip_path": "data\\raw\\proba_v\\probav_data.zip",
+    "size_bytes": 708416603,
+    "expected_size_bytes": 708416603,
+    "md5": "7101101c7c91eeb5979d472861c1b784",
+    "expected_md5": "7101101c7c91eeb5979d472861c1b784",
+    "checksum_valid": true
+  },
+  "structure_summary": {
+    "splits": {
+      "test": {
+        "NIR": {
+          "imgsets": 144,
+          "png_files": 5612
+        },
+        "RED": {
+          "imgsets": 146,
+          "png_files": 5682
+        }
+      },
+      "train": {
+        "NIR": {
+          "imgsets": 566,
+          "png_files": 22942
+        },
+        "RED": {
+          "imgsets": 594,
+          "png_files": 23966
+        }
+      }
+    },
+    "total_files": 58202,
+    "total_bytes": 698220250,
+    "layout_finding": {
+      "imgset_id_scheme": "continuous partitioned by band, NOT duplicated across bands",
+      "train_RED": "imgset0000-0593 (594)",
+      "train_NIR": "imgset0594-1159 (566)",
+      "test_RED": "imgset1160-1305 (146)",
+      "test_NIR": "imgset1306-1449 (144)",
+      "totals": {
+        "train": 1160,
+        "test": 290,
+        "total": 1450
+      },
+      "official_spec_match": true,
+      "norm_csv_lines": 1450,
+      "train_contents": "HR.png + LR###.png + QM###.png",
+      "test_contents": "LR###.png + QM###.png + SM.png (HR withheld per challenge)",
+      "implication": "Dataset loaders must treat each imgset as belonging to ONE band; region-based splitting needed to avoid leakage between RED/NIR imgsets of the same region."
+    }
+  },
+  "notes": [
+    "74 hand-selected regions; official split 1160 train / 290 test scenes",
+    "Per-scene: 9-19 LR images (300 m, 128x128), 1 HR image (100 m, 384x384)",
+    "Bands RED and NIR only; 14-bit radiometry stored in 16-bit PNG",
+    "Images NOT pre-registered; cPSNR metric is shift-invariant"
+  ]
+}

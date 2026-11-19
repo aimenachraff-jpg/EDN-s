@@ -1,0 +1,340 @@
+{
+  "acquisition_version": "1.0-full",
+  "generated_at": "2026-11-14T17:46:52.629010Z",
+  "source": {
+    "provider": "Microsoft Planetary Computer STAC API",
+    "endpoint": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "collection": "sentinel-2-l2a",
+    "license": "Copernicus / Sentinel-2, CC BY 4.0",
+    "citation": "Sentinel-2 Level-2A surface reflectance. European Space Agency."
+  },
+  "aoi": {
+    "id": "FR_01",
+    "name": "Paris Urban",
+    "country": "France",
+    "bbox": [
+      2.0,
+      48.5,
+      2.8,
+      49.0
+    ],
+    "land_cover": "dense_urban"
+  },
+  "split": "train",
+  "temporal_scope": {
+    "start": "2018-01-01",
+    "end": "2022-12-31",
+    "cloud_filter_max": 0.2
+  },
+  "bands_requested": [
+    "B2",
+    "B3",
+    "B4",
+    "B8"
+  ],
+  "resolution_m": 10,
+  "crs": "EPSG:4326",
+  "scenes": [
+    {
+      "scene_id": "31UDQ_20180114",
+      "datetime": "2018-01-14T11:04:11.026000Z",
+      "cloud_cover": 1.1,
+      "mgrs_tile": "31UDQ",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20180114\\31UDQ_20180114_B2.tif",
+          "size_bytes": 176744094,
+          "md5": "383c07daaad8869953b444f64105c27c",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20180114\\31UDQ_20180114_B3.tif",
+          "size_bytes": 186332958,
+          "md5": "820d137902dbebcdef5bddffa27f70c2",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20180114\\31UDQ_20180114_B4.tif",
+          "size_bytes": 190038381,
+          "md5": "01a6f7e1adea500b89b6b48f5bafc289",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20180114\\31UDQ_20180114_B8.tif",
+          "size_bytes": 206113933,
+          "md5": "750610ec527cd588e1a449914209bbed",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31UDQ_20181105",
+      "datetime": "2018-11-05T11:02:29.024000Z",
+      "cloud_cover": 17.6,
+      "mgrs_tile": "31UDQ",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20181105\\31UDQ_20181105_B2.tif",
+          "size_bytes": 187708089,
+          "md5": "9fae50f647d4a82c6755c40978b4a7fc",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20181105\\31UDQ_20181105_B3.tif",
+          "size_bytes": 191817721,
+          "md5": "d367baf73d41ea470dc832207a1ff68c",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20181105\\31UDQ_20181105_B4.tif",
+          "size_bytes": 195210831,
+          "md5": "74e671e5d62c333e285e23beafb0bb7e",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20181105\\31UDQ_20181105_B8.tif",
+          "size_bytes": 204428970,
+          "md5": "67e388ef3867f772f79115cf0eae51ea",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31UDP_20200121",
+      "datetime": "2020-01-21T10:53:41.024000Z",
+      "cloud_cover": 0.2,
+      "mgrs_tile": "31UDP",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20200121\\31UDP_20200121_B2.tif",
+          "size_bytes": 224371463,
+          "md5": "b3b6a10002a4eca7ed649b4ec5108e0d",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20200121\\31UDP_20200121_B3.tif",
+          "size_bytes": 239789273,
+          "md5": "8a09edfdbae8ec5c2499f01c7d407154",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20200121\\31UDP_20200121_B4.tif",
+          "size_bytes": 245733369,
+          "md5": "26dd827ec1ad917136cb5f6f264d1e92",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20200121\\31UDP_20200121_B8.tif",
+          "size_bytes": 262740670,
+          "md5": "74bd77fe4a19c624dcd0704fcea3c4c3",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31UDQ_20201109",
+      "datetime": "2020-11-09T11:03:01.024000Z",
+      "cloud_cover": 5.3,
+      "mgrs_tile": "31UDQ",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20201109\\31UDQ_20201109_B2.tif",
+          "size_bytes": 179678596,
+          "md5": "f564e4bf575203a2622ef48982ebaf31",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20201109\\31UDQ_20201109_B3.tif",
+          "size_bytes": 187330464,
+          "md5": "2de9c75d8ad6ac362eaa9dda0b002ac4",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20201109\\31UDQ_20201109_B4.tif",
+          "size_bytes": 189532223,
+          "md5": "2a511a13c362776d50bcf8f7bc64d0ee",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20201109\\31UDQ_20201109_B8.tif",
+          "size_bytes": 203938367,
+          "md5": "20e069d25389b5b3c48235e687c896c8",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31UDP_20220209",
+      "datetime": "2022-02-09T10:52:11.024000Z",
+      "cloud_cover": 0.0,
+      "mgrs_tile": "31UDP",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20220209\\31UDP_20220209_B2.tif",
+          "size_bytes": 235068644,
+          "md5": "9286a851a675a8ca36acdc07b0e4a745",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20220209\\31UDP_20220209_B3.tif",
+          "size_bytes": 242008612,
+          "md5": "ea39eab4dd06dd2557a548189e31e556",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20220209\\31UDP_20220209_B4.tif",
+          "size_bytes": 247755106,
+          "md5": "84b7f7edea01671bb8bf7a83ac728987",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20220209\\31UDP_20220209_B8.tif",
+          "size_bytes": 257408603,
+          "md5": "40f19e107c72e8c4c5241601d18070b2",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31UDP_20221101",
+      "datetime": "2022-11-01T10:51:09.024000Z",
+      "cloud_cover": 2.4,
+      "mgrs_tile": "31UDP",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20221101\\31UDP_20221101_B2.tif",
+          "size_bytes": 241414674,
+          "md5": "39ca4d7aa5ae1684f883670e554327d1",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20221101\\31UDP_20221101_B3.tif",
+          "size_bytes": 246401231,
+          "md5": "108b08a7a80188b4de6f4d9fbca73001",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20221101\\31UDP_20221101_B4.tif",
+          "size_bytes": 252115605,
+          "md5": "10cb35eafd68871574f176830974beae",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20221101\\31UDP_20221101_B8.tif",
+          "size_bytes": 266303233,
+          "md5": "89148905bcdfec76ba61991bca597baa",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    }
+  ],
+  "summary": {
+    "scenes": 6,
+    "total_bytes": 5259985110,
+    "total_mb": 5260.0,
+    "total_files": 24,
+    "checksums_valid": true
+  }
+}

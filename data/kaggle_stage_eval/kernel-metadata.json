@@ -1,0 +1,19 @@
+{
+  "id": "aymencharafedn/phase-5-edsr-small-eval-vs-bicubic",
+  "title": "Phase 5 EDSR-small eval vs bicubic",
+  "code_file": "phase5_eval.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "aymencharafedn/s2-tiles-trainval",
+    "aymencharafedn/master2-a1-code",
+    "aymencharafedn/phase5-best-ckpt"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

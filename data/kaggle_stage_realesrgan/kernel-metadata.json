@@ -1,0 +1,18 @@
+{
+  "id": "aymencharafedn/phase-5-real-esrgan-x4-training-v4",
+  "title": "Phase 5 Real-ESRGAN x4 training v4",
+  "code_file": "phase5_realesrgan.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "aymencharafedn/s2-tiles-trainval",
+    "aymencharafedn/master2-a1-code"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

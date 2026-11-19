@@ -1,0 +1,280 @@
+{
+  "acquisition_version": "1.0-full",
+  "generated_at": "2026-11-14T17:52:39.174489Z",
+  "source": {
+    "provider": "Microsoft Planetary Computer STAC API",
+    "endpoint": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "collection": "sentinel-2-l2a",
+    "license": "Copernicus / Sentinel-2, CC BY 4.0",
+    "citation": "Sentinel-2 Level-2A surface reflectance. European Space Agency."
+  },
+  "aoi": {
+    "id": "FR_01",
+    "name": "Paris Urban",
+    "country": "France",
+    "bbox": [
+      2.0,
+      48.5,
+      2.8,
+      49.0
+    ],
+    "land_cover": "dense_urban"
+  },
+  "split": "val",
+  "temporal_scope": {
+    "start": "2023-01-01",
+    "end": "2023-12-31",
+    "cloud_filter_max": 0.2
+  },
+  "bands_requested": [
+    "B2",
+    "B3",
+    "B4",
+    "B8"
+  ],
+  "resolution_m": 10,
+  "crs": "EPSG:4326",
+  "scenes": [
+    {
+      "scene_id": "S2A_MSIL2A_20230115T105411_R051_T31UDP_20230116T004613",
+      "datetime": "2023-01-15T10:54:11.024000Z",
+      "cloud_cover": 10.1,
+      "mgrs_tile": "31UDP",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20230115\\31UDP_20230115_B2.tif",
+          "size_bytes": 250533935,
+          "md5": "e9bf2da2fb125bf53991d60620ac8c41",
+          "shape": [
+            9957,
+            14937
+          ],
+          "bounds": [
+            1.63915,
+            47.75745,
+            3.13275,
+            48.75305
+          ],
+          "transform": [
+            9.999330521523734e-05,
+            0.0,
+            1.63915,
+            0.0,
+            -9.998995681430181e-05,
+            48.75305,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9825
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20230115\\31UDP_20230115_B3.tif",
+          "size_bytes": 255552192,
+          "md5": "ceb3b53a19e8c1135c904337e37c70ad",
+          "shape": [
+            9957,
+            14937
+          ],
+          "bounds": [
+            1.63915,
+            47.75745,
+            3.13275,
+            48.75305
+          ],
+          "transform": [
+            9.999330521523734e-05,
+            0.0,
+            1.63915,
+            0.0,
+            -9.998995681430181e-05,
+            48.75305,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9825
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20230115\\31UDP_20230115_B4.tif",
+          "size_bytes": 257965445,
+          "md5": "8fe82411238db6d2b26620686a09abeb",
+          "shape": [
+            9957,
+            14937
+          ],
+          "bounds": [
+            1.63915,
+            47.75745,
+            3.13275,
+            48.75305
+          ],
+          "transform": [
+            9.999330521523734e-05,
+            0.0,
+            1.63915,
+            0.0,
+            -9.998995681430181e-05,
+            48.75305,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9825
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDP_20230115\\31UDP_20230115_B8.tif",
+          "size_bytes": 273674842,
+          "md5": "af63fe3a37df00e74cda53aec929c419",
+          "shape": [
+            9957,
+            14937
+          ],
+          "bounds": [
+            1.63915,
+            47.75745,
+            3.13275,
+            48.75305
+          ],
+          "transform": [
+            9.999330521523734e-05,
+            0.0,
+            1.63915,
+            0.0,
+            -9.998995681430181e-05,
+            48.75305,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9825
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20231216T105349_R051_T31UDQ_20231220T034203",
+      "datetime": "2023-12-16T10:53:49.024000Z",
+      "cloud_cover": 3.8,
+      "mgrs_tile": "31UDQ",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20231216\\31UDQ_20231216_B2.tif",
+          "size_bytes": 240723494,
+          "md5": "e9d0548f7d0f743ca2c791b9b3eb8fa1",
+          "shape": [
+            9958,
+            15211
+          ],
+          "bounds": [
+            1.6142500000000002,
+            48.657050000000005,
+            3.13525,
+            49.652750000000005
+          ],
+          "transform": [
+            9.999342581026888e-05,
+            0.0,
+            1.6142500000000002,
+            0.0,
+            -9.998995782285594e-05,
+            49.652750000000005,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9819
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20231216\\31UDQ_20231216_B3.tif",
+          "size_bytes": 248062016,
+          "md5": "7410cb74f3ab0f7347020b5e80d94e38",
+          "shape": [
+            9958,
+            15211
+          ],
+          "bounds": [
+            1.6142500000000002,
+            48.657050000000005,
+            3.13525,
+            49.652750000000005
+          ],
+          "transform": [
+            9.999342581026888e-05,
+            0.0,
+            1.6142500000000002,
+            0.0,
+            -9.998995782285594e-05,
+            49.652750000000005,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9819
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20231216\\31UDQ_20231216_B4.tif",
+          "size_bytes": 253167194,
+          "md5": "9927948c0db4b9f62e410145e32150b3",
+          "shape": [
+            9958,
+            15211
+          ],
+          "bounds": [
+            1.6142500000000002,
+            48.657050000000005,
+            3.13525,
+            49.652750000000005
+          ],
+          "transform": [
+            9.999342581026888e-05,
+            0.0,
+            1.6142500000000002,
+            0.0,
+            -9.998995782285594e-05,
+            49.652750000000005,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9819
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\FR_01\\31UDQ_20231216\\31UDQ_20231216_B8.tif",
+          "size_bytes": 270153143,
+          "md5": "6c958a6b970efc9c3de82554b32d65d2",
+          "shape": [
+            9958,
+            15211
+          ],
+          "bounds": [
+            1.6142500000000002,
+            48.657050000000005,
+            3.13525,
+            49.652750000000005
+          ],
+          "transform": [
+            9.999342581026888e-05,
+            0.0,
+            1.6142500000000002,
+            0.0,
+            -9.998995782285594e-05,
+            49.652750000000005,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9819
+        }
+      },
+      "checksums_valid": true
+    }
+  ],
+  "summary": {
+    "scenes": 2,
+    "total_bytes": 2049832261,
+    "total_mb": 2049.8,
+    "total_files": 8,
+    "checksums_valid": true
+  }
+}

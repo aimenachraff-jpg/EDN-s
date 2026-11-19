@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include setup.py
+recursive-include src/edns/configs *.yaml *.yml
+recursive-include src/edns *.py
+recursive-include configs *.yaml *.yml
+# Include checkpoint for distribution (optional - could be large)
+# recursive-include experiments/checkpoints *.pt

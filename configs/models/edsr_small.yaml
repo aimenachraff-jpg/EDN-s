@@ -1,8 +1,8 @@
-# EDSR-small Configuration
+# EDN-S EDSR-small Configuration
 # Protocol: 16 resblocks, 64 feats, scale=4, 4 channels
 
 model:
-  _target_: src.models.edsr.EDSR
+  _target_: edns.models.EDSR
   n_resblocks: 16
   n_feats: 64
   scale: 4

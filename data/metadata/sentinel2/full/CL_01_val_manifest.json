@@ -1,0 +1,280 @@
+{
+  "acquisition_version": "1.0-full",
+  "generated_at": "2026-11-14T18:53:49.974457Z",
+  "source": {
+    "provider": "Microsoft Planetary Computer STAC API",
+    "endpoint": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "collection": "sentinel-2-l2a",
+    "license": "Copernicus / Sentinel-2, CC BY 4.0",
+    "citation": "Sentinel-2 Level-2A surface reflectance. European Space Agency."
+  },
+  "aoi": {
+    "id": "CL_01",
+    "name": "Atacama Desert",
+    "country": "Chile",
+    "bbox": [
+      -70.5,
+      -23.5,
+      -69.5,
+      -23.0
+    ],
+    "land_cover": "hyper_arid_desert"
+  },
+  "split": "val",
+  "temporal_scope": {
+    "start": "2023-01-01",
+    "end": "2023-12-31",
+    "cloud_filter_max": 0.2
+  },
+  "bands_requested": [
+    "B2",
+    "B3",
+    "B4",
+    "B8"
+  ],
+  "resolution_m": 10,
+  "crs": "EPSG:4326",
+  "scenes": [
+    {
+      "scene_id": "S2A_MSIL2A_20230101T144731_R139_T19KCQ_20230102T055806",
+      "datetime": "2023-01-01T14:47:31.024000Z",
+      "cloud_cover": 0.8,
+      "mgrs_tile": "19KCQ",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KCQ_20230101\\19KCQ_20230101_B2.tif",
+          "size_bytes": 201501080,
+          "md5": "3fa9662614b8f79b70e35cc7b503325e",
+          "shape": [
+            10012,
+            10824
+          ],
+          "bounds": [
+            -70.95985,
+            -23.595850000000002,
+            -69.87755,
+            -22.59475
+          ],
+          "transform": [
+            9.99907612712494e-05,
+            0.0,
+            -70.95985,
+            0.0,
+            -9.999001198561736e-05,
+            -22.59475,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9808
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KCQ_20230101\\19KCQ_20230101_B3.tif",
+          "size_bytes": 205648547,
+          "md5": "556153579c594b4579b3303c91481072",
+          "shape": [
+            10012,
+            10824
+          ],
+          "bounds": [
+            -70.95985,
+            -23.595850000000002,
+            -69.87755,
+            -22.59475
+          ],
+          "transform": [
+            9.99907612712494e-05,
+            0.0,
+            -70.95985,
+            0.0,
+            -9.999001198561736e-05,
+            -22.59475,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9808
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KCQ_20230101\\19KCQ_20230101_B4.tif",
+          "size_bytes": 209269331,
+          "md5": "6fb4b23cde036fa855899b3cecc517cf",
+          "shape": [
+            10012,
+            10824
+          ],
+          "bounds": [
+            -70.95985,
+            -23.595850000000002,
+            -69.87755,
+            -22.59475
+          ],
+          "transform": [
+            9.99907612712494e-05,
+            0.0,
+            -70.95985,
+            0.0,
+            -9.999001198561736e-05,
+            -22.59475,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9808
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KCQ_20230101\\19KCQ_20230101_B8.tif",
+          "size_bytes": 209235818,
+          "md5": "41b475d49d242fe64b81266eca8b4b20",
+          "shape": [
+            10012,
+            10824
+          ],
+          "bounds": [
+            -70.95985,
+            -23.595850000000002,
+            -69.87755,
+            -22.59475
+          ],
+          "transform": [
+            9.99907612712494e-05,
+            0.0,
+            -70.95985,
+            0.0,
+            -9.999001198561736e-05,
+            -22.59475,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9808
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20231224T143741_R096_T19KDQ_20231224T213906",
+      "datetime": "2023-12-24T14:37:41.024000Z",
+      "cloud_cover": 0.3,
+      "mgrs_tile": "19KDQ",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KDQ_20231224\\19KDQ_20231224_B2.tif",
+          "size_bytes": 189185259,
+          "md5": "32705c3849f637152a445970e5ca87f6",
+          "shape": [
+            9949,
+            10762
+          ],
+          "bounds": [
+            -69.98045,
+            -23.598350000000003,
+            -68.90435000000001,
+            -22.603550000000002
+          ],
+          "transform": [
+            9.999070804683114e-05,
+            0.0,
+            -69.98045,
+            0.0,
+            -9.998994873856684e-05,
+            -22.603550000000002,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9479
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KDQ_20231224\\19KDQ_20231224_B3.tif",
+          "size_bytes": 193374969,
+          "md5": "41e4d578aea840b658e589bde064b3a9",
+          "shape": [
+            9949,
+            10762
+          ],
+          "bounds": [
+            -69.98045,
+            -23.598350000000003,
+            -68.90435000000001,
+            -22.603550000000002
+          ],
+          "transform": [
+            9.999070804683114e-05,
+            0.0,
+            -69.98045,
+            0.0,
+            -9.998994873856684e-05,
+            -22.603550000000002,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9479
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KDQ_20231224\\19KDQ_20231224_B4.tif",
+          "size_bytes": 194089536,
+          "md5": "8da0a3b018843db01dee23a4fbe7f2d1",
+          "shape": [
+            9949,
+            10762
+          ],
+          "bounds": [
+            -69.98045,
+            -23.598350000000003,
+            -68.90435000000001,
+            -22.603550000000002
+          ],
+          "transform": [
+            9.999070804683114e-05,
+            0.0,
+            -69.98045,
+            0.0,
+            -9.998994873856684e-05,
+            -22.603550000000002,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9479
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\CL_01\\19KDQ_20231224\\19KDQ_20231224_B8.tif",
+          "size_bytes": 193444796,
+          "md5": "8913ca8bbc4cdddbdba9cabb6a37fe2f",
+          "shape": [
+            9949,
+            10762
+          ],
+          "bounds": [
+            -69.98045,
+            -23.598350000000003,
+            -68.90435000000001,
+            -22.603550000000002
+          ],
+          "transform": [
+            9.999070804683114e-05,
+            0.0,
+            -69.98045,
+            0.0,
+            -9.998994873856684e-05,
+            -22.603550000000002,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "valid_fraction": 0.9479
+        }
+      },
+      "checksums_valid": true
+    }
+  ],
+  "summary": {
+    "scenes": 2,
+    "total_bytes": 1595749336,
+    "total_mb": 1595.7,
+    "total_files": 8,
+    "checksums_valid": true
+  }
+}

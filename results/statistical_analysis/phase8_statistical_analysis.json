@@ -1,0 +1,153 @@
+{
+  "phase": "8 - statistical analysis",
+  "phase5": {
+    "n_pairs": 30,
+    "edsr_psnr_mean": 24.86453170776367,
+    "edsr_psnr_std": 0.527036218130253,
+    "edsr_psnr_ci95": [
+      24.675934219239466,
+      25.053129196287877
+    ],
+    "bicubic_psnr_mean": 21.832909774780273,
+    "bicubic_psnr_std": 0.4493302174814781,
+    "bicubic_psnr_ci95": [
+      21.672119021469847,
+      21.9937005280907
+    ],
+    "mean_diff_db": 3.032,
+    "cohens_d (approx)": 6.191,
+    "t_stat (approx, unpaired lower bound)": 23.978,
+    "p_value (approx)": 0.0,
+    "note": "Per-pair PSNR values were not saved in phase5_eval.json; t-test uses summary stats (conservative). For an exact paired t-test, re-run eval saving per-pair values."
+  },
+  "phase6": {
+    "n_tiles": 1742,
+    "spectral": {
+      "edsr_rate": 0.02525832376578645,
+      "edsr_n": 44,
+      "edsr_ci95": [
+        0.018868810219440507,
+        0.03373710775158275
+      ],
+      "bicubic_rate": 0.03616532721010333,
+      "bicubic_n": 63,
+      "bicubic_ci95": [
+        0.028368768229061855,
+        0.04600315646330426
+      ],
+      "rate_diff_pp": -1.0907003444316876,
+      "mcnemar": {
+        "chi2": 17.0526,
+        "p_value": 3.635795520295915e-05,
+        "b": 0,
+        "c": 19
+      },
+      "edsr_mean_confidence": 0.09096804641057199,
+      "bicubic_mean_confidence": 0.12018808986562338,
+      "mannwhitney_confidence": {
+        "U": 1091594.0,
+        "p_value": 1.2406492269766635e-46
+      }
+    },
+    "structural": {
+      "edsr_rate": 0.001148105625717566,
+      "edsr_n": 2,
+      "edsr_ci95": [
+        0.00031490186495256793,
+        0.004176685458891702
+      ],
+      "bicubic_rate": 0.0,
+      "bicubic_n": 0,
+      "bicubic_ci95": [
+        0.0,
+        0.002200428721597652
+      ],
+      "rate_diff_pp": 0.1148105625717566,
+      "mcnemar": {
+        "chi2": 0.5,
+        "p_value": 0.47950012218695337,
+        "b": 2,
+        "c": 0
+      },
+      "edsr_mean_confidence": 0.001148105625717566,
+      "bicubic_mean_confidence": 0.0,
+      "mannwhitney_confidence": {
+        "U": 1519024.0,
+        "p_value": 0.1573587761721127
+      }
+    },
+    "textural": {
+      "edsr_rate": 0.04535017221584386,
+      "edsr_n": 79,
+      "edsr_ci95": [
+        0.0365391144439776,
+        0.056162079066361476
+      ],
+      "bicubic_rate": 0.09816303099885189,
+      "bicubic_n": 171,
+      "bicubic_ci95": [
+        0.08506227775240309,
+        0.11303221146128041
+      ],
+      "rate_diff_pp": -5.281285878300804,
+      "mcnemar": {
+        "chi2": 81.1863,
+        "p_value": 0.0,
+        "b": 5,
+        "c": 97
+      },
+      "edsr_mean_confidence": 0.04535017221584386,
+      "bicubic_mean_confidence": 0.09816303099885189,
+      "mannwhitney_confidence": {
+        "U": 1437150.0,
+        "p_value": 1.5565032038493013e-09
+      }
+    },
+    "any_hallucination": {
+      "edsr_rate": 0.06888633754305395,
+      "edsr_n": 120,
+      "edsr_ci95": [
+        0.05791701837239902,
+        0.08175292648399571
+      ],
+      "bicubic_rate": 0.13030998851894374,
+      "bicubic_n": 227,
+      "bicubic_ci95": [
+        0.1153109769143898,
+        0.14693595316219904
+      ],
+      "rate_diff_pp": -6.1423650975889785,
+      "mcnemar": {
+        "chi2": 96.0342,
+        "p_value": 0.0,
+        "b": 5,
+        "c": 112
+      }
+    },
+    "chi_square_classification": {
+      "chi2": 41.6833,
+      "p_value": 1.9403329638257283e-08,
+      "dof": 4,
+      "categories": [
+        "multiple",
+        "none",
+        "spectral",
+        "structural",
+        "textural"
+      ],
+      "edsr_counts": {
+        "none": 1622,
+        "textural": 74,
+        "structural": 1,
+        "multiple": 5,
+        "spectral": 40
+      },
+      "bicubic_counts": {
+        "none": 1515,
+        "textural": 164,
+        "spectral": 56,
+        "multiple": 7
+      }
+    }
+  }
+}
