@@ -4,14 +4,20 @@ EDN-S Inference Application
 
 High-level API for running satellite image super-resolution.
 Supports both programmatic API and CLI usage.
+
+Features:
+- Super-resolution inference (EDSR-small)
+- Optional hallucination detection (spectral, structural, textural)
+- Report generation (JSON, optional visualization)
 """
 
 import os
 import sys
 import threading
 import time
+import json
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, Dict, Any
 
 import numpy as np
 import torch
@@ -22,6 +28,7 @@ from omegaconf import OmegaConf
 
 from ..models import EDSR, create_edsr
 from ..data.normalization import normalize_stack, load_normalization_stats
+from ..hallucination import HallucinationDetector
 
 
 # Device configuration
@@ -276,8 +283,11 @@ def run_sr(
     input_path: Union[str, Path],
     output_path: Union[str, Path],
     ckpt_path: Optional[str] = None,
-    config_path: Optional[str] = None
-) -> str:
+    config_path: Optional[str] = None,
+    compute_hallucination: bool = False,
+    hr_reference_path: Optional[Union[str, Path]] = None,
+    hallucination_report_path: Optional[Union[str, Path]] = None
+) -> Dict[str, Any]:
     """
     Convenience function: run SR on a file and save output.
     
@@ -286,49 +296,136 @@ def run_sr(
         output_path: Path to save output GeoTIFF
         ckpt_path: Optional checkpoint path
         config_path: Optional config path
+        compute_hallucination: Whether to compute hallucination metrics (requires hr_reference_path)
+        hr_reference_path: Path to HR reference GeoTIFF for hallucination detection
+        hallucination_report_path: Optional path to save hallucination report JSON
     
     Returns:
-        Output path
+        Dict with 'output_path', 'hallucination_report' (if computed)
     """
     inferencer = SRInference(ckpt_path, config_path)
     sr, profile = inferencer.run_from_file(input_path)
     inferencer.save(sr, output_path, profile)
-    return str(output_path)
+    
+    result = {"output_path": str(output_path)}
+    
+    if compute_hallucination:
+        if hr_reference_path is None:
+            raise ValueError("hr_reference_path is required when compute_hallucination=True")
+        
+        # Load HR reference
+        with rasterio.open(hr_reference_path) as src:
+            hr = src.read().astype(np.float32)
+        
+        # Ensure SR and HR have same shape
+        if sr.shape != hr.shape:
+            # Resize HR to match SR if needed
+            from skimage.transform import resize
+            hr_resized = np.zeros_like(sr)
+            for c in range(sr.shape[0]):
+                hr_resized[c] = resize(hr[c], sr.shape[1:], order=3, anti_aliasing=True, preserve_range=True)
+            hr = hr_resized.astype(np.float32)
+        
+        # Run hallucination detection
+        detector = HallucinationDetector()
+        hallucination_result = detector.detect_all(sr, hr)
+        
+        # Format report
+        report = {
+            "input_path": str(input_path),
+            "output_path": str(output_path),
+            "hr_reference_path": str(hr_reference_path),
+            "hallucination": hallucination_result,
+            "summary": {
+                "any_hallucination": hallucination_result["any_hallucination"],
+                "detected_categories": [
+                    cat for cat in ["spectral", "structural", "textural", "semantic"]
+                    if hallucination_result.get(cat, {}).get("detected", False)
+                ],
+                "max_confidence": max([
+                    hallucination_result.get(cat, {}).get("confidence", 0.0)
+                    for cat in ["spectral", "structural", "textural", "semantic"]
+                ])
+            }
+        }
+        
+        result["hallucination_report"] = report
+        
+        if hallucination_report_path:
+            with open(hallucination_report_path, "w") as f:
+                json.dump(report, f, indent=2)
+            print(f"Hallucination report saved to {hallucination_report_path}")
+        
+        # Print summary to console
+        print("\n=== Hallucination Detection Report ===")
+        for cat in ["spectral", "structural", "textural", "semantic"]:
+            if cat in hallucination_result:
+                det = hallucination_result[cat]
+                status = "⚠️  DETECTED" if det.get("detected", False) else "✓  Clean"
+                conf = det.get("confidence", 0.0)
+                print(f"  {cat.capitalize():12s}: {status} (confidence: {conf:.4f})")
+        print(f"  {'Any':12s}: {'⚠️  YES' if hallucination_result['any_hallucination'] else '✓  NO'}")
+        print("======================================\n")
+    
+    return result
 
 
 def main():
     """CLI entry point."""
-    if len(sys.argv) < 2:
-        print("Usage: edns-sr <input.tif> [output.tif]")
-        print("       edns-sr --help")
-        sys.exit(1)
+    import argparse
     
-    if sys.argv[1] in ("-h", "--help"):
-        print("EDN-S Super-Resolution CLI")
-        print("============================")
-        print("Usage:")
-        print("  edns-sr input.tif [output.tif]")
-        print("")
-        print("Arguments:")
-        print("  input.tif    Path to input GeoTIFF (4-band Sentinel-2)")
-        print("  output.tif   Optional output path (default: input_sr.tif)")
-        print("")
-        print("Environment:")
-        print("  EDNS_CKPT    Override checkpoint path")
-        print("  EDNS_CONFIG  Override config path")
-        sys.exit(0)
+    parser = argparse.ArgumentParser(
+        prog="edns-sr",
+        description="EDN-S Super-Resolution CLI - Satellite Image Super-Resolution with Hallucination Detection",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  edns-sr input.tif                          # Basic SR, saves to input_sr.tif
+  edns-sr input.tif output.tif               # Specify output path
+  edns-sr input.tif --hallucination --hr reference.tif  # With hallucination detection
+  edns-sr input.tif -o out.tif --hallucination --hr ref.tif --report report.json
+
+Environment variables:
+  EDNS_CKPT     Override checkpoint path
+  EDNS_CONFIG   Override config path
+        """
+    )
+    parser.add_argument("input", help="Path to input GeoTIFF (4-band Sentinel-2)")
+    parser.add_argument("-o", "--output", help="Output path (default: input_sr.tif)")
+    parser.add_argument("--ckpt", default=os.environ.get("EDNS_CKPT"), help="Checkpoint path")
+    parser.add_argument("--config", default=os.environ.get("EDNS_CONFIG"), help="Config path")
+    parser.add_argument("--hallucination", action="store_true", help="Enable hallucination detection")
+    parser.add_argument("--hr", dest="hr_reference", help="HR reference GeoTIFF path (required with --hallucination)")
+    parser.add_argument("--report", help="Path to save hallucination report JSON")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
     
-    inp = sys.argv[1]
-    outp = sys.argv[2] if len(sys.argv) > 2 else inp.replace(".tif", "_sr.tif").replace(".tiff", "_sr.tiff")
+    args = parser.parse_args()
     
-    ckpt = os.environ.get("EDNS_CKPT")
-    config = os.environ.get("EDNS_CONFIG")
+    if args.hallucination and not args.hr_reference:
+        parser.error("--hallucination requires --hr reference.tif")
+    
+    inp = args.input
+    outp = args.output or inp.replace(".tif", "_sr.tif").replace(".tiff", "_sr.tiff")
     
     print(f"Processing {inp} -> {outp}")
+    if args.hallucination:
+        print(f"Hallucination detection: ON (HR reference: {args.hr_reference})")
     t0 = time.time()
-    run_sr(inp, outp, ckpt, config)
+    
+    result = run_sr(
+        inp, outp, 
+        ckpt_path=args.ckpt, 
+        config_path=args.config,
+        compute_hallucination=args.hallucination,
+        hr_reference_path=args.hr_reference,
+        hallucination_report_path=args.report
+    )
+    
     elapsed = time.time() - t0
     print(f"Done in {elapsed:.2f}s. Saved to {outp}")
+    
+    if args.hallucination and args.report:
+        print(f"Hallucination report: {args.report}")
 
 
 if __name__ == "__main__":
