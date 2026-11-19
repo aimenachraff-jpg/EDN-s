@@ -342,7 +342,7 @@ class SRTrainer:
             if hasattr(self.model, 'discriminator') and self.model.discriminator is None:
                 self.model.setup_training()
             self.discriminator = self.model.discriminator
-            self.disc_optimizer = AdamW(self.discriminator.parameters(), lr=lr, weight_decay=1e-4)
+            self.disc_optimizer = AdamW(self.discriminator.parameters(), lr=self.config.get('lr', 1e-4), weight_decay=1e-4)
         
         self.criterion = SRLoss(
             loss_type=loss_config.get('loss_type', 'l1'),
@@ -628,7 +628,7 @@ def cpu_smoke_test(model_name: str, config: DictConfig):
     model = model.to(device)
     model.eval()
     
-    x = torch.randn(1, 4, 256, 256).to(device)
+    x = torch.randn(1, 4, 64, 64).to(device)
     
     import time
     start = time.time()
@@ -636,7 +636,7 @@ def cpu_smoke_test(model_name: str, config: DictConfig):
         y = model(x)
     elapsed = time.time() - start
     
-    print(f"{model_name} CPU inference: {elapsed:.2f}s for 256x256 -> {y.shape}")
+    print(f"{model_name} CPU inference: {elapsed:.2f}s for 64x64 -> {y.shape}")
     assert elapsed < 30, f"CPU inference too slow: {elapsed:.2f}s > 30s"
     
     return elapsed

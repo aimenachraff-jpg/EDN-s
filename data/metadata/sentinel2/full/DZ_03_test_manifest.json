@@ -1,0 +1,193 @@
+{
+  "acquisition_version": "1.0-full",
+  "generated_at": "2026-11-14T17:45:48.576526Z",
+  "source": {
+    "provider": "Microsoft Planetary Computer STAC API",
+    "endpoint": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "collection": "sentinel-2-l2a",
+    "license": "Copernicus / Sentinel-2, CC BY 4.0",
+    "citation": "Sentinel-2 Level-2A surface reflectance. European Space Agency."
+  },
+  "aoi": {
+    "id": "DZ_03",
+    "name": "Sahara Desert Ghardaia",
+    "country": "Algeria",
+    "bbox": [
+      3.5,
+      32.0,
+      4.5,
+      32.8
+    ],
+    "land_cover": "desert_bare_soil"
+  },
+  "split": "test",
+  "temporal_scope": {
+    "start": "2024-01-01",
+    "end": "2024-12-31",
+    "cloud_filter_max": 1.0
+  },
+  "bands_requested": [
+    "B2",
+    "B3",
+    "B4",
+    "B8"
+  ],
+  "resolution_m": 10,
+  "crs": "EPSG:4326",
+  "scenes": [
+    {
+      "scene_id": "31SFR_20240101",
+      "datetime": "2024-01-01T10:24:31.024000Z",
+      "cloud_cover": 86.2,
+      "mgrs_tile": "31SFR",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SFR_20240101\\31SFR_20240101_B2.tif",
+          "size_bytes": 207202375,
+          "md5": "9577529403d61326a33dfd0f83cfb292",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SFR_20240101\\31SFR_20240101_B3.tif",
+          "size_bytes": 198251913,
+          "md5": "064af4fa76a5cfc5bb8ac98f3e684cab",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SFR_20240101\\31SFR_20240101_B4.tif",
+          "size_bytes": 187208886,
+          "md5": "e3a6ea0af4df2f0e5700b1321d5f6691",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SFR_20240101\\31SFR_20240101_B8.tif",
+          "size_bytes": 187233184,
+          "md5": "7bfbf303c625bb2a02173fcd3f65b79e",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SES_20240702",
+      "datetime": "2024-07-02T10:26:01.024000Z",
+      "cloud_cover": 0.0,
+      "mgrs_tile": "31SES",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SES_20240702\\31SES_20240702_B2.tif",
+          "size_bytes": 179104958,
+          "md5": "73c2e45c9ecd95f4b1745b2336b47eac",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SES_20240702\\31SES_20240702_B3.tif",
+          "size_bytes": 180835626,
+          "md5": "be6396567fae7cdf32ea40b0579a497c",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SES_20240702\\31SES_20240702_B4.tif",
+          "size_bytes": 165201834,
+          "md5": "685b428614d9aa31e0ced64f30eadd91",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SES_20240702\\31SES_20240702_B8.tif",
+          "size_bytes": 161847529,
+          "md5": "d4bdfcd1503006e5fb0123d6531eb124",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SER_20241231",
+      "datetime": "2024-12-31T10:23:39.024000Z",
+      "cloud_cover": 45.7,
+      "mgrs_tile": "31SER",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SER_20241231\\31SER_20241231_B2.tif",
+          "size_bytes": 196031424,
+          "md5": "54daf9ac73ffb5fa324a9754d1ce3725",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SER_20241231\\31SER_20241231_B3.tif",
+          "size_bytes": 194322613,
+          "md5": "c7831499efbfcf94bd17f92f07000007",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SER_20241231\\31SER_20241231_B4.tif",
+          "size_bytes": 188333215,
+          "md5": "80953fa4dd151ad2d424c5057b79cd77",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_03\\31SER_20241231\\31SER_20241231_B8.tif",
+          "size_bytes": 182969492,
+          "md5": "9a5ca3370d8f87afe3e60e88e54c1404",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    }
+  ],
+  "summary": {
+    "scenes": 3,
+    "total_bytes": 2228543049,
+    "total_mb": 2228.5,
+    "total_files": 12,
+    "checksums_valid": true
+  }
+}

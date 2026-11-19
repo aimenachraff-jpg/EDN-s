@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "generated_at": "2026-11-15T17:27:26.310871Z",
+    "split": "train",
+    "nan_excluded": true,
+    "dtype_note": "accumulated in float64",
+    "dataset": "sentinel2-full",
+    "tile_size": 1024,
+    "overlap": 128,
+    "n_train_tiles": 7968,
+    "method": "percentile"
+  },
+  "bands": {
+    "B2": {
+      "p2": 0.004000000189989805,
+      "p98": 0.9215999841690063,
+      "mean": 0.16083004537797163,
+      "std": 0.21123571085674483,
+      "n_pixels": 6969086675,
+      "n_samples_percentile": 14364742,
+      "percentile_keys": [
+        2,
+        98
+      ]
+    },
+    "B3": {
+      "p2": 0.0010000000474974513,
+      "p98": 0.9215999841690063,
+      "mean": 0.1924439918432108,
+      "std": 0.21021234530785518,
+      "n_pixels": 6969089289,
+      "n_samples_percentile": 14364742,
+      "percentile_keys": [
+        2,
+        98
+      ]
+    },
+    "B4": {
+      "p2": 9.999999747378752e-05,
+      "p98": 0.9383999705314636,
+      "mean": 0.22732623549981185,
+      "std": 0.22943183291528207,
+      "n_pixels": 6969088899,
+      "n_samples_percentile": 14364742,
+      "percentile_keys": [
+        2,
+        98
+      ]
+    },
+    "B8": {
+      "p2": 9.999999747378752e-05,
+      "p98": 0.9383999705314636,
+      "mean": 0.31828420783593786,
+      "std": 0.22404021722623058,
+      "n_pixels": 6969088890,
+      "n_samples_percentile": 14364742,
+      "percentile_keys": [
+        2,
+        98
+      ]
+    }
+  }
+}

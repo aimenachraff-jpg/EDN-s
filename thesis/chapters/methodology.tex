@@ -1,0 +1,84 @@
+\subsection{Degradation Model (Wald Protocol)}
+HR = 4-band 10~m Sentinel-2 tile (B2/B3/B4/B8). LR = \texttt{ALSAT2BDegradation.forward\_ms\_only}:
+\begin{enumerate}
+    \item Gaussian MTF blur ($\sigma = 0.35$ at 10~m)
+    \item Area $\times$4 downsample (10~m $\to$ 40~m)
+    \item Poisson-Gaussian noise (SNR 20~dB)
+    \item 10-bit quantization
+\end{enumerate}
+Config: \texttt{configs/degradation/alsat2b.yaml}. Deterministic with seed 42.
+
+\subsection{Dataset}
+\begin{table}[h]
+\centering
+\caption{Tile counts by split and cleanliness.}
+\label{tab:tiles}
+\begin{tabular}{lrrr}
+\toprule
+Split & Tiles (all) & Clean (nan==0) & Used \\
+\midrule
+Train & 7,968 & 4,212 & 4,154 (58 excluded for non-finite) \\
+Val   & 2,712 & 1,060 & 995 (65 excluded) \\
+Test  & 4,068 & 1,823 & 1,742 (81 skipped) \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{itemize}
+    \item 8 AOIs: BR\_01, CL\_01, DZ\_01--04, FR\_01, US\_01
+    \item Tile size: 1024$\times$1024 (10~m), 4 bands (B2/B3/B4/B8)
+    \item NaN pixels excluded (never filled); \texttt{nan\_fraction} in tile-index CSVs
+    \item Normalization: \texttt{normalization\_stats.json} (per-band mean/std)
+\end{itemize}
+
+\subsection{SR Model: EDSR-small}
+\begin{table}[h]
+\centering
+\caption{EDSR-small model parameters.}
+\label{tab:model}
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+Architecture & EDSR (Lim et al., 2017) \\
+Residual blocks & 16 \\
+Features & 64 \\
+Scale & $\times$4 \\
+Channels & 4 (B2/B3/B4/B8) \\
+Parameters & 1.52M \\
+Loss & L1 \\
+Optimizer & AdamW (lr$=$1e$^{-4}$, wd$=$1e$^{-4}$) \\
+Scheduler & CosineAnnealing ($T_{max}$$=$300, $\eta_{min}$$=$1e$^{-6}$) \\
+Batch / Patch & 16 / 48$\times$48 \\
+Epochs & 300 \\
+AMP & fp16 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Config: \texttt{configs/models/edsr\_small.yaml}. Training on Kaggle 2$\times$ T4 (GPU 0).
+
+\subsection{Hallucination Detection Framework}
+Four categories (Protocol~§6):
+
+\begin{table}[h]
+\centering
+\caption{Hallucination detection thresholds and criteria.}
+\label{tab:detect}
+\begin{tabular}{lcl}
+\toprule
+Category & Metric & Threshold \\
+\midrule
+Spectral & Mean SAM, NDVI range, correlation deviation & SAM $>$ 10$^\circ$ (0.175~rad) \\
+Structural & Wavelet HH energy in homogeneous regions & $>$ 3$\sigma$ local mean \\
+Textural & GLCM entropy mismatch & $>$ 20\% diff \\
+Semantic & Task mAP drop & $>$ 15\% vs HR \\
+\bottomrule
+\end{tabular}
+\end{table}
+Implementation: \texttt{src/hallucination/detection.py} (\texttt{HallucinationDetector.detect\_all}).
+
+\subsection{Evaluation Protocol}
+\begin{itemize}
+    \item \textbf{Fidelity:} PSNR, SSIM, MSE, MAE, ERGAS, SAM, SCI, wavelet HH energy, GLCM entropy (via \texttt{src/evaluation/metrics.py::evaluate\_sr})
+    \item \textbf{Hallucination:} per-category detection rates + confidence (via \texttt{detect\_all})
+    \item \textbf{Baseline:} bicubic $\times$4 recompute on the same pairs for fairness
+\end{itemize}

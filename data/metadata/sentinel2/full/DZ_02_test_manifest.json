@@ -1,0 +1,193 @@
+{
+  "acquisition_version": "1.0-full",
+  "generated_at": "2026-11-14T17:44:59.036601Z",
+  "source": {
+    "provider": "Microsoft Planetary Computer STAC API",
+    "endpoint": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "collection": "sentinel-2-l2a",
+    "license": "Copernicus / Sentinel-2, CC BY 4.0",
+    "citation": "Sentinel-2 Level-2A surface reflectance. European Space Agency."
+  },
+  "aoi": {
+    "id": "DZ_02",
+    "name": "Tell Atlas Agriculture",
+    "country": "Algeria",
+    "bbox": [
+      2.0,
+      36.0,
+      3.5,
+      36.8
+    ],
+    "land_cover": "agricultural_forest"
+  },
+  "split": "test",
+  "temporal_scope": {
+    "start": "2024-01-01",
+    "end": "2024-12-31",
+    "cloud_filter_max": 1.0
+  },
+  "bands_requested": [
+    "B2",
+    "B3",
+    "B4",
+    "B8"
+  ],
+  "resolution_m": 10,
+  "crs": "EPSG:4326",
+  "scenes": [
+    {
+      "scene_id": "31SDV_20240102",
+      "datetime": "2024-01-02T10:43:49.024000Z",
+      "cloud_cover": 0.2,
+      "mgrs_tile": "31SDV",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDV_20240102\\31SDV_20240102_B2.tif",
+          "size_bytes": 130525322,
+          "md5": "81e8ed65db7af719e3be83e37066d092",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDV_20240102\\31SDV_20240102_B3.tif",
+          "size_bytes": 134318144,
+          "md5": "5a4202cad30acb0e2619d5eeb7bc2118",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDV_20240102\\31SDV_20240102_B4.tif",
+          "size_bytes": 137039947,
+          "md5": "5fef48d5edd4d729bbcb19734d107994",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDV_20240102\\31SDV_20240102_B8.tif",
+          "size_bytes": 133638770,
+          "md5": "b503978bb0a216c9dc5dfe7dc7cc18e0",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SDA_20240630",
+      "datetime": "2024-06-30T10:36:29.024000Z",
+      "cloud_cover": 32.1,
+      "mgrs_tile": "31SDA",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDA_20240630\\31SDA_20240630_B2.tif",
+          "size_bytes": 195309331,
+          "md5": "9cbd9a7172efb71e2dba53f86b6b3c73",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDA_20240630\\31SDA_20240630_B3.tif",
+          "size_bytes": 194240456,
+          "md5": "e8ab167afe2136926217a2b77e1de349",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDA_20240630\\31SDA_20240630_B4.tif",
+          "size_bytes": 194974170,
+          "md5": "8610293878f88bf81feb38d825334b16",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SDA_20240630\\31SDA_20240630_B8.tif",
+          "size_bytes": 189988088,
+          "md5": "bed9d3da5b18edae53282f10573b2b02",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SEA_20241229",
+      "datetime": "2024-12-29T10:34:41.024000Z",
+      "cloud_cover": 0.0,
+      "mgrs_tile": "31SEA",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SEA_20241229\\31SEA_20241229_B2.tif",
+          "size_bytes": 223622833,
+          "md5": "8404b2a157598808489361ae65d653d1",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SEA_20241229\\31SEA_20241229_B3.tif",
+          "size_bytes": 224480547,
+          "md5": "46794975c5d70789a24287f49d9a96a3",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SEA_20241229\\31SEA_20241229_B4.tif",
+          "size_bytes": 224379990,
+          "md5": "380f83c4c193596cf87bc25a28681566",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_02\\31SEA_20241229\\31SEA_20241229_B8.tif",
+          "size_bytes": 236011908,
+          "md5": "280863b661e9f644ddcb59bc8bf85f80",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    }
+  ],
+  "summary": {
+    "scenes": 3,
+    "total_bytes": 2218529506,
+    "total_mb": 2218.5,
+    "total_files": 12,
+    "checksums_valid": true
+  }
+}

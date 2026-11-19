@@ -268,11 +268,11 @@ class PerceptualLoss(nn.Module):
         
         if layer_weights is None:
             layer_weights = {
-                'conv1_2': 0.1,
-                'conv2_2': 0.1,
-                'conv3_4': 1.0,
-                'conv4_4': 1.0,
-                'conv5_4': 1.0
+                '4': 0.1,   # conv1_2 (after ReLU)
+                '9': 0.1,   # conv2_2
+                '18': 1.0,  # conv3_4
+                '27': 1.0,  # conv4_4
+                '36': 1.0,  # conv5_4
             }
         
         self.layer_weights = layer_weights
@@ -281,30 +281,17 @@ class PerceptualLoss(nn.Module):
         
         # Load VGG
         if vgg_type == 'vgg19':
-            from torchvision.models import vgg19
-            vgg = vgg19(pretrained=True).features
+            from torchvision.models import vgg19, VGG19_Weights
+            vgg = vgg19(weights=VGG19_Weights.DEFAULT).features
         else:
-            from torchvision.models import vgg16
-            vgg = vgg16(pretrained=True).features
+            from torchvision.models import vgg16, VGG16_Weights
+            vgg = vgg16(weights=VGG16_Weights.DEFAULT).features
         
-        # Extract layers
-        self.vgg_layers = nn.ModuleDict()
-        layer_names = []
-        for i, module in enumerate(vgg):
-            if isinstance(module, nn.Conv2d):
-                layer_names.append(f'conv{len(layer_names)//2 + 1}_{(i%2)+1}')
-            elif isinstance(module, nn.ReLU):
-                layer_names.append(f'relu{len(layer_names)//2 + 1}_{(i%2)+1}')
-            elif isinstance(module, nn.MaxPool2d):
-                layer_names.append(f'pool{len(layer_names)//2 + 1}')
-        
-        # Build sequential up to needed layers
-        max_layer = max(layer_weights.keys())
+        # Build sequential up to max layer needed
+        max_layer = max(int(k) for k in layer_weights.keys())
         self.vgg = nn.Sequential()
-        for name, module in vgg.named_children():
-            self.vgg.add_module(name, module)
-            if name == max_layer:
-                break
+        for i in range(max_layer + 1):
+            self.vgg.add_module(str(i), vgg[i])
         
         for param in self.vgg.parameters():
             param.requires_grad = False

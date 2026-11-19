@@ -1,0 +1,7 @@
+Super-resolution (SR) methods for satellite imagery are typically evaluated using fidelity metrics such as PSNR and SSIM, which measure pixel-level similarity but cannot distinguish genuine information recovery from visually plausible hallucination. This thesis investigates whether deep-learning SR improves \emph{actual information usefulness} for ALSAT-2B satellite imagery, or merely produces visually convincing but hallucinated details that degrade downstream task performance.
+
+We implement a hallucination-aware evaluation framework comprising four categories (spectral, structural, textural, semantic) and apply it to EDSR-small trained on a Sentinel-2 simulated ALSAT-2B $\times$4 dataset. Our results show that EDSR-small achieves \textbf{24.86 dB PSNR vs 21.83 dB for bicubic (+3.03 dB)} on full-tile evaluation, while simultaneously reducing the hallucination rate from \textbf{13.03\% (bicubic) to 6.89\% (EDSR-small)} -- a 6.14 percentage-point reduction. Textural hallucinations, the dominant category, are halved (9.82\% $\to$ 4.54\%). These findings demonstrate that learned SR can improve both fidelity and faithfulness, challenging the assumption that higher PSNR implies more hallucination.
+
+\begin{center}
+\textbf{Keywords:} super-resolution, hallucination detection, satellite imagery, ALSAT-2B, Sentinel-2, EDSR, spectral fidelity, task-driven evaluation
+\end{center}

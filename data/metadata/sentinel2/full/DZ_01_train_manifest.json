@@ -1,0 +1,291 @@
+{
+  "acquisition_version": "1.0-full",
+  "generated_at": "2026-11-15T13:01:56.203569Z",
+  "source": {
+    "provider": "Microsoft Planetary Computer STAC API",
+    "endpoint": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "collection": "sentinel-2-l2a",
+    "license": "Copernicus / Sentinel-2, CC BY 4.0",
+    "citation": "Sentinel-2 Level-2A surface reflectance. European Space Agency."
+  },
+  "aoi": {
+    "id": "DZ_01",
+    "name": "Algiers Urban Coastal",
+    "country": "Algeria",
+    "bbox": [
+      2.8,
+      36.5,
+      3.8,
+      37.0
+    ],
+    "land_cover": "urban_coastal"
+  },
+  "split": "train",
+  "temporal_scope": {
+    "start": "2018-01-01",
+    "end": "2022-12-31",
+    "cloud_filter_max": 0.2
+  },
+  "bands_requested": [
+    "B2",
+    "B3",
+    "B4",
+    "B8"
+  ],
+  "resolution_m": 10,
+  "crs": "EPSG:4326",
+  "scenes": [
+    {
+      "scene_id": "31SDA_20180103",
+      "datetime": "2018-01-03T10:44:29.027000Z",
+      "cloud_cover": 8.4,
+      "mgrs_tile": "31SDA",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20180103\\31SDA_20180103_B2.tif",
+          "size_bytes": 156905411,
+          "md5": "0dcf315b7e1b004e0645e0f8f09df84b",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20180103\\31SDA_20180103_B3.tif",
+          "size_bytes": 160420589,
+          "md5": "fdf6d27626944dda96fd3288d1f417f7",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20180103\\31SDA_20180103_B4.tif",
+          "size_bytes": 158660598,
+          "md5": "247a53df9d524198fce5b6c8e31d271d",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20180103\\31SDA_20180103_B8.tif",
+          "size_bytes": 164674627,
+          "md5": "918efdf6869518cc45e82c8faa679203",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SDB_20190118",
+      "datetime": "2019-01-18T10:43:59.024000Z",
+      "cloud_cover": 8.6,
+      "mgrs_tile": "31SDB",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20190118\\31SDB_20190118_B2.tif",
+          "size_bytes": 202193718,
+          "md5": "a80ae857d9e90eab5e80565eb3de182a",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20190118\\31SDB_20190118_B3.tif",
+          "size_bytes": 160302083,
+          "md5": "3648136a2b7afcd2a0d63bef7cfd26a1",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20190118\\31SDB_20190118_B4.tif",
+          "size_bytes": 113677445,
+          "md5": "27f9c08a940442ceb70a74a47e0065f1",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20190118\\31SDB_20190118_B8.tif",
+          "size_bytes": 98990556,
+          "md5": "e8a8e8e0712a2df94286f8426c88d9db",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SDA_20200103",
+      "datetime": "2020-01-03T10:43:39.024000Z",
+      "cloud_cover": 7.0,
+      "mgrs_tile": "31SDA",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20200103\\31SDA_20200103_B2.tif",
+          "size_bytes": 175785157,
+          "md5": "3961f6b7cbbdf09d79ec6ef9bd808997",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20200103\\31SDA_20200103_B3.tif",
+          "size_bytes": 179273609,
+          "md5": "3f6359bcf6fb66f00144298d6159cd0a",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20200103\\31SDA_20200103_B4.tif",
+          "size_bytes": 178764582,
+          "md5": "4e6352e55f5757470720bba35874867e",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20200103\\31SDA_20200103_B8.tif",
+          "size_bytes": 185887427,
+          "md5": "552d3786c56455a789e805f35d045eba",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SEA_20211220",
+      "datetime": "2021-12-20T10:33:39.024000Z",
+      "cloud_cover": 17.5,
+      "mgrs_tile": "31SEA",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEA_20211220\\31SEA_20211220_B2.tif",
+          "size_bytes": 160416603,
+          "md5": "27df433a8f016f3439bd365f68b00786",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEA_20211220\\31SEA_20211220_B3.tif",
+          "size_bytes": 163466322,
+          "md5": "ef29dac845a3bfa55cf8305197d6c1dd",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEA_20211220\\31SEA_20211220_B4.tif",
+          "size_bytes": 166658751,
+          "md5": "26bd060342328c6c6697c2423ccbc321",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEA_20211220\\31SEA_20211220_B8.tif",
+          "size_bytes": 167049126,
+          "md5": "318d994c0ea35bdfa0e2907ecf8cfd66",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SEB_20221230",
+      "datetime": "2022-12-30T10:34:31.025000Z",
+      "cloud_cover": 16.1,
+      "mgrs_tile": "31SEB",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEB_20221230\\31SEB_20221230_B2.tif",
+          "size_bytes": 175286142,
+          "md5": "998cf92b9d5e54ff7403d89eae9d2702",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEB_20221230\\31SEB_20221230_B3.tif",
+          "size_bytes": 166904247,
+          "md5": "8202cb2d1e8fc348507e7f3dfc0e1221",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEB_20221230\\31SEB_20221230_B4.tif",
+          "size_bytes": 161711012,
+          "md5": "36df0c63e11bf80b6297005586f4c385",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SEB_20221230\\31SEB_20221230_B8.tif",
+          "size_bytes": 159904001,
+          "md5": "4dd9acbc853049909e9d120e0c265590",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    }
+  ],
+  "summary": {
+    "scenes": 5,
+    "total_bytes": 3256932006,
+    "total_mb": 3256.9,
+    "total_files": 20,
+    "checksums_valid": true
+  }
+}

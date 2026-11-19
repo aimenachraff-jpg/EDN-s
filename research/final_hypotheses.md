@@ -26,8 +26,10 @@ Priority tiers:
 
 ## 2. Primary Hypotheses (P0 — Must Test)
 
-### H1: ALSAT-2B Degradation Model Fidelity
-> **Claim**: A Wald-protocol degradation model using estimated NAOMI MTF (Gaussian, σ≈0.35 pixels at Nyquist), trapezoidal SRFs from published band edges, Poisson-Gaussian noise (SNR≈20 dB conservative), 10-bit quantization, and <0.3px inter-band registration produces synthetic LR data statistically indistinguishable from real ALSAT-2B data.
+### H1: ALSAT-2B Degradation Model Fidelity (Conditional)
+> **Claim**: A Wald-protocol degradation model using estimated NAOMI MTF (Gaussian, σ≈0.35 pixels at Nyquist), trapezoidal SRFs from published band edges, Poisson-Gaussian noise (SNR≈20 dB conservative), 10-bit quantization, and <0.3px inter-band registration produces synthetic LR data statistically indistinguishable from real ALSAT-2B data **if real ALSAT-2B observations become available**.
+
+*If no real ALSAT-2B data is accessible, H1 is marked as **Not Testable**. In that case, the synthetic degradation parameters remain evaluable via internal consistency metrics (e.g., PSD, band correlation) without external validation.*
 
 **Measurement Protocol**:
 1. Generate synthetic LR from Sentinel-2 10m HR (Algeria AOIs) using degradation model

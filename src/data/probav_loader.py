@@ -60,7 +60,11 @@ class ProbaVLoader:
         return sorted(scenes)
 
     def load_scene(self, scene_id: str, band: str, split: str) -> ProbaVScene:
-        """Load a single scene (LR stack + HR reference)."""
+        """Load a single scene (LR stack + HR reference).
+
+        Masks are normalized to {0, 1}: the archive stores clear=255 in
+        SM/QM PNGs; loader converts any nonzero value to 1.
+        """
         scene_dir = self.data_dir / split / band / scene_id
 
         # Load LR images
@@ -76,6 +80,8 @@ class ProbaVLoader:
 
             # Normalize to [0, 1]
             lr_img = lr_img / self.max_value
+            # Mask: clear=255 in PNG -> {0, 1}
+            qm_img = (qm_img > 0).astype(np.uint8)
             lr_images.append(lr_img)
             lr_masks.append(qm_img)
 
@@ -89,6 +95,11 @@ class ProbaVLoader:
             hr_img = cv2.imread(str(hr_file), cv2.IMREAD_UNCHANGED).astype(np.float32)
             hr_image = hr_img / self.max_value
             hr_mask = cv2.imread(str(sm_file), cv2.IMREAD_UNCHANGED).astype(np.uint8)
+            hr_mask = (hr_mask > 0).astype(np.uint8)
+        elif sm_file.exists():
+            # Test scenes: no HR (challenge), but SM is the evaluation mask
+            hr_mask = cv2.imread(str(sm_file), cv2.IMREAD_UNCHANGED).astype(np.uint8)
+            hr_mask = (hr_mask > 0).astype(np.uint8)
 
         return ProbaVScene(
             scene_id=scene_id,
@@ -113,40 +124,39 @@ class ProbaVLoader:
 
         return scenes
 
-    def get_scene_stack(self, scenes: Dict, scene_id: str) -> Tuple[List[np.ndarray], List[np.ndarray], Optional[np.ndarray]]:
+    def get_scene_stack(self, scenes: Dict, scene_id: str) -> Tuple[List[np.ndarray], Optional[np.ndarray], str]:
         """
-        Get aligned LR stack for both bands and HR reference.
-        Returns: (lr_red_stack, lr_nir_stack, hr_reference)
+        Get the LR stack and HR reference for a single-band scene.
+
+        The archive partitions imgset IDs by band (each ID belongs to
+        exactly one band), so a scene is single-band by construction.
+        Returns: (lr_stack [N, 1, 128, 128], hr [1, 384, 384] or None, split)
         """
         if scene_id not in scenes:
             raise ValueError(f"Scene {scene_id} not found")
 
-        red_scene = scenes[scene_id].get('RED')
-        nir_scene = scenes[scene_id].get('NIR')
+        band_scenes = scenes[scene_id]
+        if not band_scenes:
+            raise ValueError(f"Scene {scene_id} has no band data")
 
-        if red_scene is None or nir_scene is None:
-            raise ValueError(f"Missing RED or NIR for scene {scene_id}")
+        band = next(iter(band_scenes))
+        scene = band_scenes[band]
 
-        # Stack LR images (should be same count)
-        n_lr = min(len(red_scene.lr_images), len(nir_scene.lr_images))
-        lr_stack = []
-        for i in range(n_lr):
-            # Stack RED and NIR as channels
-            lr_pair = np.stack([red_scene.lr_images[i], nir_scene.lr_images[i]], axis=0)  # [2, H, W]
-            lr_stack.append(lr_pair)
+        # Stack LR images as single-channel: [N, 1, 128, 128]
+        lr_stack = [np.stack([img], axis=0) for img in scene.lr_images]
 
         hr_ref = None
-        if red_scene.hr_image is not None:
-            hr_ref = np.stack([red_scene.hr_image, nir_scene.hr_image], axis=0)  # [2, H, W]
+        if scene.hr_image is not None:
+            hr_ref = np.stack([scene.hr_image], axis=0)  # [1, 384, 384]
 
-        return lr_stack, hr_ref, red_scene.split
+        return lr_stack, hr_ref, scene.split
 
     def prepare_training_pairs(self, scenes: Dict) -> List[Tuple[np.ndarray, np.ndarray, np.ndarray]]:
         """
-        Prepare training pairs for MISR.
+        Prepare training pairs for single-band MISR.
         Returns list of (lr_stack, hr, quality_mask) where:
-        - lr_stack: [N, 2, 128, 128] N LR images, 2 bands
-        - hr: [2, 384, 384] HR reference
+        - lr_stack: [N, 1, 128, 128] N LR images, single band
+        - hr: [1, 384, 384] HR reference
         - quality_mask: [384, 384] HR status mask
         """
         pairs = []
@@ -156,12 +166,11 @@ class ProbaVLoader:
             if hr_ref is None:
                 continue  # Skip test scenes without HR
 
-            # Get quality mask from RED scene
-            red_scene = scenes[scene_id]['RED']
-            quality_mask = red_scene.hr_status_mask
+            band_scene = next(iter(scenes[scene_id].values()))
+            quality_mask = band_scene.hr_status_mask
 
-            # Stack LR into [N, 2, 128, 128]
-            lr_array = np.stack(lr_stack, axis=0)  # [N, 2, 128, 128]
+            # Stack LR into [N, 1, 128, 128]
+            lr_array = np.stack(lr_stack, axis=0)  # [N, 1, 128, 128]
 
             pairs.append((lr_array, hr_ref, quality_mask))
 

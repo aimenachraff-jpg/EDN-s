@@ -118,13 +118,43 @@ def cloud_mask_from_scl(scl_band: np.ndarray,
     return mask
 
 
-def buffer_mask(mask: np.ndarray, buffer_pixels: int = 3) -> np.ndarray:
-    """Dilate mask to buffer around cloud edges."""
+def buffer_mask(mask: np.ndarray, buffer_pixels: int = 3,
+                mode: str = 'outside', connectivity: int = 1) -> np.ndarray:
+    """Buffer the mask around invalid regions (e.g., cloud edges).
+
+    The mask is interpreted as a validity mask (True = valid data,
+    False = clouds/nodata). Buffering expands the invalid region by
+    ``buffer_pixels`` pixels, shrinking the valid region.
+
+    Note: this differs from ``spatial_buffers.buffer_mask``, which buffers
+    around features (True = feature) and expands the True region.
+
+    Args:
+        mask: Binary validity mask (True = valid)
+        buffer_pixels: Number of pixels to buffer
+        mode: 'outside' shrinks the valid region (default, cloud buffering);
+              'inside' expands it
+        connectivity: 1 or 2 for the morphological structuring element
+    """
     from scipy.ndimage import binary_dilation
-    if buffer_pixels > 0:
-        structure = np.ones((buffer_pixels * 2 + 1, buffer_pixels * 2 + 1))
-        mask = binary_dilation(~mask, structure=structure)
-        mask = ~mask
+    if buffer_pixels <= 0:
+        return mask.copy()
+
+    structure = np.ones((buffer_pixels * 2 + 1, buffer_pixels * 2 + 1), dtype=bool)
+    if connectivity == 2:
+        # Cross (4-connectivity): center + arms
+        structure[0, 0] = structure[0, 2] = structure[2, 0] = structure[2, 2] = False
+        # (default connectivity=1 keeps the full square, matching the
+        # original cloud-buffer behavior)
+
+    if mode == 'outside':
+        # Dilate the invalid (False) region -> shrink the valid (True) region
+        mask = ~binary_dilation(~mask, structure=structure)
+    elif mode == 'inside':
+        # Expand the valid (True) region
+        mask = binary_dilation(mask, structure=structure)
+    else:
+        raise ValueError(f"Unknown mode: {mode}. Use 'outside' or 'inside'")
     return mask
 
 
@@ -167,7 +197,8 @@ def untile_image(tiles: List[np.ndarray],
                  output_shape: Tuple[int, int],
                  tile_size: int,
                  overlap: int = 0,
-                 blend: bool = True) -> np.ndarray:
+                 blend: bool = True,
+                 blend_weights=None) -> np.ndarray:
     """
     Reconstruct image from tiles with optional blending in overlaps.
 
@@ -178,6 +209,7 @@ def untile_image(tiles: List[np.ndarray],
         tile_size: Tile size
         overlap: Overlap used during tiling
         blend: Whether to blend overlaps (feathering)
+        blend_weights: Optional custom weight kernel for blending
 
     Returns:
         Reconstructed image [C, H, W]
@@ -190,7 +222,10 @@ def untile_image(tiles: List[np.ndarray],
     stride = tile_size - overlap
 
     for tile, (y, x) in zip(tiles, positions):
-        if blend and overlap > 0:
+        if blend_weights is not None:
+            # Use custom weight kernel
+            w = blend_weights[:tile_size, :tile_size]
+        elif blend and overlap > 0:
             # Create feathering weights
             w = np.ones((tile_size, tile_size), dtype=np.float32)
             fade = np.linspace(0, 1, overlap)
@@ -205,7 +240,7 @@ def untile_image(tiles: List[np.ndarray],
                 w[:, :overlap] *= fade[np.newaxis, :]
             # Right edge
             if x + tile_size < W:
-                w[:, -overlap:] *= fade[::-1, np.newaxis]
+                w[:, -overlap:] *= fade[::-1][np.newaxis, :]
         else:
             w = np.ones((tile_size, tile_size), dtype=np.float32)
 

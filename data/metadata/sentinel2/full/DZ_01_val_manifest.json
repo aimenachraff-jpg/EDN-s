@@ -1,0 +1,144 @@
+{
+  "acquisition_version": "1.0-full",
+  "generated_at": "2026-11-15T13:02:02.445189Z",
+  "source": {
+    "provider": "Microsoft Planetary Computer STAC API",
+    "endpoint": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "collection": "sentinel-2-l2a",
+    "license": "Copernicus / Sentinel-2, CC BY 4.0",
+    "citation": "Sentinel-2 Level-2A surface reflectance. European Space Agency."
+  },
+  "aoi": {
+    "id": "DZ_01",
+    "name": "Algiers Urban Coastal",
+    "country": "Algeria",
+    "bbox": [
+      2.8,
+      36.5,
+      3.8,
+      37.0
+    ],
+    "land_cover": "urban_coastal"
+  },
+  "split": "val",
+  "temporal_scope": {
+    "start": "2023-01-01",
+    "end": "2023-12-31",
+    "cloud_filter_max": 0.2
+  },
+  "bands_requested": [
+    "B2",
+    "B3",
+    "B4",
+    "B8"
+  ],
+  "resolution_m": 10,
+  "crs": "EPSG:4326",
+  "scenes": [
+    {
+      "scene_id": "31SDB_20230104",
+      "datetime": "2023-01-04T10:33:29.024000Z",
+      "cloud_cover": 13.5,
+      "mgrs_tile": "31SDB",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20230104\\31SDB_20230104_B2.tif",
+          "size_bytes": 133168150,
+          "md5": "1f64eea08abc35296e6ae5d54e33a9e3",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20230104\\31SDB_20230104_B3.tif",
+          "size_bytes": 129681320,
+          "md5": "6d3b587ad505b38268e0319192085891",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20230104\\31SDB_20230104_B4.tif",
+          "size_bytes": 126145671,
+          "md5": "d1d70d27b327cf75509c1d032d31285b",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDB_20230104\\31SDB_20230104_B8.tif",
+          "size_bytes": 125615280,
+          "md5": "a24eba950af0eb4e707d80e3aa437716",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    },
+    {
+      "scene_id": "31SDA_20231228",
+      "datetime": "2023-12-28T10:44:41.024000Z",
+      "cloud_cover": 15.3,
+      "mgrs_tile": "31SDA",
+      "files": {
+        "B2": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20231228\\31SDA_20231228_B2.tif",
+          "size_bytes": 178293641,
+          "md5": "a1655f8fdaed497def84fe9a0340eb9e",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B3": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20231228\\31SDA_20231228_B3.tif",
+          "size_bytes": 175445029,
+          "md5": "73f1dee36db7e0926c1d7638c3043a89",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B4": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20231228\\31SDA_20231228_B4.tif",
+          "size_bytes": 173402342,
+          "md5": "51d473ddf18ee66c0026a0dda6595cee",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        },
+        "B8": {
+          "path": "data\\raw\\sentinel2\\DZ_01\\31SDA_20231228\\31SDA_20231228_B8.tif",
+          "size_bytes": 172694782,
+          "md5": "478e0f619b14e8cdb91bf90b0d036b37",
+          "shape": null,
+          "bounds": null,
+          "transform": null,
+          "valid_fraction": null,
+          "preexisting": true
+        }
+      },
+      "checksums_valid": true
+    }
+  ],
+  "summary": {
+    "scenes": 2,
+    "total_bytes": 1214446215,
+    "total_mb": 1214.4,
+    "total_files": 8,
+    "checksums_valid": true
+  }
+}

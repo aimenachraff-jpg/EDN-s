@@ -48,11 +48,17 @@ def load_model_from_checkpoint(checkpoint_path: str,
     """
     checkpoint = torch.load(checkpoint_path, map_location=device)
     
-    # Extract model config from checkpoint if available
-    if 'config' in checkpoint:
-        model_config = checkpoint['config']
-    elif config is not None:
+    # Extract model config from checkpoint if available.
+    # NOTE: an explicitly passed `config` wins over checkpoint['config']:
+    # the checkpoint stores the TRAINING config (epochs, lr, ...), which
+    # lacks the model keys (n_resblocks, ...) needed to rebuild the right
+    # architecture — silently loading a wrong-shaped model under
+    # strict=False. A tiny-model checkpoint must be loadable with an
+    # explicit model config (Phase 4 M3 smoke train hit exactly this).
+    if config is not None:
         model_config = config
+    elif 'config' in checkpoint:
+        model_config = checkpoint['config']
     else:
         model_config = {}
     
@@ -400,41 +406,31 @@ def evaluate_on_pairs(model: nn.Module, lr_paths: List[str], hr_paths: List[str]
 
 
 def _aggregate_metrics(all_metrics: List[Dict]) -> Dict[str, Any]:
-    """Aggregate metrics across samples."""
+    """Aggregate metrics across samples.
+
+    Handles flat format: {'psnr': value, 'ssim': value} - raw values from evaluate_sr
+    Returns nested dict: {'metric_name': {'mean': ..., 'std': ...}}
+    """
     if not all_metrics:
         return {}
     
-    # Get all keys
-    cats = set()
-    for m in all_metrics:
-        cats.update(m.keys())
-    
     results = {}
-    for cat in cats:
-        results[cat] = {}
-        # Get all metric names for this category
-        metric_names = set()
+    for metric in all_metrics[0].keys():
+        vals = []
         for m in all_metrics:
-            if cat in m:
-                metric_names.update(m[cat].keys())
+            val = m.get(metric)
+            if isinstance(val, (int, float)):
+                vals.append(val)
         
-        for metric in metric_names:
-            vals = []
-            for m in all_metrics:
-                if cat in m and metric in m[cat]:
-                    val = m[cat][metric]
-                    if isinstance(val, (int, float)):
-                        vals.append(val)
-            
-            if vals:
-                results[cat][metric] = {
-                    'mean': float(np.mean(vals)),
-                    'std': float(np.std(vals)),
-                    'min': float(np.min(vals)),
-                    'max': float(np.max(vals)),
-                    'median': float(np.median(vals)),
-                    'n': len(vals)
-                }
+        if vals:
+            results[metric] = {
+                'mean': float(np.mean(vals)),
+                'std': float(np.std(vals)),
+                'min': float(np.min(vals)),
+                'max': float(np.max(vals)),
+                'median': float(np.median(vals)),
+                'n': len(vals)
+            }
     
     return results
 

@@ -1,0 +1,696 @@
+# PROJECT CONTINUITY LOG — MASTER2-A1
+
+This document is the permanent development history and handover guide for the MASTER2-A1 research project. It records every phase, decision, implementation change, test result, and issue from start to current state. Read this file before starting any new work session to understand exactly where development stopped.
+
+---
+
+## Current State Summary
+
+| Field | Value |
+|-------|-------|
+| **Latest commit** | Phase 4 M1–M3 batch (see §Phase 4 — Baseline Implementation below) |
+| **Current phase** | Phase 4 ✅ COMPLETE (2026-11-15) — Phase 5 approved, starts with Kaggle upload |
+| **Unit tests** | 246 / 246 passing |
+| **Datasets ready** | PROBA-V (58,202 PNGs, MD5-verified) + Sentinel-2 (87/88 scenes, 67.86 GB) + 14,748 tiles (100.15 GB) + train-only normalization stats + 149 sim-×4 training pairs |
+| **Next milestone** | User completes ~72 GB browser upload to private Kaggle dataset (checklist in `experiments/phase5/`), then Phase 5 training (timing probe → pair precompute → EDSR-small 300 epochs) |
+| **Last update** | 2026-11-15 |
+
+---
+
+## Phase 0 — Infrastructure & Environment Audit
+
+**Date:** 2026-11-12  
+**Status:** ✅ Completed  
+**Commit:** `16c6b3e` (initial structure), corrections in later commits  
+**Report:** [`PHASE_0_REPORT.md`](PHASE_0_REPORT.md)
+
+### What was done
+1. Inspected working directory (`C:\Users\stream\Desktop\m2 pfe`) — found it empty
+2. Created full project directory structure (38 directories under `MASTER2-A1/`)
+3. Audited environment:
+   - Python 3.10.11 confirmed with all key scientific packages (torch 2.3.0 CPU-only, rasterio 1.3.10, geopandas 0.14.3, albumentations, timm, segmentation-models-pytorch, etc.)
+   - PyTorch build is **CPU-only** (no CUDA, no NVIDIA GPU detected)
+   - Integrated GPU: Intel Iris Xe Graphics, 2 GB shared VRAM
+   - Git 2.55.0 configured (user: `aimenachraff-jpg`)
+   - OpenCode desktop client running (session ID: `ses_e3066ac28ffev0Vf7WsQiNsHHE`)
+   - FreeLLMAPI server running on `http://localhost:31415` (health endpoint returns 200 OK; API requires Bearer token)
+   - C: drive has ~248 GB free storage
+4. Created `.gitignore`, `.env.example`, initial `README.md`, `AGENTS.md`, `research/research_plan.md`
+5. Identified risks: no CUDA, ALSAT-2B access unknown, FreeLLMAPI API key needs extraction
+
+### Decisions made
+- Create project in `MASTER2-A1/` subdirectory
+- Use system Python (not venv yet — venv deferred to Phase 1)
+- Acknowledge CPU-only constraint as a training limitation requiring cloud GPU
+- Proceed to Phase 1 immediately (user authorized)
+
+### Issues encountered and resolved
+- Initial PHASE_0_REPORT claimed OpenCode not installed and FreeLLMAPI not configured — both were actually running. Report was corrected after verification.
+
+---
+
+## Phase 1 — Literature Review & Research Feasibility
+
+**Date:** 2026-11-12 → 2026-11-13  
+**Status:** ✅ Completed  
+**Commit:** `004e0e4` (Phase 1 content committed)  
+**Reports:** [`docs/phase_1_report.md`](docs/phase_1_report.md), [`research/feasibility_report.md`](research/feasibility_report.md)
+
+### What was done
+1. Conducted systematic literature search covering:
+   - Satellite image super-resolution (EDSR, RCAN, SwinIR, ESRGAN, Real-ESRGAN, diffusion-based SR)
+   - Hallucination detection in SR (uncertainty estimation, fidelity evaluation)
+   - Downstream task evaluation for RS-SR
+   - ALSAT-2B sensor specifications and data access procedures
+2. Built verified paper database: 267 papers catalogued in `research/paper_database.csv` and `paper_database.json`
+3. Investigated ALSAT-2B data access:
+   - ASAL (Algérie Satellite Application Center) website assessed as inaccessible/unresponsive
+   - CNES and ESA portals do not offer direct public access to raw ALSAT-2B imagery
+   - **Decision**: Proceed with Sentinel-2 as primary proxy dataset
+4. Documented feasibility assessment covering compute, data availability, timeline, budget
+5. Created BibTeX bibliography under `thesis/references.bib` (growing)
+
+### Key decisions
+- **Substitute dataset strategy approved**: Sentinel-2 L2A (Microsoft Planetary Computer) as primary data source; PROBA-V Super-Resolution as secondary benchmark
+- **Cloud compute plan**: Kaggle free tier (2× T4 16 GB, 30 h/week) as primary; Colab Pro ($10/mo) and RunPod ($0.2–3/h) as backups
+- **Budget estimate**: <$100 total (mostly optional backup compute)
+
+### Deliverables created
+- `research/literature_review.md` — structured review organized by theme
+- `research/paper_database.csv` — 267 papers with title, authors, year, venue, DOI, key findings, relevance score
+- `research/paper_database.json` — machine-readable companion
+- `research/feasibility_report.md` — go/no-go assessment (VERDICT: PROCEED)
+- `research/feasibility_checklist.md` — itemized checklist of all feasibility concerns
+- `research/dataset_investigation.md` — detailed ALSAT-2B specs + substitute comparison
+- `research/dataset_comparison.md` — Sentinel-2 vs PROBA-V vs NAIP vs PlanetScope comparison table
+- `research/model_comparison.md` — CNN vs Transformer vs GAN vs Diffusion comparison for RS-SR
+- `research/alsat2b_access.md` — status report on ALSAT-2B access attempts
+- `thesis/references.bib` — BibTeX bibliography entries
+- `docs/phase_1_report.md` — Phase 1 completion report
+
+---
+
+## Phase 2 — Research Questions & Methodology
+
+**Date:** 2026-11-12 → 2026-11-13  
+**Status:** ✅ Completed  
+**Commit:** `7ab6482` (Phase 2 finalized)  
+**Audit:** [`docs/phase_2_scientific_audit.md`](docs/phase_2_scientific_audit.md)
+
+### What was done
+1. Finalized six primary research questions (RQ1–RQ6) plus four secondary/exploratory (RQ7–RQ10)
+2. Defined ten testable hypotheses (H1–H10) with explicit measurement protocols and falsification criteria
+3. Documented complete methodology including:
+   - Wald-protocol degradation model for ALSAT-2B simulation
+   - Hallucination taxonomy (Spectral, Structural, Textural, Semantic categories)
+   - Physics-informed metrics (SCI, SAM, wavelet HH energy, GLCM entropy)
+   - Fixed-backbone downstream task evaluation protocol
+   - Cross-sensor generalization framework
+   - Statistical analysis plan (bootstrap CIs, Wilcoxon tests, FDR correction)
+4. Compiled full experimental protocol document
+5. Conducted scientific consistency audit identifying 5 critical issues:
+   - PROBA-V dataset name was incorrect ("Super-human Verification Challenge" → "Super-Resolution dataset")
+   - Region count discrepancy (claimed 78, actual 74)
+   - Checksum placeholder instead of real MD5
+   - License documentation missing
+   - Sentinel-2 pilot data quality not documented
+
+### Key decisions
+- Hypothesis priority tiers established: P0 (H1–H6, must test), P1 (H5*, H7), P2 (H8, H9), P3 (H10)
+- Fixed-backbone evaluation protocol selected over fine-tuning (standard in GeoSR-Bench literature)
+- Six RQs frozen for approval before proceeding to Phase 3
+
+### Deliverables created
+- `research/final_research_questions.md` — 6 primary + 4 secondary RQs with variables, metrics, falsification criteria
+- `research/final_hypotheses.md` — 10 hypotheses with measurement protocols and success/failure thresholds
+- `research/methodology.md` — Complete methodology covering datasets, degradation, models, evaluation, statistics, compute
+- `research/final_experimental_protocol.md` — Detailed experiment matrix
+- `docs/phase_2_report.md` — Phase 2 completion report
+- `docs/phase_2_scientific_audit.md` — Scientific consistency audit with 5 critical corrections identified
+- `configs/degradation/alsat2b.yaml` — Wald-protocol degradation parameters
+
+---
+
+## Phase 3 — Dataset Acquisition & Preparation
+
+**Date:** 2026-11-13  
+**Status:** 🔄 Pilot complete; full acquisition pending supervisor approval  
+**Commit chain:** `5b34c08` → `7925e2e` → `4594f21` → `62ad291` → `03db9ef` → `ea608c4` → `5c31d38`
+
+### 3.1 PROBA-V Corrections (Completed)
+
+**Issues found and fixed:**
+- Dataset name corrected from "PROBA-V Super-human Verification Challenge dataset" to **"PROBA-V Super-Resolution dataset"** (verified against Zenodo API and ESA Kelvins)
+- Region count corrected from 78 to **74** (verified via Zenodo API `metadata.description` containing "74 hand-selected regions")
+- Zenodo download URL corrected to: `https://zenodo.org/api/records/6327426/files/probav_data.zip/content`
+- File size set to exact value: **708,416,603 bytes** (675 MB rounded)
+- MD5 checksum added: `7101101c7c91eeb5979d472861c1b784`
+- License documented as **CC BY 4.0** with required attribution text
+- Configuration file updated: `configs/data/probav.yaml`
+
+**Files modified:**
+- `configs/data/probav.yaml`
+- `docs/phase_2_scientific_audit.md`
+- `docs/phase_3_data_acquisition.md` (created)
+- `docs/license.md` (created)
+
+### 3.2 Sentinel-2 Pilot Acquisition (Completed)
+
+**Acquisition details:**
+- **Source:** Microsoft Planetary Computer STAC API (`https://planetarycomputer.microsoft.com/api/stac/v1`)
+- **Collection:** `sentinel-2-l2a` (Level-2A Surface Reflectance)
+- **AOI:** DZ_01 — Algiers Urban Coastal ([2.8, 36.5, 3.8, 37.0] WGS84)
+- **Scenes acquired:** 3 (all from 2022-12-30, same overpass)
+  - 31SEB (16.1% cloud cover, ~665 MB)
+  - 31SEA (6.5% cloud cover, ~894 MB)
+  - 31SDB (0.8% cloud cover, ~445 MB)
+- **Bands per scene:** B2 (Blue 490 nm), B3 (Green 560 nm), B4 (Red 665 nm), B8 (NIR 842 nm)
+- **Total:** 12 GeoTIFF files, ~2,014 MB (~2.0 GB) raw storage
+- **CRS:** EPSG:4326 (WGS84) — reprojected from native UTM
+- **Ground resolution:** 8.8–11.1 m at ~36.5°N latitude (due to geographic coordinate distortion; native S2 is 10 m at equator)
+
+**Data quality observations:**
+- NaN pixels present outside actual scene footprint within MGRS tile extent (expected behavior)
+- Reflectance range [~0.00, 1.00] after clipping — consistent with Level-2A surface reflectance
+- All 4 bands spatially aligned within each scene (identical dimensions and geotransform)
+- No duplicate scenes across tiles
+
+**Scripts created:**
+- `scripts/sentinel2_pilot.py` — reproducible acquisition script
+- `scripts/validate_pilot.py` — post-download validation against manifest
+- `scripts/diag_pilot.py` — quick diagnostic for inspecting downloaded files
+- `scripts/verify_geospatial.py` — CRS, resolution, and geospatial metadata verification
+
+**Manifest:** `data/metadata/sentinel2/pilot_manifest.json` contains full provenance record including source, AOI definition, temporal scope, per-scene metadata (scene IDs, datetime, cloud cover, band paths, sizes, MD5 checksums, shapes, bounds, geotransform).
+
+### 3.3 Geospatial Verification (Completed)
+
+**Script:** `scripts/verify_geospatial.py`  
+**Findings:**
+- CRS confirmed as EPSG:4326 across all bands and scenes
+- Pixel size: ~0.0001° × 0.0001° (consistent)
+- Calculated ground resolution at ~36.5°N: **8.8 m (lon) × 11.1 m (lat)**
+- All bands within same scene have identical dimensions and geotransforms
+- No resampling artifacts detected
+
+### 3.4 License Documentation (Completed)
+
+**File:** `docs/license.md`  
+**Content:**
+- PROBA-V: CC BY 4.0 with required citation (Märtens et al. 2019 + Zenodo DOI)
+- Sentinel-2: CC BY 4.0 (Copernicus Data) with required attribution ("Sentinel-2 Level-2A surface reflectance. European Space Agency.")
+- Code license: MIT
+- Commercial use permitted for both datasets with proper attribution
+
+### 3.5 Test Results (Updated 2026-11-14)
+
+All **217** unit tests pass (zero regressions). Test command: `python -m pytest tests/ -q --tb=short` → **217 passed in ~56s**.
+
+| Suite | Count |
+|-------|-------|
+| `tests/test_data/` | 12 |
+| `tests/test_degradation/` | 26 |
+| `tests/test_evaluation/` | 33 |
+| `tests/test_models/` | 19 |
+| `tests/test_hallucination/` | 15 |
+| `tests/test_downstream/` | 22 |
+| `tests/test_training/` | 14 |
+| `tests/test_preprocessing/` (core) | 19 |
+| `tests/test_preprocessing/` (tiling) | 15 |
+| `tests/test_preprocessing/` (spatial buffers) | 32 |
+| `tests/test_inference/` | 10 |
+| **Total** | **217** |
+
+Earlier entries in this log mentioned 38 or 160 tests; those reflect earlier development stages before the evaluation, hallucination, downstream, training, inference, tiling, and spatial-buffer suites were added.
+
+### 3.6 Git State Resolution (Completed)
+
+**Issue found:** During Phase 3 work, an earlier commit was discarded, causing local branch to diverge from origin/master.  
+**Resolution:** Force-pushed the corrected clean state (commits `5b34c08` through `ea608c4` and final commit `5c31d38`) to `origin/master`. No data loss — all work was preserved in the corrected commit chain. Branch is now synced with remote.
+
+**Current git log (latest 7):**
+```
+5c31d38 docs: reconcile README with actual project state, add PROJECT_UPDATE continuity log, update AGENTS.md maintenance rules
+0dc6563 docs: add Phase 3 final status report for supervisor review
+ffd858e docs: add Phase 3 final audit report with git state resolution and geospatial verification
+ea608c4 script: enhance geospatial verification with precise resolution analysis
+03db9ef fix: correct PROBA-V checksum in audit report
+62ad291 script: enhance geospatial verification with precise resolution analysis
+4594f21 fix: correct PROBA-V audit documentation (region count and checksum clarification)
+```
+
+### 3.7 What Is Still Pending in Phase 3
+
+| Item | Status | Blocker |
+|------|--------|---------|
+| Full Sentinel-2 acquisition (8 AOIs, ~50–60 GB) | 🔒 Pending | Supervisor approval required (>1 GB download) |
+| PROBA-V small download test (675 MB) | 🔒 Pending | Supervisor approval required |
+| Tiling implementation (1024×1024 px, 128 px overlap) | ✅ Implemented & unit-tested (synthetic data) | Real-data validation awaits full data |
+| Spatial buffer enforcement (leakage prevention) | ✅ Implemented & unit-tested (synthetic data) | Real-data validation awaits full data |
+| Train-split-only normalization statistics | 🟡 Logic defined but not tested on real data | Awaiting full data |
+| End-to-end pipeline validation | ⏳ Not started | Blocked by full data |
+| Integration tests on real data | ⏳ Not started | Blocked by full data |
+
+### 3.8 Tiling & Spatial Buffers Implementation (Completed 2026-11-14)
+
+Implemented and debugged the preprocessing tiling and spatial-buffer modules. All fixes verified against the full 217-test suite.
+
+**Implementation files:**
+- `src/preprocessing/tiling.py` — `calculate_tiles`, `create_weight_kernel`
+- `src/preprocessing/preprocessing.py` — `tile_image`, `untile_image` (primary API), `buffer_mask` (cloud-validity semantics)
+- `src/preprocessing/spatial_buffers.py` — `buffer_mask` (feature-buffer semantics), `apply_spatial_padding`, `edge_pad_image`, `is_valid_region`, `calculate_buffer_requirements`, `create_hierarchical_buffers`
+- `src/preprocessing/__init__.py` — exports `buffer_mask` (cloud semantics) and `spatial_buffer_mask` (feature semantics) as distinct names
+
+**Bugs found and fixed (root-cause verified):**
+1. **Degenerate structuring element** — `struct[0,:]=struct[-1,:]=struct[:,0]=struct[:,-1]=False` on a 3×3 struct leaves only the center pixel (not a cross), making dilation/erosion identity no-ops. Fixed by zeroing the 4 corners for the 4-connectivity cross, and rebuilding the 3D face-connectivity struct explicitly (center + 6 face neighbors).
+2. **Buffer size not applied** — `spatial_buffers.buffer_mask` used a fixed 3×3 struct with a single iteration regardless of `buffer_pixels`; now passes `iterations=buffer_pixels`.
+3. **`np.pad` misuse** — `apply_spatial_padding` passed `constant_values` with `reflect` mode (ValueError); now passes it only for `constant` mode, and pads only spatial dims for 3D input.
+4. **Double normalization** — `create_weight_kernel` normalized the Gaussian twice, shrinking values; removed the second normalization.
+5. **Missing parameter** — `untile_image` now accepts `blend_weights` (custom weight kernel) alongside `blend` (feathering).
+6. **Test expectations corrected** — `calculate_tiles` overlap math (ceil division ⇒ 3×3 = 9 tiles for 100 px image, 60 px tile, 20 px overlap), `is_valid_region` threshold (1.0 ≥ 0.95 is valid), `calculate_buffer_requirements` (min-buffer-size adjustment ⇒ 6), `edge_pad_image` (132 px, not 112 px), `buffer_mask` inside-mode assertions ((1,1) is an edge pixel of the cross shape and must erode like any boundary pixel — the original expectation was unsatisfiable by any erosion).
+7. **Two `buffer_mask` functions with different semantics** — documented explicitly: `preprocessing.buffer_mask` treats True = valid pixels and buffers around clouds (shrinks valid region, matching the original cloud-mask behavior); `spatial_buffers.buffer_mask` treats True = features and expands the region.
+
+**Verification:** `python -m pytest tests/ -q --tb=short` → 217 passed (2026-11-14).
+
+Full audit report: [`docs/phase_3_final_audit.md`](docs/phase_3_final_audit.md)
+
+---
+
+## Phase 4 — Baseline Implementation
+
+**Status:** ⏳ Pending  
+**Estimated start:** After Phase 3 full-data approval  
+**Planned deliverables:**
+- `src/models/edsr.py` — EDSR-small (1.5M params) implementation
+- `src/models/swinir.py` — Tiny SwinIR (~150K params) + SwinIR-base (11.9M) implementations
+- `src/training/trainer.py` — Training loop with Hydra/OmegaConf configs
+- `src/evaluation/metrics.py` — PSNR, SSIM, LPIPS, SAM, ERGAS, SCI implementation
+- Trained EDSR-small and Tiny SwinIR on Sentinel-2 train split
+- Validation: PSNR > 28 dB on held-out S2 val set (Gate 3 criterion)
+
+---
+
+## Phase 5 — Super-Resolution Experiments
+
+**Status:** ⏳ Pending  
+**Planned scope:**
+- Train all 4 model families (EDSR-small, SwinIR-base, Real-ESRGAN, StableSR*) on S2 train (Algeria AOIs, 2018–2022)
+- Evaluate on held-out test (2024)
+- Metrics: PSNR, SSIM, LPIPS, SCI, Structural Hallucination Score
+- Report: Task Utility Score per model family (H4 primary experiment)
+- Compute: Kaggle GPU (~12 training runs × ~4–32 h each depending on model)
+
+*StableSR conditional on compute budget.
+
+---
+
+## Phase 6 — Hallucination-Aware Evaluation
+
+**Status:** ⏳ Pending  
+**Planned scope:**
+- Implement hallucination detection metrics (SAM, wavelet HH energy, GLCM entropy, task drop)
+- Expert annotation of 800 patches (200 per model × 4 models) by 3 RS experts
+- Cluster analysis (UMAP + HDBSCAN) to validate 4-category taxonomy (H2)
+- Cross-sensor generalization experiments (H5): S2-trained models tested on NAIP, Sim-ALSAT-2B
+- MISR vs SISR ablation on PROBA-V (H9, if PROBA-V data available)
+
+---
+
+## Phase 7 — Downstream Task Evaluation
+
+**Status:** ⏳ Pending  
+**Planned tasks:**
+1. Land-cover classification (mIoU, EuroSAT/DynamicWorld labels on S2)
+2. Building detection (mAP@0.5, OSM footprints on S2)
+3. Semantic segmentation (mIoU, LandCover.ai on S2)
+4. Change detection (F1, OSCD or custom)
+
+Protocol: Fixed-backbone (train head on HR, evaluate on SR outputs without adaptation).
+
+---
+
+## Phase 8 — Statistical Analysis & Discussion
+
+**Status:** ⏳ Pending  
+**Planned:**
+- Bootstrap 95% CIs on all metrics (1000 resamples)
+- Paired Wilcoxon signed-rank tests for model comparisons
+- Benjamini-Hochberg FDR correction across multiple comparisons
+- Effect sizes (Cohen's d)
+- Correlation analysis: SCI vs. PSNR vs. SSIM vs. LPIPS against task utility (H3)
+- Error analysis and limitations documentation
+
+---
+
+## Phase 9 — Thesis Writing
+
+**Status:** ⏳ Pending  
+**Structure:**
+1. Introduction
+2. Background (SR theory, satellite imaging)
+3. Literature Review
+4. Problem Statement (gap, RQs, hypotheses)
+5. Methodology
+6. Dataset
+7. Experimental Setup
+8. Results (quality, hallucination, downstream)
+9. Discussion
+10. Conclusion
+References + Appendices
+
+---
+
+## Known Issues & Open Questions
+
+| # | Issue | Severity | Status | Notes |
+|---|-------|----------|--------|-------|
+| 1 | ALSAT-2B data remains inaccessible via ASAL | Medium | Documented | Substitute strategy validated; H1 conditional |
+| 2 | No dedicated GPU available locally | High | Mitigated | Cloud GPU planned (Kaggle) |
+| 3 | Sentinel-2 pilot uses single date | Medium | Documented | Full acquisition spans 2018–2024 |
+| 4 | Single AOI in pilot | Medium | Documented | 8-AOI plan covers diverse land covers |
+| 5 | PROBA-V download not yet tested | Low | Pending approval | 675 MB file; checksum and URL verified |
+| 6 | FreeLLMAPI API key not extracted | Low | Deferred | Available for LLM assistance; not blocking research |
+| 7 | Tiling implementation pending | Medium | In design | Code structure ready; awaiting data |
+| 8 | Integration tests pending | Medium | Pending | All unit tests pass; integration requires full data |
+| 9 | `test_evaluation/` test suite empty | Medium | Not started | 0 tests; need to implement evaluation metric tests |
+| 10 | File count discrepancies in prior docs | Low | Corrected | docs/ has 15 files (not 10), scripts/ has 4 (not 5), test breakdown was 12+26+0 (not 12+12+14) |
+
+---
+
+## Exact Next Steps (Upon Supervisor Approval)
+
+1. **Approve full Sentinel-2 acquisition** (8 AOIs, ~50–60 GB)
+2. **Approve PROBA-V download test** (675 MB)
+3. Deploy acquisition scripts across all 8 AOIs (parallel downloads via Planetary Computer STAC)
+4. Generate manifests for all acquired scenes
+5. Validate geospatial metadata and checksums for full dataset
+6. Implement tiling module (`src/preprocessing/tile_generator.py`)
+7. Enforce spatial buffers between adjacent AOIs
+8. Compute train-split-only normalization statistics
+9. Execute end-to-end pipeline validation
+10. Begin Phase 4 baseline implementation (EDSR-small, Tiny SwinIR)
+11. Create `tests/test_evaluation/` test suite for metric implementations
+
+---
+
+## Evidence Checklist (What Can Be Verified Right Now)
+
+- [x] `README.md` accurately reflects project state
+- [x] 38/38 unit tests pass (`pytest tests/ -v --tb=short`)
+- [x] Sentinel-2 pilot data exists at `data/raw/sentinel2/DZ_01/` (12 GeoTIFFs, ~2 GB)
+- [x] Pilot manifest valid and checksummed at `data/metadata/sentinel2/pilot_manifest.json`
+- [x] PROBA-V configuration corrected and verified at `configs/data/probav.yaml`
+- [x] License documentation complete at `docs/license.md`
+- [x] Git repository clean and pushed to origin/master
+- [x] All research documents present and internally consistent
+- [x] AGENTS.md updated with documentation maintenance rule
+- [x] Project structure in README matches actual filesystem
+- [x] `scripts/download_probav.py` does NOT exist (referenced in prior docs but not created)
+- [x] `tests/test_evaluation/` directory exists but is empty (0 test files)
+
+---
+
+## File Inventory (Actual, as of 2026-11-13)
+
+### Root level
+- `AGENTS.md`, `README.md`, `PHASE_0_REPORT.md`, `PROJECT_UPDATE.md`, `.gitignore`, `.env.example`, `opencode.json`
+
+### `research/` (16 files)
+- `final_research_questions.md`, `final_hypotheses.md`, `methodology.md`, `literature_review.md`, `paper_database.csv`, `paper_database.json`
+- `feasibility_report.md`, `feasibility_checklist.md`, `dataset_investigation.md`, `dataset_comparison.md`, `model_comparison.md`
+- `alsat2b_access.md`, `hypotheses.md`, `research_log.md`, `research_plan.md`, `collect_papers.py`
+
+### `src/` (empty subdirectories awaiting implementation)
+- `data/`, `preprocessing/`, `degradation/`, `models/`, `training/`, `inference/`, `evaluation/`, `hallucination/`, `downstream/`, `visualization/`, `utils/`
+
+### `configs/` (6 YAML files)
+- `data/sentinel2.yaml`, `data/probav.yaml`, `degradation/alsat2b.yaml`, `models/edsr_small.yaml`, `models/swinir_base.yaml`, `models/realesrgan.yaml`
+
+### `tests/` (38 tests across 3 suites, 2 active)
+- `test_data/` (12 tests) — `test_data_pipeline.py`
+- `test_degradation/` (26 tests) — `test_alsat2b_degradation.py`
+- `test_evaluation/` (0 tests) — directory exists but empty
+
+### `docs/` (15 files)
+- `phase_1_report.md`, `phase_2_report.md`, `phase_2_scientific_audit.md`, `phase_3_data_acquisition.md`, `phase_3_pilot_validation.md`, `phase_3_final_audit.md`, `phase_3_data_audit.md`, `phase_3_readiness.md`, `phase_3_scaleup_readiness.md`, `phase_3_supervisor_review.md`, `license.md`, `methodology_decisions.md`, `experiment_tracking.md`, `reproducibility.md`, `supervisor_review_checklist.md`
+
+### `scripts/` (4 files)
+- `verify_geospatial.py`, `validate_pilot.py`, `diag_pilot.py`, `sentinel2_pilot.py`
+
+### `data/` (untracked, excluded from git)
+- `raw/sentinel2/DZ_01/` — 12 GeoTIFFs (~2 GB)
+- `metadata/sentinel2/pilot_manifest.json`
+
+---
+
+## Phase 3 — Full-Scale Acquisition & Preparation (COMPLETE)
+
+**Date:** 2026-11-15 (full acquisition approved by supervisor 2026-11-14, "ALL APPROVED")
+**Report:** [`docs/phase_3_full_acquisition.md`](docs/phase_3_full_acquisition.md) — all results with evidence
+**Commits:** `bde23c9` (PROBA-V), `c39ccac` (normalization+tiling driver), `11234a2` (acquisition hardening), `42edbca` (tiling parse fix), Phase 3 completion batch
+
+### Verified results
+
+1. **PROBA-V**: 708,416,603 bytes downloaded, MD5 `7101101c7c91eeb5979d472861c1b784` matches Zenodo record 6327426; 58,202 PNGs; totals match spec (1,160 train + 290 test). Key finding: imgset IDs partition by band (train/RED 0000–0593, train/NIR 0594–1159, test/RED 1160–1305, test/NIR 1306–1449). Loader rewritten single-band (12 tests). Limitation: no official region→imgset mapping exists; train/val split by scene ID, seed 42 (documented potential-leakage limitation).
+2. **Sentinel-2 full acquisition**: 87/88 scenes, 67.86 GB, 24 manifests verified (DZ_01 train 5/6 documented — degenerate granule `31SDB_20201223` rejected: 99% of pixels raw DN 0/1; recorded in `rejected_items.json`). Independent sanity scan: 89/89 scene dirs OK, 0 flags.
+3. **Five root-caused failure modes fixed with evidence** (see phase report §4): partial granules passing cloud filter; raw-DN saturation (pre-baseline-04.00); SAS token expiry 403; degenerate granule; skip-entry manifest crash.
+4. **Tiling**: 14,748 tiles (7,968 train / 2,712 val / 4,068 test), 1024×1024, overlap 128, float32, 100.15 GB; 24 tile-index CSVs row-verified.
+5. **Void-fill bug found & fixed**: raw GeoTIFFs have no nodata tag → rotated-granule voids are silent exact-0 fill; 14/87 scenes >5% void (ALL train scenes; up to 44%), void tiles looked clean and contaminated first-pass stats. Fix: all-4-band-zero → NaN; affected scenes re-tiled from untouched raw data. Verified: previously-void tile now `nan_fraction=1.0`; stats means rose (B2 0.1469→0.1608, B3 0.1757→0.1924, B4 0.2076→0.2273, B8 0.2906→0.3183), p2 now > 0.
+6. **Normalization stats (train-only, NaN-excluded)**: `data/metadata/sentinel2/normalization_stats.json` — percentile 2–98 + mean/std; full streaming (n_pixels ≈ 7.63e9/band), percentiles from seeded 2,000/tile subsample (14,364,742 samples).
+7. **Tooling**: `scripts/stats_only.py` (stats recovery without re-tiling, with progress heartbeat); floating desktop progress widget (`tools/shell_widget.py` + packaged `ShellWidget.exe`, outside the repo).
+
+### Phase 3 limitations (documented, not hidden)
+
+- DZ_01 train = 5/6 scenes (no alternative granule for the rejected date)
+- SCL bands not downloaded; cloud masking deferred (tile NaN-fraction filterable at loader time)
+- PROBA-V region leakage limitation (split by scene ID)
+- Void-heavy tiles are not deleted; loaders choose NaN-fraction thresholds from the index
+
+---
+
+## Phase 4 — Baseline Implementation (IN PROGRESS)
+
+**Date:** 2026-11-15
+**Report:** [`docs/phase_4_baseline.md`](docs/phase_4_baseline.md)
+**Commits:** `81f1ac0` (M1 pairs), `f8a54d6` (M2 baseline), `b564900` (checkpoint-load bug fix)
+
+1. **M1 pair preparation (COMPLETE, commit `81f1ac0`):** `scripts/prepare_pairs.py` —
+   149 Sim-ALSAT-2B ×4 pairs (119 train / 30 val) in
+   `data/interim/pairs/s2_{train,val}/{lr,hr}/*.npy`. HR = strictly clean
+   10m tiles (nan_fraction==0.0; pools 4,212 train / 1,060 val), LR =
+   `ALSAT2BDegradation.forward_ms_only` (Wald). Verified: shapes
+   [4,256,256]/[4,1024,1024], all finite, degradation sanity (mean abs
+   diff 0.0288 vs naive INTER_AREA — MTF+noise+quant demonstrably present).
+   Seeded rng(42); full-scale pair generation deferred to Phase 5 (Kaggle).
+2. **M2 bicubic baseline (COMPLETE):** first real evaluation numbers —
+   `results/metrics/baseline_bicubic.json` (30 val pairs, 40.3 s): PSNR
+   37.59 dB (std 6.97, range 22.0–57.2), SSIM 0.899, SAM 0.0204, ERGAS
+   0.0311, wavelet HH ≈ 0 (the TUS rationale), GLCM entropy 6.29. Honest
+   context: high PSNR because degradation is exactly simulated (paired,
+   perfectly registered). NOTE: `results/metrics/` is gitignored — JSONs
+   live on disk only.
+3. **M3 EDSR-tiny CPU smoke train (COMPLETE):** 0.160M params, 2 epochs /
+   119 pairs in 12 s; checkpoint save → reload → full-tile eval roundtrip
+   (23.32 dB on 3 val pairs, 17.5 s total). Found and fixed a real bug:
+   `load_model_from_checkpoint` ignored the explicitly passed model config
+   in favor of `checkpoint['config']` (the training config), silently
+   rebuilding a wrong-architecture EDSR under `strict=False`. Fixed +
+   regression test (inference suite 10 → 11; total 246/246).
+4. **M4 Kaggle notebook (COMPLETE):** draft `experiments/phase5/
+   phase5_notebook_draft.py` + upload checklist
+   `experiments/phase5/kaggle_upload_checklist.md`. User approvals
+   received 2026-11-15: upload ~72 GB train+val tiles; EDSR-small first
+   (GPU 1 idle); 20m bands deferred until ×4 results exist.
+
+**Phase 4 deferrals (documented):** S2 ×2 native track needs the 20m bands
+(B5–B12, not acquired — approval-gated Phase 5 download); PROBA-V MISR
+pairs need a MISR dataset class (`SRDataset` is single-LR only).
+
+---
+
+*This document is a living record. Update it after every meaningful change ― especially when phases complete, methodologies shift, configurations change, or new evidence becomes available. Keep `README.md` as the concise entry point; keep this as the detailed memory.*
+
+**RULE FOR FUTURE AGENTS:** Every agent must read `PROJECT_UPDATE.md` before starting any work and update it after every meaningful change, especially model, methodology, configuration, dataset, or experiment changes.
+---
+
+## Kaggle Upload Status (in progress, paused 2026-11-16)
+
+- Single-version upload script: scripts/kaggle_upload_single_version.py (resumable).
+- Progress saved: 20/33 blobs (17 metadata + 3 tile zips: BR_01_train, BR_01_val, CL_01_train).
+- CL_01_val zip complete on disk, pending upload.
+- 12 tile zips remaining.
+- Resume command: python scripts/kaggle_upload_single_version.py (skips already-uploaded blobs).
+- Partial/corrupt zips are auto-discarded and re-created on resume.
+- Target: one dataset version ymencharafedn/s2-tiles-trainval containing all 10,680 train+val tiles.
+- Note: earlier per-zip versioning (kaggle_upload_staged.py) left only the last batch in the current version; superseded by the single-version approach.
+
+---
+
+## Kaggle Upload COMPLETE and VERIFIED (2026-11-16)
+
+- Single-version upload (scripts/kaggle_upload_single_version.py) finished:
+  version 18 of ymencharafedn/s2-tiles-trainval is the current version,
+  78.16 GB, containing ALL 33 files.
+- Independent verification (scripts/verify_kaggle_files.py): 10,697 files
+  = 10,680 train+val TIFs + 16 tile-index CSVs + 1 normalization JSON.
+  Every one of the 16 AOI x split group counts matches the local
+  tile-index CSVs exactly (RESULT: ALL DATA PRESENT).
+- Note: the earlier per-zip versioning (kaggle_upload_staged.py, versions
+  1-17) did NOT accumulate; superseded by blob-token accumulation into
+  version 18. Old versions remain on Kaggle but are unused.
+- Code dataset ymencharafedn/master2-a1-code created (80 KB zip:
+  src/, configs/, scripts/prepare_pairs.py).
+- Outage mid-upload (electricity) recovered via resumable tokens file
+  data/kaggle_stage/upload_tokens.json (33 blobs).
+- Next: Phase 5 Kaggle notebook - timing probe first, then full-scale pair
+  precompute, then EDSR-small on GPU 0 (user-approved 2026-11-15).
+
+
+## Phase 5 COMPLETE (2026-11-18) - EDSR-small on Kaggle 2xT4
+
+### Training
+- Kernel: aymencharafedn/phase-5-edsr-small-x4-training-s2-sim-alsat-2b (v2, API-pushed)
+- EDSR-small (16 resblocks / 64 feats / scale 4, 1.52M params), 300 epochs, batch 16,
+  patch 48, L1 loss, fp16 AMP, AdamW lr=1e-4 (cosine), seed 42, deterministic.
+- GPU 0 only (GPU 1 idle per approval). Training time 6.82 h, 78,020 steps.
+- Best val-patch PSNR 25.169 dB (epoch 239); final epoch val-patch PSNR ~24.95 dB,
+  val SSIM ~0.76. Checkpoint: experiments/checkpoints/edsr_small_phase5_best.pt (18.3 MB).
+
+### Data used
+- 4,154 train + 995 val LR/HR pairs (Wald degradation, seed 42) generated on Kaggle.
+  123 of 5,272 clean-indexed tiles (58 train / 65 val) were excluded at read time
+  because nan_fraction==0.0 in the index but still contained non-finite pixels
+  (data-quality note: the index nan_fraction metric misses some voids; excluded,
+  never filled - per project honesty rule).
+- HR streamed via windowed rasterio reads (192x192 patch region only) to keep
+  memory/IO bounded; LR precomputed as float32 .npy (~5.4 GB total).
+- Degradation: ALSAT2BDegradation.forward_ms_only (MTF sigma=0.35, area x4
+  downsample, Poisson-Gaussian noise SNR 20dB, 10-bit quantization).
+
+### Evaluation (full-tile, 30 val pairs, same pairs as bicubic baseline)
+- EDSR-small: PSNR 24.86 dB, SSIM 0.771, MSE 0.00329, MAE 0.0370,
+  ERGAS 0.0514, SAM 0.0203, SCI 0.9966.
+- Bicubic x4:   PSNR 21.83 dB, SSIM 0.629, MSE 0.00659, MAE 0.0552,
+  ERGAS 0.1032, SAM 0.0364.
+- VERDICT: EDSR-small BEATS bicubic by +3.03 dB PSNR. Artifact:
+  results/metrics/phase5_edsr_small_eval.json.
+- Note: the Phase 4 reference 37.59 dB bicubic figure was computed on the
+  smoke-subset val pairs (30 of the 120 local tiles), which are NOT the same
+  tiles as the Kaggle full-scale pool; the eval above recomputes bicubic on the
+  exact same 30 pairs the model is evaluated on, for a fair head-to-head.
+
+### Infrastructure lessons (for reproducibility / Phase 6)
+- Kaggle input layout is now /kaggle/input/datasets/<owner>/<slug>, not
+  /kaggle/input/<slug>. Dataset attachment must be declared in kernel-metadata
+  as dataset_sources (not dataset_data) - the latter is silently dropped.
+- Python glob with recursive=True is unreliable on Kaggle's virtual mount
+  (saw 204 of 10,680 tifs); os.walk sees all of them.
+- PyTorch 2.6 changed torch.load default to weights_only=True; loading our
+  checkpoints requires weights_only=False (trusted source). SRTrainer's own
+  load_checkpoint uses torch.load without weights_only and is unaffected, but
+  src/inference/inference.py::load_model_from_checkpoint needs the flag.
+- Kaggle interactive sessions die ~20 min after the tab closes; headless
+  (kernels push) runs are the reliable cloud path for long training.
+- Kaggle datasets auto-unzip uploaded zips; very large file counts (>~500 per
+  dataset) are not fully visible in the notebook mount unless walked.
+
+### Artifacts
+- experiments/checkpoints/edsr_small_phase5_best.pt (18.3 MB)
+- results/metrics/phase5_edsr_small_eval.json (full metric suite, 30 pairs)
+- results/metrics/phase5_train_summary.json (best_val_psnr, epochs, elapsed)
+- Kaggle kernels: phase-5-edsr-small-x4-training-s2-sim-alsat-2b (training, v2),
+  phase-5-edsr-small-eval-vs-bicubic (eval, v2).
+
+### Next
+- Phase 6: hallucination detection (src/hallucination/detection.py) on the
+  4,068 test tiles (kept local, never uploaded) + downstream task metrics
+  (src/downstream/tasks.py). All test tiles + raw scenes remain on local disk.
+
+
+## Phase 6 COMPLETE (2026-11-18) - Hallucination detection on test set
+
+### Scope
+- 1,823 clean test tiles (nan_fraction==0.0) across 8 AOIs; 1,742 processed
+  (81 skipped: missing files or non-finite pixels on read - same exclusion rule
+  as Phase 5, never filled).
+- Per tile: HR test tile -> Wald degradation (seed 42) -> LR [4,256,256] ->
+  SR via EDSR-small (best.pt, CPU, ~1.05 s/tile) and bicubic x4 ->
+  HallucinationDetector.detect_all (spectral/structural/textural; semantic
+  skipped - no task model provided).
+- Runtime 163.7 min (~0.18 tiles/s including inference + detection).
+
+### Results (any-hallucination rate)
+| Category   | EDSR-small | Bicubic x4 |
+|------------|------------|------------|
+| Spectral   | 2.53% (44) | 3.62% (63) |
+| Structural | 0.11% (2)  | 0.00% (0)  |
+| Textural   | 4.54% (79) | 9.82% (171)|
+| ANY        | 6.89% (120)| 13.03% (226)|
+
+- EDSR-small produces roughly HALF the hallucination rate of bicubic (6.89% vs 13.03%).
+- Textural hallucinations are the dominant category for both models and show the
+  largest gap (4.54% vs 9.82%) - consistent with EDSR's learned texture prior
+  vs bicubic's smoothing/overshoot.
+- Spectral hallucinations are rare for both (2.53% vs 3.62%), indicating both
+  respect band correlations reasonably well.
+- Structural hallucinations are negligible (0.11% EDSR, 0% bicubic).
+
+### Artifacts
+- results/metrics/phase6_per_tile.jsonl (1,742 per-tile records: classification,
+  detected_types, confidences, per-category metrics for both models)
+- results/metrics/phase6_hallucination.json (aggregated summary)
+- scripts/phase6_hallucination.py (resume-safe, --max_tiles cap for pilots)
+
+### H2 / downstream tasks
+- Semantic detection skipped (no trained task model). FixedBackboneEvaluator
+  (src/downstream/tasks.py) is available but requires a trained task model on
+  HR - a follow-up sub-project if task-level impact is needed.
+- Expert annotation validation (validate_hallucination_metrics) requires manual
+  labels - out of scope for automated run.
+
+### Thesis headline so far
+- Phase 5: EDSR-small 24.86 dB vs bicubic 21.83 dB (+3.03 dB) on full-tile eval.
+- Phase 6: EDSR-small hallucination rate 6.89% vs bicubic 13.03% (-6.14 pp).
+  EDSR improves both fidelity AND reduces hallucinations.
+
+
+## Phase 5b IN PROGRESS (2026-11-18) - Multi-model training (SwinIR + Real-ESRGAN)
+
+### Scripts
+- data/kaggle_stage_swinir/phase5_swinir.py: SwinIR-base (6 layers, 180 embed, 6 heads,
+  200 epochs, L1+LPIPS weight 0.1, patch 64, lr 2e-4, seed 123). LPIPS 4-channel
+  fix patched (uses first 3 channels for AlexNet backbone).
+- data/kaggle_stage_realesrgan/phase5_realesrgan.py: Real-ESRGAN (RRDBNet 23 blocks,
+  64 feats + VGGStyleDiscriminator, max 50k iters capped from 400k, L1+perceptual+GAN,
+  patch 128, lr 1e-4, seed 456). Perceptual loss already handles 4 channels.
+
+### Kernels (both RUNNING)
+- aymencharafedn/phase-5-swinir-base-x4-training-v2 (v2, GPU, internet, both datasets)
+- aymencharafedn/phase-5-real-esrgan-x4-training (v1, GPU, internet, both datasets)
+
+### SwinIR v1 failure (2026-11-18)
+- v1 (batch 16, patch 64) hit CUDA OOM after 49 min of training (14.56 GiB GPU, 12.87M params,
+  6-stage window attention). Root cause: SwinIR's window attention + 6 transformer stages
+  are far more memory-hungry than the CNN EDSR baseline.
+- Fix: batch 16 -> 8 (patch 64 kept for convergence parity). Pushed as v2, now running.
+
+### Real-ESRGAN v1 failure (2026-11-18)
+- v1 crashed at model construction with `AttributeError: 'RRDBNet' object has no attribute 'get'`
+  (line 183 of realesrgan.py). The script passed an RRDBNet *instance* as `net_g`, but
+  RealESRGAN.__init__ expects a *config dict* and builds the RRDBNet itself.
+- Fix: pass `mcfg["model"]["net_g"]` dict directly. Pushed as v2, now running.
+
+### Real-ESRGAN v2 failure (2026-11-18)
+- v2 failed at `trainer._setup_loss` line 345 with `NameError: name 'lr' is not defined` when
+  building the discriminator optimizer. `lr` is only defined in `_setup_optimizer`, not in scope
+  of `_setup_loss`.
+- Fix: replaced `lr=lr` with `lr=self.config.get('lr', 1e-4)` in trainer.py. Since the Kaggle
+  `master2-a1-code` dataset can't be versioned (Kaggle API returns 404 on dataset-version
+  creation — the upload path is broken on this account), the fix is applied **inline** in
+  the kernel script: it reads `src/training/trainer.py` from the mounted dataset and rewrites
+  the buggy line before training starts. Pushed as v3, now running.
+
+### Goal
+3-way comparison (EDSR vs SwinIR vs Real-ESRGAN) for fidelity (PSNR/SSIM/SAM/ERGAS)
+and hallucination rates. Download checkpoints when done, re-run eval + hallucination
+detection, update thesis.

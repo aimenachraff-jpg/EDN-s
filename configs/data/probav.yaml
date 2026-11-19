@@ -12,7 +12,7 @@ dataset:
   name: "PROBA-V MISR"
   source: "ESA Kelvin Platform"
   challenge_url: "https://kelvins.esa.int/proba-v-super-resolution/"
-  data_url: "https://zenodo.org/record/6327426"  # 675 MB zip
+  data_url: "https://zenodo.org/record/6327426"  # 675 MB (708,416,603 bytes) probav_data.zip
   variant: "proba_v_ref"  # Use reference-aware variant
 
   # Scene counts (official split)
@@ -120,17 +120,22 @@ metric:
   reference: "norm.csv provides baseline cPSNR for normalization"
 
 # ============================================================================
-# Directory Structure (After Download)
+# Directory Structure (Verified against actual archive 2026-11-14)
 # ============================================================================
+# ACTUAL Zenodo layout: imgset IDs are CONTINUOUS and PARTITIONED by band,
+# not duplicated. Verified: train 594+566=1160, test 146+144=290 (spec match).
 structure:
-  root: "data/raw/proba_v"
+  root: "data/raw/proba_v/probav_data"
+  id_scheme: "partitioned"   # each imgset ID belongs to ONE band
   train:
-    RED: "train/RED/imgsetxxxx/HR.png, LRXXX.png, QMXXX.png"
-    NIR: "train/NIR/imgsetxxxx/HR.png, LRXXX.png, QMXXX.png"
+    RED: "train/RED/imgset0000-0593"   # 594 imgsets (HR + LR + QM)
+    NIR: "train/NIR/imgset0594-1159"   # 566 imgsets (HR + LR + QM)
   test:
-    RED: "test/RED/imgsetxxxx/LRXXX.png, QMXXX.png, SM.png"
-    NIR: "test/NIR/imgsetxxxx/LRXXX.png, QMXXX.png, SM.png"
-  norm_csv: "norm.csv"
+    RED: "test/RED/imgset1160-1305"    # 146 imgsets (LR + QM + SM, no HR)
+    NIR: "test/NIR/imgset1306-1449"    # 144 imgsets (LR + QM + SM, no HR)
+  norm_csv: "norm.csv"   # 1450 lines, one baseline cPSNR per imgset
+  leakage_note: "Split by REGION, not imgset ID - RED/NIR imgsets of the
+    same region are related; naive ID splits leak."
 
 # ============================================================================
 # Processing Parameters
@@ -166,8 +171,9 @@ splits:
 # Download Configuration
 # ============================================================================
 download:
-  url: "https://zenodo.org/record/6327426/files/proba-v-super-resolution.zip"
+  url: "https://zenodo.org/api/records/6327426/files/probav_data.zip/content"
   size_mb: 675
-  checksum: "sha256:verify_after_download"  # TODO: add actual checksum
+  size_bytes: 708416603
+  checksum: "md5:7101101c7c91eeb5979d472861c1b784"
   extract: true
   target_dir: "data/raw/proba_v"
