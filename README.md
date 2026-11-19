@@ -2,7 +2,10 @@
 
 > **Master 2 Thesis** — Computer Science / Artificial Intelligence, Algeria  
 > **Working title:** *Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery*  
-> **Status:** Phase 5b IN PROGRESS - Both SwinIR (v2, batch 8) and Real-ESRGAN (v2, net_g fix) kernels now running on Kaggle after separate failures (OOM for SwinIR v1, constructor bug for Real-ESRGAN v1). Phase 6 complete: hallucination 6.89% (EDSR) vs 13.03% (bicubic). Phase 5 eval: EDSR-small 24.86 dB vs 21.83 dB (+3.03 dB). All results in results/metrics/.
+> **Status:** Phase 9 COMPLETE. All core research phases finished; LaTeX thesis compiled.  
+> Phase 5b (SwinIR + Real-ESRGAN) blocked — Kaggle weekly GPU quota maxed (30 h/week reached 2026-11-19). Kernels prepared but not run. Core results stand on EDSR-small alone.  
+> 
+> **Storage note (2026-11-19):** 114.9 GB of local Sentinel-2 tiles (`data/processed/sentinel2`), smoke pairs (`data/interim/pairs`), and scratch (`tmp/`) deleted. All training data is mirrored on Kaggle (`s2-tiles-trainval` v18) and regenerable on demand. The trained checkpoint (`experiments/checkpoints/edsr_small_phase5_best.pt`), all metrics, and the inference app are untouched — the model and `sr_app.py` still work.
 > **Last updated:** 2026-11-18
 
 ---
@@ -66,8 +69,8 @@ Full hypotheses: [`research/final_hypotheses.md`](research/final_hypotheses.md)
 | 5 | Super-Resolution Experiments | ✅ Complete (2026-11-18): EDSR-small 24.86 dB vs bicubic 21.83 dB (+3.03 dB) on Kaggle 2×T4 |
 | 6 | Hallucination-Aware Evaluation | ✅ Complete (2026-11-18): 1,742 clean test tiles; EDSR hallucination 6.89% vs bicubic 13.03% |
 | 7 | Downstream Task Evaluation | ⏳ Optional (task model training needed; framework implemented in src/downstream/tasks.py) |
-| 8 | Statistical Analysis & Discussion | ⏳ Pending |
-| 9 | Thesis Writing & Final Validation | ⏳ Pending |
+| 8 | Statistical Analysis & Discussion | ✅ Complete (2026-11-18): Cohen's d 6.19, McNemar p<0.001 for textural/spectral |
+| 9 | Thesis Writing & Final Validation | ✅ Complete (2026-11-19): LaTeX thesis `thesis/main.pdf` (19 pages) compiled with all results |
 
 ---
 

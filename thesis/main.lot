@@ -1,0 +1,18 @@
+\babel@toc {nil}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Tile counts by split and cleanliness.}}{7}{table.caption.4}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces EDSR-small model parameters.}}{8}{table.caption.5}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Hallucination detection thresholds and criteria.}}{8}{table.caption.6}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces Phase~5 evaluation: EDSR-small vs bicubic baseline on 30 validation pairs.}}{10}{table.caption.7}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Phase~6 hallucination detection rates on 1,742 clean test tiles.}}{11}{table.caption.8}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces Thesis artifacts and their locations.}}{16}{table.caption.10}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }

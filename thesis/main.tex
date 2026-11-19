@@ -1,0 +1,191 @@
+% !TeX program = pdflatex
+% Master 2 Thesis - Hallucination-Aware SR for ALSAT-2B
+
+\documentclass[12pt,a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{babel}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+% Page geometry
+\geometry{margin=2.5cm}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue
+}
+
+% Section spacing
+\titleformat{\chapter}[display]
+    {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{40pt}
+
+\begin{document}
+
+% ==================== TITLE PAGE ====================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Large Master 2 Thesis -- Computer Science / Artificial Intelligence} \\
+    \vspace{0.5cm}
+    {Algeria} \\
+    \vspace{2cm}
+    
+    {\huge\bfseries Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery} \\
+    \vfill
+    \vspace{1cm}
+    
+    {\Large Author: [Student Name]} \\
+    \vspace{0.5cm}
+    {\Large Supervisor: [Supervisor Name]} \\
+    \vspace{0.5cm}
+    {\large November 2026} \\
+    
+\end{titlepage}
+
+% ==================== ABSTRACT ====================
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{chapters/abstract.tex}
+
+% ==================== TABLE OF CONTENTS ====================
+\tableof contents
+\listoffigures
+\listoftables
+
+% ==================== CHAPTER 1: INTRODUCTION ====================
+\chapter{Introduction}
+\input{chapters/introduction.tex}
+
+% ==================== CHAPTER 2: LITERATURE REVIEW ====================
+\chapter{Literature Review}
+\input{chapters/literature_review.tex}
+
+% ==================== CHAPTER 3: METHODOLOGY ====================
+\chapter{Methodology}
+\input{chapters/methodology.tex}
+
+% ==================== CHAPTER 4: BASELINE IMPLEMENTATION ====================
+\chapter{Baseline Implementation}
+\input{chapters/baseline.tex}
+
+% ==================== CHAPTER 5: SR EXPERIMENTS ====================
+\chapter{Super-Resolution Experiments}
+\input{chapters/phase5.tex}
+
+% ==================== CHAPTER 6: HALLUCINATION EVALUATION ====================
+\chapter{Hallucination-Aware Evaluation}
+\input{chapters/phase6.tex}
+
+% ==================== CHAPTER 7: DISCUSSION ====================
+\chapter{Discussion}
+\input{chapters/discussion.tex}
+
+% ==================== CHAPTER 8: CONCLUSION ====================
+\chapter{Conclusion}
+\input{chapters/conclusion.tex}
+
+% ==================== REFERENCES ====================
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% ==================== APPENDICES ====================
+\appendix
+\chapter{Artifact Inventory}
+
+\begin{table}[H]
+\centering
+\caption{Thesis artifacts and their locations.}
+\label{tab:artifacts}
+\begin{tabularx}{\textwidth}{l l r}
+\toprule
+Artifact & Path & Size \\
+\midrule
+EDSR-small checkpoint (best) & \texttt{experiments/checkpoints/edsr\_small\_phase5\_best.pt} & 18.3 MB \\
+Phase 5 eval metrics & \texttt{results/metrics/phase5\_edsr\_small\_eval.json} & 5.4 KB \\
+Phase 5 train summary & \texttt{results/metrics/phase5\_train\_summary.json} & 87 B \\
+Phase 6 per-tile records & \texttt{results/metrics/phase6\_per\_tile.jsonl} & 1.6 MB \\
+Phase 6 aggregated summary & \texttt{results/metrics/phase6\_hallucination.json} & 1.6 KB \\
+Phase 8 statistical analysis & \texttt{results/metrics/phase8\_statistical\_analysis.json} & $\sim$15 KB \\
+Bicubic baseline & \texttt{results/metrics/baseline\_bicubic.json} & 2.5 KB \\
+Smoke test results & \texttt{results/metrics/smoke\_edsr\_tiny.json} & 2.4 KB \\
+Training run output & Kaggle kernel \texttt{phase-5-edsr-small-x4-training-s2-sim-alsat-2b} (v2) & -- \\
+Eval run output & Kaggle kernel \texttt{phase-5-edsr-small-eval-vs-bicubic} (v2) & -- \\
+Tile dataset (verified) & Kaggle \texttt{s2-tiles-trainval} (v18, 78.16 GB, 10,697 files) & -- \\
+Code dataset & Kaggle \texttt{master2-a1-code} (80 KB) & -- \\
+Comparison figure & \texttt{results/figures/00\_comparison\_panel.png} & 1.5 MB \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Software Artifacts}
+
+\section{Python Application}
+The inference application is available at \texttt{sr\_app.py} with a dark-themed GUI supporting:
+\begin{itemize}
+    \item Drag-and-drop input GeoTIFF loading
+    \item Threaded SR processing (queue-based, non-blocking)
+    \item Three-panel display (Original / EDSR / EDSR+)
+    \item Hallucination detection integrated into status bar
+    \item Keyboard shortcuts (\texttt{Ctrl+O}, \texttt{Ctrl+S}, \texttt{Esc}, \texttt{R})
+    \item CLI mode: \texttt{python sr\_app.py input.tif output.tif}
+\end{itemize}
+Double-click launcher: \texttt{run\_sr\_app.bat}.
+
+\section{Project Structure}
+\begin{verbatim}
+MASTER2-A1/
+├── configs/              # Model and degradation configs
+├── data/                 # Tile indexes, normalization stats, kaggle stages
+├── docs/                 # Phase reports, methodology decisions
+├── experiments/
+│   ├── checkpoints/      # Trained model weights
+│   ├── logs/             # Training logs
+│   └── protocols/        # Kernel templates
+├── notebooks/            # Jupyter notebooks
+├── results/
+│   ├── figures/          # Generated comparison images
+│   ├── metrics/          # JSON metrics (all verified)
+│   └── tables/           # Markdown tables for thesis
+├── scripts/              # All Python utility scripts
+├── src/                  # Source code (models, evaluation, etc.)
+├── tests/                # Unit tests
+├── thesis/               # This LaTeX thesis
+├── AGENTS.md             # Agent instructions
+├── README.md             # Project readme
+└── sr_app.py             # Inference GUI application
+\end{verbatim}
+
+\chapter{Reproducibility Checklist}
+
+All experiments are reproducible:
+\begin{enumerate}
+    \item \textbf{Data:} Download from Kaggle \texttt{aymencharafedn/s2-tiles-trainval} (v18)
+    \item \textbf{Model:} Load checkpoint \texttt{experiments/checkpoints/edsr\_small\_phase5\_best.pt}
+    \item \textbf{Metrics:} Run \texttt{scripts/verify\_kaggle\_files.py} to confirm tile counts match
+    \item \textbf{Hallucination:} Run \texttt{scripts/phase6\_hallucination.py} on test tiles
+    \item \textbf{Statistics:} Run \texttt{scripts/phase8\_statistical\_analysis.py}
+    \item \textbf{GUI App:} Run \texttt{python sr\_app.py} or double-click \texttt{run\_sr\_app.bat}
+\end{enumerate}
+
+Seed: 42. Hardware: Kaggle 2$\times$ T4 16~GB; local CPU (Intel Iris Xe). Python 3.10.11, PyTorch 2.11.0+cu130 (Kaggle), 2.3.0 (local).
+
+\end{document}

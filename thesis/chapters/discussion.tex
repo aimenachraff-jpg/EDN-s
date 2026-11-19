@@ -1,0 +1,27 @@
+\subsection{Fidelity}
+EDSR achieves +3.03 dB PSNR, +0.142 SSIM, halved ERGAS (0.0514 vs 0.1032), and lower SAM (0.0203 vs 0.0364) vs bicubic. The improvement is consistent across all fidelity metrics, not just PSNR.
+
+\subsection{Hallucination}
+Textural hallucinations dominate for both models (bicubic 9.82\%, EDSR 4.54\%). Bicubic's smoothing/overshoot creates texture mismatches; EDSR's learned texture prior reduces these. Spectral hallucinations are rare (2.53\% vs 3.62\%), indicating both methods respect band correlations (NDVI in range, correlation matrix stable). Structural hallucinations are negligible -- wavelet-based detection in homogeneous regions finds almost no spurious high-frequency content.
+
+\subsection{Statistical Significance}
+The phase~8 statistical analysis confirms the robustness of these results:
+\begin{itemize}
+    \item Cohen's $d = 6.19$ (very large effect size for PSNR difference)
+    \item McNemar $\chi^2 = 81.19$ for textural hallucinations ($p < 0.001$)
+    \item McNemar $\chi^2 = 17.05$ for spectral hallucinations ($p = 3.6 \times 10^{-5}$)
+    \item Wilson score CIs confirm the differences are statistically significant at 95\% confidence
+\end{itemize}
+
+\subsection{Limitations}
+\begin{itemize}
+    \item Single SR model evaluated (EDSR-small); SwinIR/Real-ESRGAN training was deferred due to Kaggle GPU quota exhaustion (30 h/week limit reached on 2026-11-19)
+    \item Semantic detection not evaluated (no trained task model)
+    \item H2 (metric validation vs expert annotations) not performed
+    \item $\times$2 native track deferred (20m bands not acquired)
+    \item S2 tile index \texttt{nan\_fraction} metric misses some non-finite pixels (123 tiles excluded from analysis)
+    \item 81 of 1,823 clean test tiles skipped (missing or non-finite on read)
+\end{itemize}
+
+\subsection{Downstream Task Evaluation (Deferred)}
+\texttt{FixedBackboneEvaluator} implemented in \texttt{src/downstream/tasks.py}. Requires labeled task data + trained task model on HR. Documented as future work if task-level impact is needed.

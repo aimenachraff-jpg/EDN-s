@@ -342,7 +342,7 @@ class SRTrainer:
             if hasattr(self.model, 'discriminator') and self.model.discriminator is None:
                 self.model.setup_training()
             self.discriminator = self.model.discriminator
-            self.disc_optimizer = AdamW(self.discriminator.parameters(), lr=lr, weight_decay=1e-4)
+            self.disc_optimizer = AdamW(self.discriminator.parameters(), lr=self.config.get('lr', 1e-4), weight_decay=1e-4)
         
         self.criterion = SRLoss(
             loss_type=loss_config.get('loss_type', 'l1'),

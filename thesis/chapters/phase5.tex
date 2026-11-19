@@ -1,0 +1,39 @@
+\subsection{Training}
+EDSR-small trained on Kaggle 2$\times$ T4 (GPU 0 only):
+\begin{itemize}
+    \item 300 epochs, 78,020 steps, 6.82 h
+    \item Best val-patch PSNR: \textbf{25.169 dB} (epoch 239)
+    \item Final: val-patch PSNR $\sim$24.95 dB, val SSIM $\sim$0.76, LR $\sim$1e$^{-6}$
+    \item Checkpoint: \texttt{experiments/checkpoints/edsr\_small\_phase5\_best.pt} (18.3 MB)
+\end{itemize}
+
+\subsection{Evaluation (Full-Tile, 30 Val Pairs)}
+
+\begin{table}[h]
+\centering
+\caption{Phase~5 evaluation: EDSR-small vs bicubic baseline on 30 validation pairs.}
+\label{tab:eval}
+\begin{tabular}{lrrr}
+\toprule
+Metric & EDSR-small & Bicubic $\times$4 & $\Delta$ \\
+\midrule
+PSNR (dB) & \textbf{24.86} & 21.83 & +3.03 \\
+SSIM & 0.771 & 0.629 & +0.142 \\
+MSE & 0.00329 & 0.00659 & $-$0.00330 \\
+MAE & 0.0370 & 0.0552 & $-$0.0182 \\
+ERGAS & 0.0514 & 0.1032 & $-$0.0518 \\
+SAM & 0.0203 & 0.0364 & $-$0.0161 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cohen's $d \approx 6.19$ (very large effect). 95\% CI: EDSR [24.68, 25.05] vs bicubic [21.67, 21.99] (non-overlapping). $p < 0.001$.
+
+\subsection{Infrastructure Notes}
+\begin{itemize}
+    \item Kaggle input layout: \texttt{/kaggle/input/datasets/<owner>/<slug>} (not \texttt{/kaggle/input/<slug>})
+    \item \texttt{glob(..., recursive=True)} unreliable on Kaggle mount (204/10,680 tifs); use \texttt{os.walk}
+    \item Dataset attachment in kernel-metadata uses \texttt{dataset\_sources} (not \texttt{dataset\_data})
+    \item PyTorch 2.6: \texttt{torch.load} default \texttt{weights\_only=True} breaks checkpoint loading; use \texttt{weights\_only=False} for trusted sources
+    \item Training run ``error'' status was only the eval step (torch.load incompatibility); training itself completed fully
+\end{itemize}
