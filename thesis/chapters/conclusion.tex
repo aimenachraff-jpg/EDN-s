@@ -1,9 +1,0 @@
-This thesis demonstrates that deep-learning super-resolution (EDSR-small) on ALSAT-2B $\times$4 satellite imagery improves both fidelity (+3.03 dB PSNR) and reduces hallucination rates (6.89\% vs 13.03\%) compared to bicubic interpolation. The hallucination-aware evaluation framework (spectral, structural, textural, semantic) provides a more complete picture than PSNR alone, revealing that:
-
-\begin{enumerate}
-    \item Learned SR generates textures that are more faithful, not just more plausible.
-    \item Spectral fidelity is preserved (low SAM, rare spectral hallucinations).
-    \item The perception-distortion tradeoff does not necessarily hold: EDSR achieves both lower distortion AND fewer hallucinations.
-\end{enumerate}
-
-The detection framework and evaluator are reusable for other SR methods and datasets. Future work includes evaluating SwinIR/Real-ESRGAN (kernels prepared but blocked by GPU quota), training task models for semantic hallucination detection, and validating metrics against expert annotations (H2).
