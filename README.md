@@ -3,8 +3,9 @@
 ## Overview
 EDN-S (Enhanced Deep Network for Satellite Super-Resolution) is a lightweight PyTorch implementation of EDSR-small for satellite image super-resolution, deployable as a pip-installable package with CLI and Python API.
 
+**Author:** Chekalil Aimene Charef Eddine
+**Project type:** Independent research startup (self-directed, completed without institutional affiliation)
 **Thesis:** "Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery"
-**Degree:** Master 2 Computer Science / Artificial Intelligence — Algeria
 
 ---
 
@@ -110,7 +111,7 @@ src/edns/
 MIT License — see [LICENSE](LICENSE) file
 
 ## Acknowledgments
-This work was supported by the MASTER2-A1 project. Special thanks to the Kaggle community for dataset access and the OpenCode framework for enabling this development.
+Special thanks to the Kaggle community for dataset access and the OpenCode framework for enabling this independent research.
 
-## Contact
-For questions or collaboration, contact: aimenachraff@example.com
+## Author
+Chekalil Aimene Charef Eddine — independent researcher
