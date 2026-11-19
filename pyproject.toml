@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "edns"
-version = "1.0.0"
+version = "1.0.1"
 description = "EDN-S: Enhanced Deep Network for Satellite Super-Resolution"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Aimen Achraff", email = "aimenachraff@example.com"}
+    {name = "Chekalil Aimene Charef Eddine", email = "aimenachraff@example.com"}
 ]
 maintainers = [
-    {name = "Aimen Achraff", email = "aimenachraff@example.com"}
+    {name = "Chekalil Aimene Charef Eddine", email = "aimenachraff@example.com"}
 ]
 keywords = [
     "super-resolution",
@@ -69,10 +69,10 @@ full = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/aimenachraff-jpg/EDN-S"
-Repository = "https://github.com/aimenachraff-jpg/EDN-S"
-Issues = "https://github.com/aimenachraff-jpg/EDN-S/issues"
-Documentation = "https://github.com/aimenachraff-jpg/EDN-S/wiki"
+Homepage = "https://github.com/aimenachraff-jpg/MASTER2-A1"
+Repository = "https://github.com/aimenachraff-jpg/MASTER2-A1"
+Issues = "https://github.com/aimenachraff-jpg/MASTER2-A1/issues"
+Documentation = "https://github.com/aimenachraff-jpg/MASTER2-A1/wiki"
 
 [project.scripts]
 edns-sr = "edns.inference.app:main"
