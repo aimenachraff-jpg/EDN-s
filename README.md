@@ -1,11 +1,18 @@
 # EDN-S: Enhanced Deep Network for Satellite Super-Resolution
 
+[![PyPI version](https://badge.fury.io/py/edns.svg)](https://pypi.org/project/edns/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/aimenachraff-jpg/EDN-s?style=social)](https://github.com/aimenachraff-jpg/EDN-s)
+
 ## Overview
 EDN-S (Enhanced Deep Network for Satellite Super-Resolution) is a lightweight PyTorch implementation of EDSR-small for satellite image super-resolution, deployable as a pip-installable package with CLI and Python API.
 
-**Author:** Chekalil Aimene Charef Eddine
-**Project type:** Independent research startup (self-directed, completed without institutional affiliation)
-**Thesis:** "Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery"
+**Author:** Chekalil Aimene Charef Eddine  
+**Project type:** Independent research startup (self-directed, completed without institutional affiliation)  
+**Thesis:** "Hallucination-Aware and Task-Driven Evaluation of Super-Resolution Methods for ALSAT-2B Satellite Imagery"  
+**Institution:** Master 2 Computer Science / AI — Algeria  
+**Related:** ASAL (Algerian Space Agency) — ALSAT-2B satellite imagery research
 
 ---
 
@@ -34,8 +41,8 @@ pip install edns
 
 Or from source:
 ```bash
-git clone https://github.com/aimenachraff-jpg/MASTER2-A1.git
-cd MASTER2-A1
+git clone https://github.com/aimenachraff-jpg/EDN-s.git
+cd EDN-s
 pip install -e .
 ```
 
@@ -47,16 +54,36 @@ pip install -e .
 ```python
 from edns.inference import run_sr
 
-result_path = run_sr(
+# Basic super-resolution
+result = run_sr(
     input_path="data/raw/sentinel2/test.tif",
-    output_path="output_sr.tif",
-    model_path="experiments/checkpoints/edsr_small_phase5_best.pt"
+    output_path="output_sr.tif"
 )
+
+# With hallucination detection (requires HR reference)
+result = run_sr(
+    input_path="input.tif",
+    output_path="output_sr.tif",
+    compute_hallucination=True,
+    hr_reference_path="reference_hr.tif",
+    hallucination_report_path="hallucination_report.json"
+)
+print(result["hallucination_report"]["summary"])
 ```
 
 ### CLI
 ```bash
+# Basic super-resolution
 edns-sr input.tif [output.tif]
+
+# With hallucination detection
+edns-sr input.tif --hallucination --hr reference_hr.tif
+
+# With hallucination report saved to JSON
+edns-sr input.tif -o output.tif --hallucination --hr reference.tif --report report.json
+
+# Verbose output
+edns-sr input.tif -v --hallucination --hr reference.tif
 ```
 
 Environment variables: `EDNS_CKPT`, `EDNS_CONFIG`
@@ -71,6 +98,63 @@ Environment variables: `EDNS_CKPT`, `EDNS_CONFIG`
 - 🛠️ **Deployable**: CLI + Python API, pip-installable package (`edns`)
 
 ---
+
+## Hallucination Detection
+
+The package includes a built-in hallucination detector that evaluates super-resolved outputs against a ground-truth HR reference across four categories:
+
+| Category | What it detects |
+|----------|-----------------|
+| **Spectral** | Unnatural spectral signatures, band correlation violations |
+| **Structural** | Geometric distortions, edge artifacts, ringing |
+| **Textural** | Invented textures, GLCM/entropy anomalies |
+| **Semantic** | Downstream task performance degradation (requires task model) |
+
+### CLI Output Example
+```bash
+$ edns-sr input.tif --hallucination --hr reference.tif
+Processing input.tif -> input_sr.tif
+Hallucination detection: ON (HR reference: reference.tif)
+Done in 52.34s. Saved to input_sr.tif
+
+=== Hallucination Detection Report ===
+  Spectral     : ✓  Clean (confidence: 0.0123)
+  Structural   : ✓  Clean (confidence: 0.0001)
+  Textural     : ⚠️  DETECTED (confidence: 0.0456)
+  Semantic     : —  Skipped (no task model)
+  Any          : ⚠️  YES
+======================================
+```
+
+### Python API Report Structure
+```python
+result = run_sr(
+    input_path="input.tif",
+    output_path="output.tif",
+    compute_hallucination=True,
+    hr_reference_path="reference.tif",
+    hallucination_report_path="report.json"
+)
+
+# result["hallucination_report"] contains:
+{
+    "input_path": "input.tif",
+    "output_path": "output.tif",
+    "hr_reference_path": "reference.tif",
+    "hallucination": {
+        "spectral": {"detected": False, "confidence": 0.0123, ...},
+        "structural": {"detected": False, "confidence": 0.0001, ...},
+        "textural": {"detected": True, "confidence": 0.0456, ...},
+        "semantic": {"detected": False, "confidence": 0.0, "skipped": True},
+        "any_hallucination": True
+    },
+    "summary": {
+        "any_hallucination": True,
+        "detected_categories": ["textural"],
+        "max_confidence": 0.0456
+    }
+}
+```
 
 ## Verified Results
 
@@ -110,8 +194,15 @@ src/edns/
 ## License
 MIT License — see [LICENSE](LICENSE) file
 
+## Published on PyPI
+```bash
+pip install edns
+```
+Package: [https://pypi.org/project/edns/](https://pypi.org/project/edns/) — version 1.0.1
+
 ## Acknowledgments
-Special thanks to the Kaggle community for dataset access and the OpenCode framework for enabling this independent research.
+Special thanks to the Kaggle community for dataset access and the OpenCode framework for enabling this independent research.  
+This work is inspired by ALSAT-2B satellite imagery research in collaboration with **ASAL** (Algerian Space Agency).
 
 ## Author
 Chekalil Aimene Charef Eddine — independent researcher
