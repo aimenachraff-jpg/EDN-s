@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "edns"
 version = "1.0.1"
-description = "EDN-S: Enhanced Deep Network for Satellite Super-Resolution"
+description = "EDN-S: Enhanced Deep Network for Satellite Super-Resolution — Lightweight EDSR-small implementation for Sentinel-2/ALSAT-2B imagery with built-in hallucination detection (spectral, structural, textural, semantic). Pip-installable CLI and Python API. Research project for Master 2 CS/AI (Algeria) with ASAL (Algerian Space Agency) relevance."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
@@ -18,15 +18,24 @@ keywords = [
     "super-resolution",
     "satellite",
     "sentinel-2",
+    "alsat-2b",
     "edsr",
     "deep-learning",
     "remote-sensing",
-    "pytorch"
+    "pytorch",
+    "hallucination-detection",
+    "image-processing",
+    "gis",
+    "asal",
+    "algerian-space-agency"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
     "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -34,6 +43,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Scientific/Engineering :: Image Processing",
     "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Visualization",
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -69,10 +79,12 @@ full = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/aimenachraff-jpg/MASTER2-A1"
-Repository = "https://github.com/aimenachraff-jpg/MASTER2-A1"
-Issues = "https://github.com/aimenachraff-jpg/MASTER2-A1/issues"
-Documentation = "https://github.com/aimenachraff-jpg/MASTER2-A1/wiki"
+Homepage = "https://github.com/aimenachraff-jpg/EDN-s"
+Repository = "https://github.com/aimenachraff-jpg/EDN-s"
+Issues = "https://github.com/aimenachraff-jpg/EDN-s/issues"
+Documentation = "https://github.com/aimenachraff-jpg/EDN-s/wiki"
+Changelog = "https://github.com/aimenachraff-jpg/EDN-s/releases"
+Funding = "https://github.com/sponsors/aimenachraff-jpg"
 
 [project.scripts]
 edns-sr = "edns.inference.app:main"
