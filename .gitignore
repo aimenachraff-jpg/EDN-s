@@ -96,16 +96,5 @@ results/figures/
 *.jpeg
 *.pdf
 
-# Thesis build
-thesis/*.aux
-thesis/*.bbl
-thesis/*.blg
-thesis/*.fdb_latexmk
-thesis/*.fls
-thesis/*.log
-thesis/*.out
-thesis/*.synctex.gz
-thesis/*.toc
-thesis/*.lof
-thesis/*.lot
-thesis/main.pdf
+# Thesis (hidden from GitHub until finalized)
+thesis/
