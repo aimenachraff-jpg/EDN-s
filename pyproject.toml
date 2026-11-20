@@ -5,29 +5,29 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "edns"
 version = "1.0.2"
-description = "EDN-S: Enhanced Deep Network for Satellite Super-Resolution — Lightweight EDSR-small implementation for Sentinel-2/ALSAT-2B imagery with built-in hallucination detection (spectral, structural, textural, semantic). Pip-installable CLI and Python API. Research project for Master 2 CS/AI (Algeria) with ASAL (Algerian Space Agency) relevance."
+description = "A PyTorch-based implementation of deep learning methods for satellite image super-resolution, featuring model training, image reconstruction, and quantitative evaluation of spectral and spatial fidelity."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Chekalil Aimene Charef Eddine", email = "aimenachraff@example.com"}
+    {name = "Chekalil Aimene Charef Eddine"}
 ]
 maintainers = [
-    {name = "Chekalil Aimene Charef Eddine", email = "aimenachraff@example.com"}
+    {name = "Chekalil Aimene Charef Eddine"}
 ]
 keywords = [
     "super-resolution",
-    "satellite",
+    "satellite-imagery",
     "sentinel-2",
     "alsat-2b",
     "edsr",
     "deep-learning",
+    "computer-vision",
     "remote-sensing",
     "pytorch",
     "hallucination-detection",
     "image-processing",
-    "gis",
-    "asal",
-    "algerian-space-agency"
+    "earth-observation",
+    "research"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -67,24 +67,21 @@ dev = [
     "mypy>=1.0",
     "pre-commit>=3.0",
 ]
-gui = [
-    "tkinter",
-]
 cloud = [
     "kagglehub>=0.3.0",
     "kaggle>=1.7.0",
 ]
 full = [
-    "edns[dev,gui,cloud]",
+    "edns[dev,cloud]",
 ]
 
 [project.urls]
 Homepage = "https://github.com/aimenachraff-jpg/EDN-s"
 Repository = "https://github.com/aimenachraff-jpg/EDN-s"
 Issues = "https://github.com/aimenachraff-jpg/EDN-s/issues"
-Documentation = "https://github.com/aimenachraff-jpg/EDN-s/wiki"
-Changelog = "https://github.com/aimenachraff-jpg/EDN-s/releases"
-Funding = "https://github.com/sponsors/aimenachraff-jpg"
+Documentation = "https://github.com/aimenachraff-jpg/EDN-s/tree/main/docs"
+Changelog = "https://github.com/aimenachraff-jpg/EDN-s/blob/main/CHANGELOG.md"
+PyPI = "https://pypi.org/project/edns/"
 
 [project.scripts]
 edns-sr = "edns.inference.app:main"
@@ -97,6 +94,7 @@ include = ["edns*"]
 edns = [
     "configs/**/*.yaml",
     "configs/**/*.yml",
+    "data/*.json",
 ]
 
 [tool.pytest.ini_options]

@@ -5,12 +5,12 @@ EDN-S: Enhanced Deep Network for Satellite Super-Resolution
 A PyTorch implementation of EDSR-small for satellite imagery super-resolution.
 Trained on Sentinel-2 simulated ALSAT-2B ×4 dataset.
 
-Author: Aimen Achraff
+Author: Chekalil Aimene Charef Eddine
 License: MIT
 """
 
-__version__ = "1.0.0"
-__author__ = "Aimen Achraff"
+__version__ = "1.0.2"
+__author__ = "Chekalil Aimene Charef Eddine"
 
 from .models import (
     EDSR,

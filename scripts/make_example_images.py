@@ -5,7 +5,7 @@ import torch, yaml, rasterio
 from PIL import Image
 from omegaconf import OmegaConf
 
-ROOT = r"C:\Users\stream\Desktop\m2 pfe\MASTER2-A1"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 os.chdir(ROOT)
 

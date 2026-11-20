@@ -96,5 +96,11 @@ results/figures/
 *.jpeg
 *.pdf
 
+# Documentation assets are part of the repository
+!docs/assets/
+!docs/assets/*.png
+!docs/assets/*.jpg
+!docs/assets/*.svg
+
 # Thesis (hidden from GitHub until finalized)
 thesis/

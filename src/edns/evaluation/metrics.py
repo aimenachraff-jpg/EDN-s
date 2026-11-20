@@ -383,8 +383,8 @@ def compute_all_metrics(
     Compute all available metrics for a pair of images.
     
     Args:
-        hr: High-resolution reference [H, W] or [C, H, W]
-        sr: Super-resolved image (same shape)
+        sr: Super-resolved image [H, W] or [C, H, W]
+        hr: High-resolution reference (same shape)
         baseline: Optional baseline (e.g., bicubic) for TUS
         scale: Upscaling factor for ERGAS
     
@@ -418,15 +418,21 @@ def compute_all_metrics(
         results['wavelet_hh_energy'] = None
         results['glcm_entropy'] = None
     
-    # Task Utility Score if baseline provided
+    # Task Utility Score if baseline provided.
+    # NOTE: TUS is defined for bounded task metrics. For PSNR the HR-vs-HR value is
+    # infinite, so these keys are diagnostic placeholders and are not used in any
+    # reported result. See docs/limitations.md.
     if baseline is not None:
         baseline_np = _to_numpy(baseline)
         if baseline_np.shape == hr_np.shape:
+            baseline_metrics = compute_all_metrics(baseline, hr)
             for metric_name in ['psnr', 'ssim']:
                 hr_val = results[metric_name]
-                baseline_val = compute_all_metrics(hr, baseline).get(metric_name, 0)
+                baseline_val = baseline_metrics.get(metric_name, 0)
                 if baseline_val is not None:
-                    tus = compute_task_utility_score(hr_val, hr_val, baseline_val, higher_is_better=True)
-                    results[f'tus_{metric_name}'] = tus
+                    results[f'tus_{metric_name}'] = compute_task_utility_score(
+                        hr_val, hr_val, baseline_val,
+                        higher_is_better=True,
+                    )
     
     return results

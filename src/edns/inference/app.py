@@ -70,10 +70,15 @@ def load_model(ckpt_path: Optional[str] = None, config_path: Optional[str] = Non
         if _MODEL is not None:
             return _MODEL
         
-        # Default config
+        # Default config: prefer the copy bundled with the package so that a
+        # pip-installed CLI works without a source checkout.
         if config_path is None:
-            ROOT = Path(__file__).parent.parent.parent.parent
-            config_path = ROOT / "configs" / "models" / "edsr_small.yaml"
+            packaged = Path(__file__).parent.parent / "configs" / "models" / "edsr_small.yaml"
+            if packaged.exists():
+                config_path = packaged
+            else:
+                ROOT = Path(__file__).parent.parent.parent.parent
+                config_path = ROOT / "configs" / "models" / "edsr_small.yaml"
         
         # Load config
         cfg = yaml.safe_load(open(config_path))
@@ -330,6 +335,10 @@ def run_sr(
         detector = HallucinationDetector()
         hallucination_result = detector.detect_all(sr, hr)
         
+        # detect_all() returns the per-category results under "details"
+        details = hallucination_result["details"]
+        categories = ["spectral", "structural", "textural", "semantic"]
+
         # Format report
         report = {
             "input_path": str(input_path),
@@ -337,16 +346,16 @@ def run_sr(
             "hr_reference_path": str(hr_reference_path),
             "hallucination": hallucination_result,
             "summary": {
-                "any_hallucination": hallucination_result["any_hallucination"],
+                "any_hallucination": len(hallucination_result["detected_types"]) > 0,
                 "detected_categories": [
-                    cat for cat in ["spectral", "structural", "textural", "semantic"]
-                    if hallucination_result.get(cat, {}).get("detected", False)
+                    cat for cat in categories
+                    if details.get(cat, {}).get("detected", False)
                 ],
-                "max_confidence": max([
-                    hallucination_result.get(cat, {}).get("confidence", 0.0)
-                    for cat in ["spectral", "structural", "textural", "semantic"]
-                ])
-            }
+                "max_confidence": max(
+                    (details.get(cat, {}).get("confidence", 0.0) for cat in categories),
+                    default=0.0,
+                ),
+            },
         }
         
         result["hallucination_report"] = report
@@ -358,13 +367,13 @@ def run_sr(
         
         # Print summary to console
         print("\n=== Hallucination Detection Report ===")
-        for cat in ["spectral", "structural", "textural", "semantic"]:
-            if cat in hallucination_result:
-                det = hallucination_result[cat]
-                status = "⚠️  DETECTED" if det.get("detected", False) else "✓  Clean"
-                conf = det.get("confidence", 0.0)
-                print(f"  {cat.capitalize():12s}: {status} (confidence: {conf:.4f})")
-        print(f"  {'Any':12s}: {'⚠️  YES' if hallucination_result['any_hallucination'] else '✓  NO'}")
+        for cat in categories:
+            det = details.get(cat, {})
+            status = "DETECTED" if det.get("detected", False) else "Clean"
+            conf = det.get("confidence", 0.0)
+            print(f"  {cat.capitalize():12s}: {status:9s} (confidence: {conf:.4f})")
+        any_detected = len(hallucination_result["detected_types"]) > 0
+        print(f"  {'Any':12s}: {'YES' if any_detected else 'NO'}")
         print("======================================\n")
     
     return result

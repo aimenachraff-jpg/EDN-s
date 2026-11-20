@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "EDN-S: Satellite Image Super-Resolution"
+type: software
+authors:
+  - family-names: "Chekalil"
+    given-names: "Aimene Charef Eddine"
+version: 1.0.2
+date-released: 2026-11-19
+license: MIT
+repository-code: "https://github.com/aimenachraff-jpg/EDN-s"
+url: "https://pypi.org/project/edns/"
+keywords:
+  - super-resolution
+  - satellite imagery
+  - Sentinel-2
+  - ALSAT-2B
+  - EDSR
+  - deep learning
+  - PyTorch
+  - remote sensing
+  - hallucination detection
+abstract: >-
+  EDN-S is a PyTorch implementation of an EDSR-small super-resolution model for
+  four-band satellite imagery. It includes training and reconstruction code, a
+  tiled GeoTIFF inference path, a spectral and spatial quality metric suite, and
+  reference-based hallucination detection. The reported experiments use Sentinel-2
+  imagery with a simulated ALSAT-2B x4 degradation; no real ALSAT-2B data was used.

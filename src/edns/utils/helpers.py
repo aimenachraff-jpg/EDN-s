@@ -4,9 +4,11 @@ EDN-S Helper Functions
 """
 
 import time
-import torch
+from pathlib import Path
+from typing import Optional, Union
+
 import numpy as np
-from typing import Union
+import torch
 
 
 def count_parameters(model: torch.nn.Module, trainable_only: bool = False) -> int:

@@ -11,8 +11,17 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 
-# Default normalization stats path
-DEFAULT_STATS_PATH = Path(__file__).parent.parent.parent.parent / "data" / "metadata" / "sentinel2" / "normalization_stats.json"
+# Normalization statistics are bundled with the package so that a pip-installed
+# CLI works without a source checkout. The repository copy is used as a fallback
+# for development installs that predate the bundled file.
+_PACKAGED_STATS_PATH = Path(__file__).parent / "normalization_stats.json"
+_REPO_STATS_PATH = (
+    Path(__file__).parent.parent.parent.parent
+    / "data" / "metadata" / "sentinel2" / "normalization_stats.json"
+)
+DEFAULT_STATS_PATH = (
+    _PACKAGED_STATS_PATH if _PACKAGED_STATS_PATH.exists() else _REPO_STATS_PATH
+)
 
 
 def load_normalization_stats(path: Optional[Union[str, Path]] = None) -> Dict:
